@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Trash2, Plus, Users, Trophy, Zap, RefreshCw } from "lucide-react";
+import { Trash2, Plus, Users, Trophy, Zap, RefreshCw, UserX } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
 
@@ -142,6 +142,21 @@ export default function AdminPage() {
       toast({
         title: "XP reset!",
         description: "User XP has been reset to 0.",
+      });
+    },
+  });
+
+  const deleteUserMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      const res = await apiRequest("DELETE", `/api/admin/users/${userId}`);
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/home"] });
+      setSelectedUser("");
+      toast({
+        title: "User deleted",
+        description: "The user has been removed from the platform.",
       });
     },
   });
@@ -299,21 +314,82 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                <Button
-                  variant="destructive"
-                  onClick={() => {
-                    if (selectedUser) {
-                      resetXPMutation.mutate(selectedUser);
-                    }
-                  }}
-                  className="w-full"
-                  data-testid="button-reset-xp"
-                >
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Reset XP to 0
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="destructive"
+                    onClick={() => {
+                      if (selectedUser) {
+                        resetXPMutation.mutate(selectedUser);
+                      }
+                    }}
+                    className="flex-1"
+                    data-testid="button-reset-xp"
+                  >
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Reset XP to 0
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={() => {
+                      if (selectedUser && confirm("Are you sure you want to delete this user? This action cannot be undone.")) {
+                        deleteUserMutation.mutate(selectedUser);
+                      }
+                    }}
+                    className="flex-1"
+                    data-testid="button-delete-user"
+                  >
+                    <UserX className="h-4 w-4 mr-2" />
+                    Delete User
+                  </Button>
+                </div>
               </div>
             )}
+          </CardContent>
+        </Card>
+
+        {/* User Management */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              User Management
+            </CardTitle>
+            <CardDescription>View and manage all users on the platform</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {(stats as any)?.leaderboard && (stats as any).leaderboard.length > 0 ? (
+                (stats as any).leaderboard.map((u: any) => (
+                  <div
+                    key={u.id}
+                    className="flex items-center justify-between p-3 rounded-lg border bg-card hover-elevate"
+                  >
+                    <div className="flex-1">
+                      <div className="font-semibold">{u.username}</div>
+                      <div className="text-sm text-muted-foreground">
+                        Level {u.level} • {u.xp.toLocaleString()} XP
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        if (confirm(`Are you sure you want to delete ${u.username}? This action cannot be undone.`)) {
+                          deleteUserMutation.mutate(u.id);
+                        }
+                      }}
+                      data-testid={`button-delete-user-${u.id}`}
+                    >
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                  </div>
+                ))
+              ) : (
+                <p className="text-muted-foreground text-center py-8">
+                  No users found.
+                </p>
+              )}
+            </div>
           </CardContent>
         </Card>
 
