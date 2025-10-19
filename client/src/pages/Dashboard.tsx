@@ -31,7 +31,7 @@ export default function Dashboard() {
     enabled: !!user,
   });
 
-  const [lastEvent, setLastEvent] = useState<React.MouseEvent | MouseEvent | null>(null);
+  const [lastEvent, setLastEvent] = useState<any>(null);
 
   const completeMutation = useMutation({
     mutationFn: async (challengeId: string) => {
@@ -205,7 +205,7 @@ export default function Dashboard() {
         <CrewGoalMeter 
           current={total} 
           goal={goal} 
-          isAdmin={user?.isAdmin}
+          isAdmin={user?.isAdmin || false}
           onReset={() => resetCrewGoalMutation.mutate()}
         />
 
