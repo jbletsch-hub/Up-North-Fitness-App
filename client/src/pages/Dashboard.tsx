@@ -36,9 +36,14 @@ export default function Dashboard() {
       return await apiRequest("POST", `/api/challenges/${challengeId}/complete`);
     },
     onSuccess: (data: any, variables: any, context: any) => {
+      console.log("Challenge complete - Data:", data);
+      console.log("Challenge complete - Context:", context);
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       if (data.xpAwarded && context?.event) {
+        console.log("Showing XP popup for challenge");
         showXP(data.xpAwarded, context.event);
+      } else {
+        console.log("NOT showing XP popup. xpAwarded:", data.xpAwarded, "event:", context?.event);
       }
       // Show bonus XP if all challenges completed
       if (data.bonusXP > 0 && context?.event) {
