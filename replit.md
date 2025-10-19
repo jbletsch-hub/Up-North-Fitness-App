@@ -23,6 +23,7 @@ Preferred communication style: Simple, everyday language.
 - ✅ Created ProtectedRoute component for authenticated route protection
 - ✅ Updated all API routes to use new auth endpoints (/api/register, /api/login, /api/logout, /api/user)
 - ✅ Removed Replit Auth dependencies and cleaned up old auth files
+- ✅ Fixed logout to use POST request instead of anchor tag for proper session termination
 
 ### Feature Enhancements
 - ✅ Fixed progress photo upload to use static/uploads directory (not object storage)
@@ -36,9 +37,16 @@ Preferred communication style: Simple, everyday language.
 - ✅ Implemented dynamic XP popup positioning to appear near clicked buttons
 - ✅ Updated all component event handlers to pass click events for popup positioning
 - ✅ Fixed crew goal updates to invalidate /api/home query when PRs are updated
-- ✅ Created GoalsCard component displaying weekly goals and lifetime stats
-- ✅ Added weekly goals tracking (check-ins, challenges completed, total weight lifted)
-- ✅ Added lifetime stats display (total XP, current level, total PRs)
+
+### User-Defined Goals System
+- ✅ Added userGoals table to database schema for personalized goal tracking
+- ✅ Created full CRUD API endpoints for goals (/api/goals)
+- ✅ Implemented GoalsCard component with dialog-based goal creation
+- ✅ Users can create weekly and lifetime goals with custom titles, targets, and units
+- ✅ Goals display progress bars showing current vs. target values
+- ✅ Users can mark goals as complete and delete goals
+- ✅ Completed goals are shown separately with visual distinction
+- ✅ Supports multiple unit types: lbs, kg, reps, miles, km, days, times
 
 ## System Architecture
 
@@ -65,9 +73,10 @@ Preferred communication style: Simple, everyday language.
 - Theme state persisted to localStorage
 
 **Key Design Patterns:**
-- Component composition with feature-focused components (CheckInCard, PRTracker, LeaderboardCard, etc.)
+- Component composition with feature-focused components (CheckInCard, PRTracker, LeaderboardCard, GoalsCard, etc.)
 - Custom hooks for reusable logic (useAuth, useXPPopup, use-toast)
 - Portal-based UI for popups (XPPopup component showing XP rewards)
+- Dialog-based forms for creating/editing content (goals creation)
 - Centralized API request handling through queryClient utility
 - XP utilities (xpUtils.ts) for level calculation and progress tracking
 
@@ -111,11 +120,12 @@ Preferred communication style: Simple, everyday language.
 - `userDailyChallenges`: Daily challenge assignments with completion status
 - `progressPhotos`: Uploaded progress photos with metadata
 - `crewState`: Shared crew goal tracking (total lifted vs. goal)
+- `userGoals`: User-defined weekly and lifetime goals with progress tracking
 - `sessions`: Session storage for passport authentication
 
 **Key Relationships:**
 - One-to-one: User → PR record
-- One-to-many: User → Activities, User → Progress Photos, User → Daily Challenges
+- One-to-many: User → Activities, User → Progress Photos, User → Daily Challenges, User → Goals
 - Singleton: Crew State (shared across all users)
 
 **Indexes:**
