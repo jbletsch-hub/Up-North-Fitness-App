@@ -28,7 +28,7 @@ export function CrewGoalMeter({ current, goal, isAdmin, onReset }: CrewGoalMeter
               className="text-xs"
             >
               <RefreshCw className="h-3 w-3 mr-1" />
-              Reset to 5000
+              Set Next Goal
             </Button>
           )}
         </div>

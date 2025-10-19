@@ -484,8 +484,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Forbidden" });
       }
 
-      await storage.updateCrewGoal(5000);
-      res.json({ success: true, goal: 5000 });
+      // Get current total lifted and set new goal to next 5000 milestone
+      const allPRs = await storage.getAllPRs();
+      const total = allPRs.reduce((sum, pr) => sum + pr.squat + pr.bench + pr.deadlift, 0);
+      
+      // Calculate next milestone (round up to next 5000 increment)
+      const nextGoal = Math.ceil((total + 1) / 5000) * 5000;
+      
+      await storage.updateCrewGoal(nextGoal);
+      res.json({ success: true, goal: nextGoal });
     } catch (error) {
       console.error("Error resetting goal:", error);
       res.status(500).json({ message: "Failed to reset goal" });
