@@ -43,8 +43,8 @@ export function Navigation({ isLoggedIn, username, isAdmin, userLevel, userXP }:
                   <span className="text-muted-foreground">{userXP} XP</span>
                 </div>
               )}
-              <Button variant="ghost" size="sm" data-testid="button-logout">
-                Logout
+              <Button variant="ghost" size="sm" data-testid="button-logout" asChild>
+                <a href="/api/logout">Logout</a>
               </Button>
             </>
           ) : (

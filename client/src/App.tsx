@@ -4,13 +4,25 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import Home from "@/pages/Home";
+import { useAuth } from "@/hooks/useAuth";
+import Landing from "@/pages/Landing";
+import HomePage from "@/pages/HomePage";
+import Dashboard from "@/pages/Dashboard";
 import NotFound from "@/pages/not-found";
 
 function Router() {
+  const { isAuthenticated, isLoading } = useAuth();
+
   return (
     <Switch>
-      <Route path="/" component={Home} />
+      {isLoading || !isAuthenticated ? (
+        <Route path="/" component={Landing} />
+      ) : (
+        <>
+          <Route path="/" component={HomePage} />
+          <Route path="/dashboard" component={Dashboard} />
+        </>
+      )}
       <Route component={NotFound} />
     </Switch>
   );
