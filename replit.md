@@ -14,6 +14,27 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (October 19, 2025)
 
+### Latest Updates - XP System & Goal Completion Rewards
+- ✅ Fixed XP popup not displaying by refactoring mutation context handling
+- ✅ Added 45 XP bonus for completing all daily challenges (4/4)
+- ✅ Added 100 XP reward for completing weekly goals
+- ✅ Added 1000 XP reward for completing lifetime goals
+- ✅ Enhanced XP popup with Nintendo-style animations:
+  - Sparkle particle burst effect (8 animated particles)
+  - Bounce entrance with elastic easing and rotation
+  - Pulsing golden glow effect around popup
+  - Gradient background from primary to chart colors
+  - Shine overlay shimmer effect
+  - Spinning sparkle icons flanking XP text
+  - Text glow with golden shadow
+  - Expanding ring pulse on appearance
+  - Float away exit animation after 2.5 seconds
+- ✅ Refactored all mutations to pass events through context instead of state
+- ✅ Added bonus XP toast notification when all challenges completed
+- ✅ Goal completion now awards XP and shows popup with animations
+
+## Previous Changes
+
 ### Authentication Migration
 - ✅ Replaced Replit Auth with username/password authentication using passport-local
 - ✅ Added password field to users table in database schema
