@@ -6,7 +6,7 @@ Iron Crew is a fullstack fitness tracking application that combines workout logg
 
 The application is built as a modern web app using React on the frontend and Express on the backend, with PostgreSQL (via Neon) for data persistence and Replit Auth for authentication.
 
-**Current Status:** Fully functional with username/password authentication, XP system with level progression tracking, daily challenges, PR tracking, check-ins, weigh-ins, photo uploads, leaderboards, and user profiles. All frontend components are connected to live backend APIs with consistent XP popup feedback.
+**Current Status:** Fully functional with username/password authentication, XP system with level progression tracking, daily challenges, PR tracking, check-ins, weigh-ins, photo uploads, leaderboards, and user profiles. All frontend components are connected to live backend APIs with consistent XP popup feedback. New users complete a profile setup flow with name entry and gym-themed profile picture selection.
 
 ## User Preferences
 
@@ -14,7 +14,21 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (October 19, 2025)
 
-### Latest Updates - XP System & Goal Completion Rewards
+### Latest Updates - Profile Setup Flow for New Users
+- ✅ Added profile setup requirement for new users after registration
+- ✅ Created ProfileSetup page (/profile-setup) with name inputs and profile picture selector
+- ✅ Added 10 gym-themed stock images for profile picture selection
+- ✅ Updated users schema to use firstName, lastName, and profileImageUrl fields
+- ✅ Implemented POST /api/profile/setup endpoint to save profile data
+- ✅ Enhanced ProtectedRoute to redirect incomplete profiles to /profile-setup
+- ✅ Added skipProfileCheck prop to allow /profile-setup route access
+- ✅ Profile picture selection uses grid layout with ring highlighting for selected option
+- ✅ Form validation ensures first name and profile picture are required
+
+### Previous Updates - Daily Limits & XP System
+- ✅ Implemented strict daily limits: PRs and weigh-ins can only be updated once per day
+- ✅ Backend validation prevents multiple updates with clear error messages
+- ✅ Frontend error handling displays helpful toast notifications when daily limit reached
 - ✅ Fixed XP popup not displaying by refactoring mutation context handling
 - ✅ Added 45 XP bonus for completing all daily challenges (4/4)
 - ✅ Added 100 XP reward for completing weekly goals
