@@ -88,10 +88,15 @@ export function GoalsCard() {
       return await apiRequest("PATCH", `/api/goals/${id}/complete`);
     },
     onSuccess: (data: any, variables: any, context: any) => {
+      console.log("Goal completion response:", data);
+      console.log("Context:", context);
       queryClient.invalidateQueries({ queryKey: ["/api/goals"] });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       if (data.xpAwarded && context?.event) {
+        console.log("Showing XP popup:", data.xpAwarded);
         showXP(data.xpAwarded, context.event);
+      } else {
+        console.log("NOT showing XP popup. xpAwarded:", data.xpAwarded, "event:", context?.event);
       }
       toast({
         title: "Goal completed!",
