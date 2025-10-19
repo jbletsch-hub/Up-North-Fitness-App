@@ -100,11 +100,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
   app.get("/api/auth/user", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims?.sub || req.user.isAdmin ? "admin" : null;
+      const userId = req.user.claims?.sub || (req.user.isAdmin ? "admin" : null);
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
-      const user = await storage.getUser(userId);
+      
+      let user = await storage.getUser(userId);
+      
+      // If user doesn't exist in database yet, fetch the claims from session and create the user
+      if (!user && req.user.claims) {
+        const claims = req.user.claims;
+        const email = claims.email;
+        let username = email?.split("@")[0] || claims.first_name || `user${userId}`;
+        
+        // Check if username exists and make it unique
+        const existingUser = await storage.getUserByUsername(username);
+        if (existingUser && existingUser.id !== userId) {
+          username = `${username}${userId.slice(-4)}`;
+        }
+        
+        user = await storage.upsertUser({
+          id: userId,
+          email,
+          firstName: claims.first_name,
+          lastName: claims.last_name,
+          profileImageUrl: claims.profile_image_url,
+          username,
+        });
+      }
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
       res.json(user);
     } catch (error) {
       console.error("Error fetching user:", error);
