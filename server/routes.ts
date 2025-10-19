@@ -181,7 +181,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.completeChallenge(challengeId);
       const result = await awardXP(userId, 15, "completed a daily challenge");
 
-      res.json({ success: true, ...result });
+      // Check if all daily challenges are completed
+      const today = getTodayDate();
+      const allChallenges = await storage.getUserDailyChallenges(userId, today);
+      const allCompleted = allChallenges.every((c) => c.completed);
+
+      let bonusResult;
+      if (allCompleted) {
+        bonusResult = await awardXP(userId, 45, "completed all daily challenges!");
+      }
+
+      res.json({ 
+        success: true, 
+        ...result,
+        allCompleted,
+        bonusXP: bonusResult?.xpAwarded || 0
+      });
     } catch (error) {
       console.error("Error completing challenge:", error);
       res.status(500).json({ message: "Failed to complete challenge" });
@@ -522,9 +537,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch("/api/goals/:id/complete", isAuthenticated, async (req: any, res) => {
     try {
+      const userId = req.user.id;
       const { id } = req.params;
+      
+      // Get goal to check type before completing
+      const goalBefore = await storage.getGoal(id);
+      if (!goalBefore) {
+        return res.status(404).json({ error: "Goal not found" });
+      }
+
       const goal = await storage.completeGoal(id);
-      res.json(goal);
+      
+      // Award XP based on goal type
+      const xpAmount = goalBefore.type === "weekly" ? 100 : 1000;
+      const xpReason = goalBefore.type === "weekly" 
+        ? "completed a weekly goal!" 
+        : "completed a lifetime goal!";
+      const result = await awardXP(userId, xpAmount, xpReason);
+
+      res.json({ ...goal, ...result });
     } catch (error) {
       console.error("Error completing goal:", error);
       res.status(500).json({ error: "Failed to complete goal" });

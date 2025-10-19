@@ -31,16 +31,24 @@ export default function Dashboard() {
     enabled: !!user,
   });
 
-  const [lastEvent, setLastEvent] = useState<any>(null);
-
   const completeMutation = useMutation({
-    mutationFn: async (challengeId: string) => {
+    mutationFn: async ({ challengeId }: { challengeId: string }) => {
       return await apiRequest("POST", `/api/challenges/${challengeId}/complete`);
     },
-    onSuccess: (data: any) => {
+    onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
-      if (data.xpAwarded && lastEvent) {
-        showXP(data.xpAwarded, lastEvent);
+      if (data.xpAwarded && context?.event) {
+        showXP(data.xpAwarded, context.event);
+      }
+      // Show bonus XP if all challenges completed
+      if (data.bonusXP > 0 && context?.event) {
+        setTimeout(() => {
+          showXP(data.bonusXP, context.event);
+        }, 500);
+        toast({
+          title: "All challenges complete! 🎉",
+          description: `Bonus ${data.bonusXP} XP awarded!`,
+        });
       }
     },
   });
@@ -49,11 +57,11 @@ export default function Dashboard() {
     mutationFn: async () => {
       return await apiRequest("POST", "/api/checkin");
     },
-    onSuccess: (data: any) => {
+    onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      if (data.xpAwarded && lastEvent) {
-        showXP(data.xpAwarded, lastEvent);
+      if (data.xpAwarded && context?.event) {
+        showXP(data.xpAwarded, context.event);
       }
       toast({
         title: "Checked in!",
@@ -70,15 +78,15 @@ export default function Dashboard() {
   });
 
   const prMutation = useMutation({
-    mutationFn: async (prs: { squat: number; bench: number; deadlift: number }) => {
+    mutationFn: async ({ prs }: { prs: { squat: number; bench: number; deadlift: number } }) => {
       return await apiRequest("POST", "/api/prs", prs);
     },
-    onSuccess: (data: any) => {
+    onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       queryClient.invalidateQueries({ queryKey: ["/api/home"] });
-      if (data.xpAwarded > 0 && lastEvent) {
-        showXP(data.xpAwarded, lastEvent);
+      if (data.xpAwarded > 0 && context?.event) {
+        showXP(data.xpAwarded, context.event);
       }
       toast({
         title: "PRs updated!",
@@ -88,14 +96,14 @@ export default function Dashboard() {
   });
 
   const weighinMutation = useMutation({
-    mutationFn: async (weight: number) => {
+    mutationFn: async ({ weight }: { weight: number }) => {
       return await apiRequest("POST", "/api/weighin", { weight });
     },
-    onSuccess: (data: any) => {
+    onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      if (data.xpAwarded > 0 && lastEvent) {
-        showXP(data.xpAwarded, lastEvent);
+      if (data.xpAwarded > 0 && context?.event) {
+        showXP(data.xpAwarded, context.event);
       }
       toast({
         title: "Weight recorded!",
@@ -105,7 +113,7 @@ export default function Dashboard() {
   });
 
   const photoMutation = useMutation({
-    mutationFn: async (file: File) => {
+    mutationFn: async ({ file }: { file: File }) => {
       const formData = new FormData();
       formData.append("photo", file);
       const response = await fetch("/api/photos", {
@@ -118,11 +126,11 @@ export default function Dashboard() {
       }
       return response.json();
     },
-    onSuccess: (data: any) => {
+    onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      if (data.xpAwarded && lastEvent) {
-        showXP(data.xpAwarded, lastEvent);
+      if (data.xpAwarded && context?.event) {
+        showXP(data.xpAwarded, context.event);
       }
       toast({
         title: "Photo uploaded!",
@@ -213,15 +221,13 @@ export default function Dashboard() {
           <DailyChallenges
             challenges={challenges}
             onComplete={(id, event) => {
-              setLastEvent(event);
-              completeMutation.mutate(id);
+              completeMutation.mutate({ challengeId: id }, { context: { event } });
             }}
           />
           <CheckInCard
             streak={dashboardUser.streakCount}
             onCheckIn={(event) => {
-              setLastEvent(event);
-              checkinMutation.mutate();
+              checkinMutation.mutate(undefined, { context: { event } });
             }}
           />
         </div>
@@ -230,21 +236,18 @@ export default function Dashboard() {
           <PRTracker
             initialPRs={pr}
             onUpdate={(prs, event) => {
-              setLastEvent(event);
-              prMutation.mutate(prs);
+              prMutation.mutate({ prs }, { context: { event } });
             }}
           />
           <div className="space-y-6">
             <WeighInCard
               currentWeight={dashboardUser.weight}
               onWeighIn={(weight, event) => {
-                setLastEvent(event);
-                weighinMutation.mutate(weight);
+                weighinMutation.mutate({ weight }, { context: { event } });
               }}
             />
             <PhotoUpload onUpload={(file, event) => {
-              setLastEvent(event);
-              photoMutation.mutate(file);
+              photoMutation.mutate({ file }, { context: { event } });
             }} />
           </div>
         </div>

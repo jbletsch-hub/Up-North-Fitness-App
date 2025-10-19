@@ -77,6 +77,7 @@ export interface IStorage {
   
   // User goals operations
   getUserGoals(userId: string, type?: string): Promise<UserGoal[]>;
+  getGoal(id: string): Promise<UserGoal | undefined>;
   createGoal(goal: InsertUserGoal): Promise<UserGoal>;
   updateGoalProgress(id: string, currentValue: number): Promise<UserGoal>;
   completeGoal(id: string): Promise<UserGoal>;
@@ -364,6 +365,11 @@ export class DatabaseStorage implements IStorage {
       .from(userGoals)
       .where(eq(userGoals.userId, userId))
       .orderBy(desc(userGoals.createdAt));
+  }
+
+  async getGoal(id: string): Promise<UserGoal | undefined> {
+    const [goal] = await db.select().from(userGoals).where(eq(userGoals.id, id));
+    return goal;
   }
 
   async createGoal(goalData: InsertUserGoal): Promise<UserGoal> {

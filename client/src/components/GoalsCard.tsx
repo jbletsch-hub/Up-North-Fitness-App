@@ -37,6 +37,7 @@ interface UserGoal {
 
 export function GoalsCard() {
   const { toast } = useToast();
+  const { showXP, popup } = useXPPopup();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
   const [selectedGoal, setSelectedGoal] = useState<UserGoal | null>(null);
@@ -82,11 +83,15 @@ export function GoalsCard() {
   });
 
   const completeGoalMutation = useMutation({
-    mutationFn: async (id: string) => {
+    mutationFn: async ({ id }: { id: string }) => {
       return await apiRequest("PATCH", `/api/goals/${id}/complete`);
     },
-    onSuccess: () => {
+    onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/goals"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      if (data.xpAwarded && context?.event) {
+        showXP(data.xpAwarded, context.event);
+      }
       toast({
         title: "Goal completed!",
         description: "Congratulations on reaching your goal!",
@@ -270,7 +275,7 @@ export function GoalsCard() {
                     <Button
                       size="icon"
                       variant="ghost"
-                      onClick={() => completeGoalMutation.mutate(goal.id)}
+                      onClick={(e) => completeGoalMutation.mutate({ id: goal.id }, { context: { event: e } })}
                       data-testid={`button-complete-goal-${goal.id}`}
                     >
                       <Check className="h-4 w-4" />
@@ -354,6 +359,8 @@ export function GoalsCard() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {popup}
     </>
   );
 }
