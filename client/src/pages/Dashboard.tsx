@@ -32,25 +32,49 @@ export default function Dashboard() {
   });
 
   const completeMutation = useMutation({
-    mutationFn: async ({ challengeId, event }: { challengeId: string; event?: any }) => {
+    mutationFn: async ({ challengeId, position }: { challengeId: string; position?: { x: number; y: number } }) => {
       const res = await apiRequest("POST", `/api/challenges/${challengeId}/complete`);
-      return { data: await res.json(), event };
+      return { data: await res.json(), position };
     },
     onSuccess: (response: any) => {
-      const { data, event } = response;
-      console.log("Challenge complete - Data:", data);
-      console.log("Challenge complete - Event:", event);
+      const { data, position } = response;
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
-      if (data.xpAwarded && event) {
-        console.log("Showing XP popup for challenge");
-        showXP(data.xpAwarded, event);
-      } else {
-        console.log("NOT showing XP popup. xpAwarded:", data.xpAwarded, "event:", event);
+      if (data.xpAwarded && position) {
+        // Create a fake event with the position
+        const fakeEvent = {
+          currentTarget: {
+            getBoundingClientRect: () => ({
+              left: position.x - 50,
+              top: position.y,
+              width: 100,
+              height: 40,
+              right: position.x + 50,
+              bottom: position.y + 40,
+              x: position.x - 50,
+              y: position.y,
+            }),
+          },
+        };
+        showXP(data.xpAwarded, fakeEvent as any);
       }
       // Show bonus XP if all challenges completed
-      if (data.bonusXP > 0 && event) {
+      if (data.bonusXP > 0 && position) {
         setTimeout(() => {
-          showXP(data.bonusXP, event);
+          const fakeEvent = {
+            currentTarget: {
+              getBoundingClientRect: () => ({
+                left: position.x - 50,
+                top: position.y,
+                width: 100,
+                height: 40,
+                right: position.x + 50,
+                bottom: position.y + 40,
+                x: position.x - 50,
+                y: position.y,
+              }),
+            },
+          };
+          showXP(data.bonusXP, fakeEvent as any);
         }, 500);
         toast({
           title: "All challenges complete! 🎉",
@@ -61,16 +85,30 @@ export default function Dashboard() {
   });
 
   const checkinMutation = useMutation({
-    mutationFn: async (event?: any) => {
+    mutationFn: async (position?: { x: number; y: number }) => {
       const res = await apiRequest("POST", "/api/checkin");
-      return { data: await res.json(), event };
+      return { data: await res.json(), position };
     },
     onSuccess: (response: any) => {
-      const { data, event } = response;
+      const { data, position } = response;
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      if (data.xpAwarded && event) {
-        showXP(data.xpAwarded, event);
+      if (data.xpAwarded && position) {
+        const fakeEvent = {
+          currentTarget: {
+            getBoundingClientRect: () => ({
+              left: position.x - 50,
+              top: position.y,
+              width: 100,
+              height: 40,
+              right: position.x + 50,
+              bottom: position.y + 40,
+              x: position.x - 50,
+              y: position.y,
+            }),
+          },
+        };
+        showXP(data.xpAwarded, fakeEvent as any);
       }
       toast({
         title: "Checked in!",
@@ -87,17 +125,31 @@ export default function Dashboard() {
   });
 
   const prMutation = useMutation({
-    mutationFn: async ({ prs, event }: { prs: { squat: number; bench: number; deadlift: number }; event?: any }) => {
+    mutationFn: async ({ prs, position }: { prs: { squat: number; bench: number; deadlift: number }; position?: { x: number; y: number } }) => {
       const res = await apiRequest("POST", "/api/prs", prs);
-      return { data: await res.json(), event };
+      return { data: await res.json(), position };
     },
     onSuccess: (response: any) => {
-      const { data, event } = response;
+      const { data, position } = response;
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       queryClient.invalidateQueries({ queryKey: ["/api/home"] });
-      if (data.xpAwarded > 0 && event) {
-        showXP(data.xpAwarded, event);
+      if (data.xpAwarded > 0 && position) {
+        const fakeEvent = {
+          currentTarget: {
+            getBoundingClientRect: () => ({
+              left: position.x - 50,
+              top: position.y,
+              width: 100,
+              height: 40,
+              right: position.x + 50,
+              bottom: position.y + 40,
+              x: position.x - 50,
+              y: position.y,
+            }),
+          },
+        };
+        showXP(data.xpAwarded, fakeEvent as any);
       }
       toast({
         title: "PRs updated!",
@@ -107,16 +159,30 @@ export default function Dashboard() {
   });
 
   const weighinMutation = useMutation({
-    mutationFn: async ({ weight, event }: { weight: number; event?: any }) => {
+    mutationFn: async ({ weight, position }: { weight: number; position?: { x: number; y: number } }) => {
       const res = await apiRequest("POST", "/api/weighin", { weight });
-      return { data: await res.json(), event };
+      return { data: await res.json(), position };
     },
     onSuccess: (response: any) => {
-      const { data, event } = response;
+      const { data, position } = response;
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      if (data.xpAwarded > 0 && event) {
-        showXP(data.xpAwarded, event);
+      if (data.xpAwarded > 0 && position) {
+        const fakeEvent = {
+          currentTarget: {
+            getBoundingClientRect: () => ({
+              left: position.x - 50,
+              top: position.y,
+              width: 100,
+              height: 40,
+              right: position.x + 50,
+              bottom: position.y + 40,
+              x: position.x - 50,
+              y: position.y,
+            }),
+          },
+        };
+        showXP(data.xpAwarded, fakeEvent as any);
       }
       toast({
         title: "Weight recorded!",
@@ -126,7 +192,7 @@ export default function Dashboard() {
   });
 
   const photoMutation = useMutation({
-    mutationFn: async ({ file, event }: { file: File; event?: any }) => {
+    mutationFn: async ({ file, position }: { file: File; position?: { x: number; y: number } }) => {
       const formData = new FormData();
       formData.append("photo", file);
       const response = await fetch("/api/photos", {
@@ -137,14 +203,28 @@ export default function Dashboard() {
       if (!response.ok) {
         throw new Error("Failed to upload photo");
       }
-      return { data: await response.json(), event };
+      return { data: await response.json(), position };
     },
     onSuccess: (response: any) => {
-      const { data, event } = response;
+      const { data, position } = response;
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      if (data.xpAwarded && event) {
-        showXP(data.xpAwarded, event);
+      if (data.xpAwarded && position) {
+        const fakeEvent = {
+          currentTarget: {
+            getBoundingClientRect: () => ({
+              left: position.x - 50,
+              top: position.y,
+              width: 100,
+              height: 40,
+              right: position.x + 50,
+              bottom: position.y + 40,
+              x: position.x - 50,
+              y: position.y,
+            }),
+          },
+        };
+        showXP(data.xpAwarded, fakeEvent as any);
       }
       toast({
         title: "Photo uploaded!",
@@ -236,13 +316,23 @@ export default function Dashboard() {
           <DailyChallenges
             challenges={challenges}
             onComplete={(id, event) => {
-              completeMutation.mutate({ challengeId: id, event });
+              const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+              const position = {
+                x: rect.left + rect.width / 2,
+                y: rect.top,
+              };
+              completeMutation.mutate({ challengeId: id, position });
             }}
           />
           <CheckInCard
             streak={dashboardUser.streakCount}
             onCheckIn={(event) => {
-              checkinMutation.mutate(event);
+              const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+              const position = {
+                x: rect.left + rect.width / 2,
+                y: rect.top,
+              };
+              checkinMutation.mutate(position);
             }}
           />
         </div>
@@ -251,18 +341,33 @@ export default function Dashboard() {
           <PRTracker
             initialPRs={pr}
             onUpdate={(prs, event) => {
-              prMutation.mutate({ prs, event });
+              const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+              const position = {
+                x: rect.left + rect.width / 2,
+                y: rect.top,
+              };
+              prMutation.mutate({ prs, position });
             }}
           />
           <div className="space-y-6">
             <WeighInCard
               currentWeight={dashboardUser.weight}
               onWeighIn={(weight, event) => {
-                weighinMutation.mutate({ weight, event });
+                const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+                const position = {
+                  x: rect.left + rect.width / 2,
+                  y: rect.top,
+                };
+                weighinMutation.mutate({ weight, position });
               }}
             />
             <PhotoUpload onUpload={(file, event) => {
-              photoMutation.mutate({ file, event });
+              const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+              const position = {
+                x: rect.left + rect.width / 2,
+                y: rect.top,
+              };
+              photoMutation.mutate({ file, position });
             }} />
           </div>
         </div>

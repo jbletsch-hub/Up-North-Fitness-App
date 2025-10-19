@@ -85,21 +85,30 @@ export function GoalsCard() {
   });
 
   const completeGoalMutation = useMutation({
-    mutationFn: async ({ id, event }: { id: string; event?: any }) => {
+    mutationFn: async ({ id, position }: { id: string; position?: { x: number; y: number } }) => {
       const res = await apiRequest("PATCH", `/api/goals/${id}/complete`);
-      return { data: await res.json(), event };
+      return { data: await res.json(), position };
     },
     onSuccess: (response: any) => {
-      const { data, event } = response;
-      console.log("Goal completion response:", data);
-      console.log("Event:", event);
+      const { data, position } = response;
       queryClient.invalidateQueries({ queryKey: ["/api/goals"] });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      if (data.xpAwarded && event) {
-        console.log("Showing XP popup:", data.xpAwarded);
-        showXP(data.xpAwarded, event);
-      } else {
-        console.log("NOT showing XP popup. xpAwarded:", data.xpAwarded, "event:", event);
+      if (data.xpAwarded && position) {
+        const fakeEvent = {
+          currentTarget: {
+            getBoundingClientRect: () => ({
+              left: position.x - 50,
+              top: position.y,
+              width: 100,
+              height: 40,
+              right: position.x + 50,
+              bottom: position.y + 40,
+              x: position.x - 50,
+              y: position.y,
+            }),
+          },
+        };
+        showXP(data.xpAwarded, fakeEvent as any);
       }
       toast({
         title: "Goal completed!",
@@ -286,7 +295,14 @@ export function GoalsCard() {
                     <Button
                       size="icon"
                       variant="ghost"
-                      onClick={(e) => completeGoalMutation.mutate({ id: goal.id, event: e })}
+                      onClick={(e) => {
+                        const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                        const position = {
+                          x: rect.left + rect.width / 2,
+                          y: rect.top,
+                        };
+                        completeGoalMutation.mutate({ id: goal.id, position });
+                      }}
                       data-testid={`button-complete-goal-${goal.id}`}
                     >
                       <Check className="h-4 w-4" />
