@@ -85,20 +85,21 @@ export function GoalsCard() {
   });
 
   const completeGoalMutation = useMutation({
-    mutationFn: async ({ id }: { id: string }) => {
+    mutationFn: async ({ id, event }: { id: string; event?: any }) => {
       const res = await apiRequest("PATCH", `/api/goals/${id}/complete`);
-      return await res.json();
+      return { data: await res.json(), event };
     },
-    onSuccess: (data: any, variables: any, context: any) => {
+    onSuccess: (response: any) => {
+      const { data, event } = response;
       console.log("Goal completion response:", data);
-      console.log("Context:", context);
+      console.log("Event:", event);
       queryClient.invalidateQueries({ queryKey: ["/api/goals"] });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      if (data.xpAwarded && context?.event) {
+      if (data.xpAwarded && event) {
         console.log("Showing XP popup:", data.xpAwarded);
-        showXP(data.xpAwarded, context.event);
+        showXP(data.xpAwarded, event);
       } else {
-        console.log("NOT showing XP popup. xpAwarded:", data.xpAwarded, "event:", context?.event);
+        console.log("NOT showing XP popup. xpAwarded:", data.xpAwarded, "event:", event);
       }
       toast({
         title: "Goal completed!",
@@ -285,7 +286,7 @@ export function GoalsCard() {
                     <Button
                       size="icon"
                       variant="ghost"
-                      onClick={(e) => completeGoalMutation.mutate({ id: goal.id }, { context: { event: e } })}
+                      onClick={(e) => completeGoalMutation.mutate({ id: goal.id, event: e })}
                       data-testid={`button-complete-goal-${goal.id}`}
                     >
                       <Check className="h-4 w-4" />
