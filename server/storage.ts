@@ -6,6 +6,7 @@ import {
   userDailyChallenges,
   progressPhotos,
   crewState,
+  userGoals,
   type User,
   type UpsertUser,
   type InsertUser,
@@ -21,6 +22,8 @@ import {
   type InsertProgressPhoto,
   type CrewState,
   type InsertCrewState,
+  type UserGoal,
+  type InsertUserGoal,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, sql } from "drizzle-orm";
@@ -71,6 +74,13 @@ export interface IStorage {
   // Crew state operations
   getCrewGoal(): Promise<number>;
   updateCrewGoal(goal: number): Promise<CrewState>;
+  
+  // User goals operations
+  getUserGoals(userId: string, type?: string): Promise<UserGoal[]>;
+  createGoal(goal: InsertUserGoal): Promise<UserGoal>;
+  updateGoalProgress(id: string, currentValue: number): Promise<UserGoal>;
+  completeGoal(id: string): Promise<UserGoal>;
+  deleteGoal(id: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -341,6 +351,50 @@ export class DatabaseStorage implements IStorage {
       })
       .returning();
     return state;
+  }
+
+  // User goals operations
+  async getUserGoals(userId: string, type?: string): Promise<UserGoal[]> {
+    const query = db
+      .select()
+      .from(userGoals)
+      .where(eq(userGoals.userId, userId));
+    
+    if (type) {
+      return await query.where(and(eq(userGoals.userId, userId), eq(userGoals.type, type)));
+    }
+    
+    return await query.orderBy(desc(userGoals.createdAt));
+  }
+
+  async createGoal(goalData: InsertUserGoal): Promise<UserGoal> {
+    const [goal] = await db
+      .insert(userGoals)
+      .values(goalData)
+      .returning();
+    return goal;
+  }
+
+  async updateGoalProgress(id: string, currentValue: number): Promise<UserGoal> {
+    const [goal] = await db
+      .update(userGoals)
+      .set({ currentValue })
+      .where(eq(userGoals.id, id))
+      .returning();
+    return goal;
+  }
+
+  async completeGoal(id: string): Promise<UserGoal> {
+    const [goal] = await db
+      .update(userGoals)
+      .set({ completed: true, completedAt: new Date() })
+      .where(eq(userGoals.id, id))
+      .returning();
+    return goal;
+  }
+
+  async deleteGoal(id: string): Promise<void> {
+    await db.delete(userGoals).where(eq(userGoals.id, id));
   }
 }
 

@@ -1,7 +1,8 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Moon, Sun, Dumbbell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "./ThemeProvider";
+import { apiRequest } from "@/lib/queryClient";
 
 interface NavigationProps {
   isLoggedIn: boolean;
@@ -13,6 +14,17 @@ interface NavigationProps {
 
 export function Navigation({ isLoggedIn, username, isAdmin, userLevel, userXP }: NavigationProps) {
   const { theme, toggleTheme } = useTheme();
+  const [, setLocation] = useLocation();
+
+  const handleLogout = async () => {
+    try {
+      await apiRequest("POST", "/api/logout");
+      setLocation("/auth");
+      window.location.reload();
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
@@ -43,8 +55,13 @@ export function Navigation({ isLoggedIn, username, isAdmin, userLevel, userXP }:
                   <span className="text-muted-foreground">{userXP} XP</span>
                 </div>
               )}
-              <Button variant="ghost" size="sm" data-testid="button-logout" asChild>
-                <a href="/api/logout">Logout</a>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleLogout}
+                data-testid="button-logout"
+              >
+                Logout
               </Button>
             </>
           ) : (

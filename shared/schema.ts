@@ -137,6 +137,28 @@ export const insertCrewStateSchema = createInsertSchema(crewState);
 export type InsertCrewState = z.infer<typeof insertCrewStateSchema>;
 export type CrewState = typeof crewState.$inferSelect;
 
+// User goals table
+export const userGoals = pgTable("user_goals", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  type: varchar("type").notNull(), // "weekly" or "lifetime"
+  title: text("title").notNull(),
+  targetValue: real("target_value").notNull(),
+  currentValue: real("current_value").default(0).notNull(),
+  unit: varchar("unit").notNull(),
+  completed: boolean("completed").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  completedAt: timestamp("completed_at"),
+});
+
+export const insertUserGoalSchema = createInsertSchema(userGoals).omit({ 
+  id: true, 
+  createdAt: true,
+  completedAt: true,
+});
+export type InsertUserGoal = z.infer<typeof insertUserGoalSchema>;
+export type UserGoal = typeof userGoals.$inferSelect;
+
 // Relations
 export const usersRelations = relations(users, ({ one, many }) => ({
   pr: one(prs, {
@@ -146,6 +168,14 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   activities: many(activities),
   dailyChallenges: many(userDailyChallenges),
   photos: many(progressPhotos),
+  goals: many(userGoals),
+}));
+
+export const userGoalsRelations = relations(userGoals, ({ one }) => ({
+  user: one(users, {
+    fields: [userGoals.userId],
+    references: [users.id],
+  }),
 }));
 
 export const prsRelations = relations(prs, ({ one }) => ({
