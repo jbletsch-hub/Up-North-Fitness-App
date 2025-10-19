@@ -6,10 +6,10 @@ interface CrewGoalMeterProps {
   current: number;
   goal: number;
   isAdmin?: boolean;
-  onReset?: () => void;
+  onAdvance?: () => void;
 }
 
-export function CrewGoalMeter({ current, goal, isAdmin, onReset }: CrewGoalMeterProps) {
+export function CrewGoalMeter({ current, goal, isAdmin, onAdvance }: CrewGoalMeterProps) {
   const percentage = Math.min((current / goal) * 100, 100);
   const isComplete = current >= goal;
 
@@ -19,12 +19,12 @@ export function CrewGoalMeter({ current, goal, isAdmin, onReset }: CrewGoalMeter
         <CardTitle className="text-2xl font-display tracking-wider">CREW GOAL</CardTitle>
         <div className="flex items-center gap-2">
           <Trophy className={`h-6 w-6 ${isComplete ? 'text-primary animate-pulse' : 'text-muted-foreground'}`} />
-          {isAdmin && onReset && (
+          {isAdmin && onAdvance && (
             <Button
               size="sm"
               variant="outline"
-              onClick={onReset}
-              data-testid="button-reset-crew-goal"
+              onClick={onAdvance}
+              data-testid="button-advance-crew-goal"
               className="text-xs"
             >
               <RefreshCw className="h-3 w-3 mr-1" />

@@ -249,9 +249,9 @@ export default function Dashboard() {
     },
   });
 
-  const resetCrewGoalMutation = useMutation({
+  const advanceCrewGoalMutation = useMutation({
     mutationFn: async () => {
-      const res = await apiRequest("POST", "/api/admin/goal/reset");
+      const res = await apiRequest("POST", "/api/admin/goal/advance");
       return await res.json();
     },
     onSuccess: (data) => {
@@ -318,7 +318,7 @@ export default function Dashboard() {
           current={total} 
           goal={goal} 
           isAdmin={user?.isAdmin || false}
-          onReset={() => resetCrewGoalMutation.mutate()}
+          onAdvance={() => advanceCrewGoalMutation.mutate()}
         />
 
         <div className="grid md:grid-cols-2 gap-6">

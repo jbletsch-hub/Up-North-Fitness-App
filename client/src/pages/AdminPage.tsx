@@ -7,7 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Trash2, Plus, Users, Trophy } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Trash2, Plus, Users, Trophy, Zap, RefreshCw } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
 
@@ -17,6 +18,8 @@ export default function AdminPage() {
   const [, navigate] = useLocation();
   const [newChallenge, setNewChallenge] = useState("");
   const [newGoal, setNewGoal] = useState("");
+  const [selectedUser, setSelectedUser] = useState("");
+  const [xpAmount, setXpAmount] = useState("");
 
   // Redirect non-admins
   if (user && !user.isAdmin) {
@@ -84,6 +87,65 @@ export default function AdminPage() {
     },
   });
 
+  const resetGoalTo5000Mutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", "/api/admin/goal/reset-to-5000");
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/home"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
+      toast({
+        title: "Goal reset!",
+        description: "Crew goal has been reset to 5,000 lbs.",
+      });
+    },
+  });
+
+  const advanceGoalMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", "/api/admin/goal/advance");
+      return await res.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/home"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
+      toast({
+        title: "Goal advanced!",
+        description: `Crew goal increased to ${data.goal.toLocaleString()} lbs.`,
+      });
+    },
+  });
+
+  const addXPMutation = useMutation({
+    mutationFn: async ({ userId, xp }: { userId: string; xp: number }) => {
+      const res = await apiRequest("POST", `/api/admin/users/${userId}/xp/add`, { xp });
+      return await res.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/home"] });
+      setXpAmount("");
+      toast({
+        title: "XP added!",
+        description: `User now has ${data.newXP.toLocaleString()} XP.`,
+      });
+    },
+  });
+
+  const resetXPMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      const res = await apiRequest("POST", `/api/admin/users/${userId}/xp/reset`);
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/home"] });
+      toast({
+        title: "XP reset!",
+        description: "User XP has been reset to 0.",
+      });
+    },
+  });
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation
@@ -130,35 +192,130 @@ export default function AdminPage() {
           <Card>
             <CardHeader>
               <CardTitle>Crew Goal Management</CardTitle>
-              <CardDescription>Set a custom crew goal</CardDescription>
+              <CardDescription>Manage the crew's lifting goal</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="goal">New Goal (lbs)</Label>
-                <Input
-                  id="goal"
-                  type="number"
-                  placeholder="e.g., 10000"
-                  value={newGoal}
-                  onChange={(e) => setNewGoal(e.target.value)}
-                  data-testid="input-new-goal"
-                />
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => resetGoalTo5000Mutation.mutate()}
+                  variant="outline"
+                  className="flex-1"
+                  data-testid="button-reset-goal-5000"
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Reset to 5,000
+                </Button>
+                <Button
+                  onClick={() => advanceGoalMutation.mutate()}
+                  variant="outline"
+                  className="flex-1"
+                  data-testid="button-advance-goal-250"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  +250 lbs
+                </Button>
               </div>
-              <Button
-                onClick={() => {
-                  const goal = parseInt(newGoal);
-                  if (goal > 0) {
-                    updateGoalMutation.mutate(goal);
-                  }
-                }}
-                disabled={!newGoal || parseInt(newGoal) <= 0}
-                data-testid="button-update-goal"
-              >
-                Update Goal
-              </Button>
+              <div className="space-y-2">
+                <Label htmlFor="goal">Custom Goal (lbs)</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="goal"
+                    type="number"
+                    placeholder="e.g., 10000"
+                    value={newGoal}
+                    onChange={(e) => setNewGoal(e.target.value)}
+                    data-testid="input-new-goal"
+                  />
+                  <Button
+                    onClick={() => {
+                      const goal = parseInt(newGoal);
+                      if (goal > 0) {
+                        updateGoalMutation.mutate(goal);
+                      }
+                    }}
+                    disabled={!newGoal || parseInt(newGoal) <= 0}
+                    data-testid="button-update-goal"
+                  >
+                    Set Goal
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
+
+        {/* XP Management */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Zap className="h-5 w-5" />
+              XP Management
+            </CardTitle>
+            <CardDescription>Add or reset XP for any user</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="user-select">Select User</Label>
+              <Select value={selectedUser} onValueChange={setSelectedUser}>
+                <SelectTrigger id="user-select" data-testid="select-user">
+                  <SelectValue placeholder="Choose a user..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {(stats as any)?.leaderboard?.map((u: any) => (
+                    <SelectItem key={u.id} value={u.id}>
+                      {u.username} (Level {u.level} - {u.xp.toLocaleString()} XP)
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {selectedUser && (
+              <div className="space-y-4 p-4 border rounded-lg bg-card/50">
+                <div className="space-y-2">
+                  <Label htmlFor="xp-amount">XP Amount</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="xp-amount"
+                      type="number"
+                      placeholder="e.g., 100"
+                      value={xpAmount}
+                      onChange={(e) => setXpAmount(e.target.value)}
+                      data-testid="input-xp-amount"
+                    />
+                    <Button
+                      onClick={() => {
+                        const xp = parseInt(xpAmount);
+                        if (xp && selectedUser) {
+                          addXPMutation.mutate({ userId: selectedUser, xp });
+                        }
+                      }}
+                      disabled={!xpAmount || parseInt(xpAmount) <= 0}
+                      data-testid="button-add-xp"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add XP
+                    </Button>
+                  </div>
+                </div>
+
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    if (selectedUser) {
+                      resetXPMutation.mutate(selectedUser);
+                    }
+                  }}
+                  className="w-full"
+                  data-testid="button-reset-xp"
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Reset XP to 0
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Challenge Pool Management */}
         <Card>

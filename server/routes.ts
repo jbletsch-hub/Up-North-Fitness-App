@@ -491,7 +491,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/goal/reset", isAuthenticated, async (req: any, res) => {
+  app.post("/api/admin/goal/advance", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.id;
       const user = await storage.getUser(userId);
@@ -507,8 +507,76 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.updateCrewGoal(nextGoal);
       res.json({ success: true, goal: nextGoal });
     } catch (error) {
-      console.error("Error resetting goal:", error);
-      res.status(500).json({ message: "Failed to reset goal" });
+      console.error("Error advancing goal:", error);
+      res.status(500).json({ message: "Failed to advance goal" });
+    }
+  });
+
+  app.post("/api/admin/goal/reset-to-5000", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+
+      await storage.updateCrewGoal(5000);
+      res.json({ success: true, goal: 5000 });
+    } catch (error) {
+      console.error("Error resetting goal to 5000:", error);
+      res.status(500).json({ message: "Failed to reset goal to 5000" });
+    }
+  });
+
+  app.post("/api/admin/users/:userId/xp/add", isAuthenticated, async (req: any, res) => {
+    try {
+      const adminId = req.user.id;
+      const admin = await storage.getUser(adminId);
+
+      if (!admin?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+
+      const { userId } = req.params;
+      const { xp } = req.body;
+      
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const newXP = user.xp + parseInt(xp);
+      await storage.updateUserXP(userId, newXP);
+
+      res.json({ success: true, newXP });
+    } catch (error) {
+      console.error("Error adding XP:", error);
+      res.status(500).json({ message: "Failed to add XP" });
+    }
+  });
+
+  app.post("/api/admin/users/:userId/xp/reset", isAuthenticated, async (req: any, res) => {
+    try {
+      const adminId = req.user.id;
+      const admin = await storage.getUser(adminId);
+
+      if (!admin?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+
+      const { userId } = req.params;
+      
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      await storage.updateUserXP(userId, 0);
+      res.json({ success: true, newXP: 0 });
+    } catch (error) {
+      console.error("Error resetting XP:", error);
+      res.status(500).json({ message: "Failed to reset XP" });
     }
   });
 
