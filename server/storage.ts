@@ -101,13 +101,9 @@ export class DatabaseStorage implements IStorage {
       if (!adminUser) {
         const hashedPassword = await hashPasswordFn("admin123");
         await this.createUser({
-          id: "admin",
           username: "admin",
           password: hashedPassword,
           isAdmin: true,
-          xp: 0,
-          level: 1,
-          title: "Rookie 1",
         });
         console.log("✅ Admin user created (username: admin, password: admin123)");
       }
@@ -355,16 +351,19 @@ export class DatabaseStorage implements IStorage {
 
   // User goals operations
   async getUserGoals(userId: string, type?: string): Promise<UserGoal[]> {
-    const query = db
-      .select()
-      .from(userGoals)
-      .where(eq(userGoals.userId, userId));
-    
     if (type) {
-      return await query.where(and(eq(userGoals.userId, userId), eq(userGoals.type, type)));
+      return await db
+        .select()
+        .from(userGoals)
+        .where(and(eq(userGoals.userId, userId), eq(userGoals.type, type)))
+        .orderBy(desc(userGoals.createdAt));
     }
     
-    return await query.orderBy(desc(userGoals.createdAt));
+    return await db
+      .select()
+      .from(userGoals)
+      .where(eq(userGoals.userId, userId))
+      .orderBy(desc(userGoals.createdAt));
   }
 
   async createGoal(goalData: InsertUserGoal): Promise<UserGoal> {

@@ -3,7 +3,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, TrendingUp, Calendar } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { Trophy, TrendingUp, Calendar, Target, Check } from "lucide-react";
 import { useParams } from "wouter";
 
 export default function ProfilePage() {
@@ -32,7 +33,7 @@ export default function ProfilePage() {
     );
   }
 
-  const { user: profileUser, pr, photos, activities } = profileData;
+  const { user: profileUser, pr, photos, activities, challenges = [], weeklyGoals = [], lifetimeGoals = [] } = profileData;
 
   return (
     <div className="min-h-screen bg-background">
@@ -144,6 +145,129 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Daily Challenges */}
+        {challenges.length > 0 && (
+          <Card className="border-card-border">
+            <CardHeader>
+              <CardTitle className="text-xl font-display tracking-wider flex items-center gap-2">
+                <Target className="h-5 w-5 text-primary" />
+                DAILY CHALLENGES
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {challenges.map((challenge: any) => (
+                  <div
+                    key={challenge.id}
+                    className={`flex items-center gap-3 p-3 rounded-lg border border-border ${
+                      challenge.completed ? "opacity-60" : ""
+                    }`}
+                  >
+                    {challenge.completed ? (
+                      <Check className="h-5 w-5 text-chart-3 flex-shrink-0" />
+                    ) : (
+                      <div className="h-5 w-5 rounded-full border-2 border-muted-foreground flex-shrink-0" />
+                    )}
+                    <span className={challenge.completed ? "line-through text-muted-foreground" : ""}>
+                      {challenge.text}
+                    </span>
+                    {challenge.completed && (
+                      <Badge className="ml-auto bg-chart-3 text-white border-0">✓</Badge>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Goals Section */}
+        {(weeklyGoals.length > 0 || lifetimeGoals.length > 0) && (
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Weekly Goals */}
+            {weeklyGoals.length > 0 && (
+              <Card className="border-card-border">
+                <CardHeader>
+                  <CardTitle className="text-xl font-display tracking-wider flex items-center gap-2">
+                    <Target className="h-5 w-5 text-chart-2" />
+                    WEEKLY GOALS
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {weeklyGoals.filter((g: any) => !g.completed).map((goal: any) => {
+                    const progress = Math.min(100, (goal.currentValue / goal.targetValue) * 100);
+                    return (
+                      <div key={goal.id} className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="font-medium">{goal.title}</span>
+                          <span className="text-muted-foreground text-sm">
+                            {goal.currentValue} / {goal.targetValue} {goal.unit}
+                          </span>
+                        </div>
+                        <Progress value={progress} className="h-2" />
+                      </div>
+                    );
+                  })}
+                  {weeklyGoals.filter((g: any) => g.completed).length > 0 && (
+                    <div className="pt-4 border-t border-border">
+                      <p className="text-sm font-medium text-muted-foreground mb-2">Completed</p>
+                      {weeklyGoals.filter((g: any) => g.completed).map((goal: any) => (
+                        <div key={goal.id} className="flex justify-between items-center py-2 opacity-60">
+                          <span className="text-sm line-through">{goal.title}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {goal.targetValue} {goal.unit} ✓
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Lifetime Goals */}
+            {lifetimeGoals.length > 0 && (
+              <Card className="border-card-border">
+                <CardHeader>
+                  <CardTitle className="text-xl font-display tracking-wider flex items-center gap-2">
+                    <Trophy className="h-5 w-5 text-primary" />
+                    LIFETIME GOALS
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {lifetimeGoals.filter((g: any) => !g.completed).map((goal: any) => {
+                    const progress = Math.min(100, (goal.currentValue / goal.targetValue) * 100);
+                    return (
+                      <div key={goal.id} className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="font-medium">{goal.title}</span>
+                          <span className="text-muted-foreground text-sm">
+                            {goal.currentValue} / {goal.targetValue} {goal.unit}
+                          </span>
+                        </div>
+                        <Progress value={progress} className="h-2" />
+                      </div>
+                    );
+                  })}
+                  {lifetimeGoals.filter((g: any) => g.completed).length > 0 && (
+                    <div className="pt-4 border-t border-border">
+                      <p className="text-sm font-medium text-muted-foreground mb-2">Completed</p>
+                      {lifetimeGoals.filter((g: any) => g.completed).map((goal: any) => (
+                        <div key={goal.id} className="flex justify-between items-center py-2 opacity-60">
+                          <span className="text-sm line-through">{goal.title}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {goal.targetValue} {goal.unit} ✓
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
 
         {/* Progress Photos */}
         {photos.length > 0 && (

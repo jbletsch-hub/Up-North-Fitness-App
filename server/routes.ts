@@ -325,6 +325,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const pr = (await storage.getPR(user.id)) || { squat: 0, bench: 0, deadlift: 0 };
       const photos = await storage.getPhotosByUser(user.id);
       const activities = await storage.getActivitiesByUser(user.id, 20);
+      
+      // Get daily challenges for today
+      const today = getTodayDate();
+      await assignDailyChallenges(user.id, today);
+      const challenges = await storage.getUserDailyChallenges(user.id, today);
+      
+      // Get goals
+      const weeklyGoals = await storage.getUserGoals(user.id, "weekly");
+      const lifetimeGoals = await storage.getUserGoals(user.id, "lifetime");
 
       const formattedActivities = activities.map((a) => ({
         ...a,
@@ -336,6 +345,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         pr,
         photos,
         activities: formattedActivities,
+        challenges,
+        weeklyGoals,
+        lifetimeGoals,
       });
     } catch (error) {
       console.error("Error fetching profile:", error);
