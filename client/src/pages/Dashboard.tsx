@@ -165,6 +165,13 @@ export default function Dashboard() {
         });
       }
     },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update PRs",
+        variant: "destructive",
+      });
+    },
   });
 
   const weighinMutation = useMutation({
@@ -196,6 +203,13 @@ export default function Dashboard() {
       toast({
         title: "Weight recorded!",
         description: "Your weight has been saved.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to record weight",
+        variant: "destructive",
       });
     },
   });

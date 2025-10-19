@@ -246,13 +246,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const today = getTodayDate();
-      let xpAwarded = 0;
-
-      if (user.lastPrUpdateDate !== today) {
-        await storage.updateUserPRDate(userId, today);
-        const result = await awardXP(userId, 10, "updated their PRs");
-        xpAwarded = 10;
+      
+      // Prevent updating PRs more than once per day
+      if (user.lastPrUpdateDate === today) {
+        return res.status(400).json({ message: "You can only update your PRs once per day" });
       }
+
+      await storage.updateUserPRDate(userId, today);
+      const result = await awardXP(userId, 10, "updated their PRs");
+      const xpAwarded = 10;
 
       const pr = await storage.upsertPR(userId, {
         squat: parseInt(squat) || 0,
@@ -295,12 +297,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const today = getTodayDate();
-      let xpAwarded = 0;
-
-      if (user.lastWeighinDate !== today) {
-        const result = await awardXP(userId, 15, "recorded their weight");
-        xpAwarded = 15;
+      
+      // Prevent weighing in more than once per day
+      if (user.lastWeighinDate === today) {
+        return res.status(400).json({ message: "You can only weigh in once per day" });
       }
+
+      const result = await awardXP(userId, 15, "recorded their weight");
+      const xpAwarded = 15;
 
       await storage.updateUserWeight(userId, parseFloat(weight), today);
 
@@ -547,7 +551,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const newXP = user.xp + parseInt(xp);
-      await storage.updateUserXP(userId, newXP);
+      const { level, title } = calculateLevelAndTitle(newXP);
+      await storage.updateUserXP(userId, newXP, level, title);
 
       res.json({ success: true, newXP });
     } catch (error) {
@@ -572,7 +577,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "User not found" });
       }
 
-      await storage.updateUserXP(userId, 0);
+      const { level, title } = calculateLevelAndTitle(0);
+      await storage.updateUserXP(userId, 0, level, title);
       res.json({ success: true, newXP: 0 });
     } catch (error) {
       console.error("Error resetting XP:", error);
