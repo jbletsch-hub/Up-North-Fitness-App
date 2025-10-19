@@ -68,7 +68,8 @@ export function GoalsCard() {
 
   const createGoalMutation = useMutation({
     mutationFn: async (goal: { type: string; title: string; targetValue: number; unit: string }) => {
-      return await apiRequest("POST", "/api/goals", goal);
+      const res = await apiRequest("POST", "/api/goals", goal);
+      return await res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/goals"] });
@@ -85,7 +86,8 @@ export function GoalsCard() {
 
   const completeGoalMutation = useMutation({
     mutationFn: async ({ id }: { id: string }) => {
-      return await apiRequest("PATCH", `/api/goals/${id}/complete`);
+      const res = await apiRequest("PATCH", `/api/goals/${id}/complete`);
+      return await res.json();
     },
     onSuccess: (data: any, variables: any, context: any) => {
       console.log("Goal completion response:", data);
@@ -107,7 +109,8 @@ export function GoalsCard() {
 
   const deleteGoalMutation = useMutation({
     mutationFn: async (id: string) => {
-      return await apiRequest("DELETE", `/api/goals/${id}`);
+      const res = await apiRequest("DELETE", `/api/goals/${id}`);
+      return res.status === 204 ? null : await res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/goals"] });
@@ -120,7 +123,8 @@ export function GoalsCard() {
 
   const updateProgressMutation = useMutation({
     mutationFn: async ({ id, currentValue }: { id: string; currentValue: number }) => {
-      return await apiRequest("PATCH", `/api/goals/${id}/progress`, { currentValue });
+      const res = await apiRequest("PATCH", `/api/goals/${id}/progress`, { currentValue });
+      return await res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/goals"] });

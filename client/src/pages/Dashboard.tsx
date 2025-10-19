@@ -33,7 +33,8 @@ export default function Dashboard() {
 
   const completeMutation = useMutation({
     mutationFn: async ({ challengeId }: { challengeId: string }) => {
-      return await apiRequest("POST", `/api/challenges/${challengeId}/complete`);
+      const res = await apiRequest("POST", `/api/challenges/${challengeId}/complete`);
+      return await res.json();
     },
     onSuccess: (data: any, variables: any, context: any) => {
       console.log("Challenge complete - Data:", data);
@@ -60,7 +61,8 @@ export default function Dashboard() {
 
   const checkinMutation = useMutation({
     mutationFn: async () => {
-      return await apiRequest("POST", "/api/checkin");
+      const res = await apiRequest("POST", "/api/checkin");
+      return await res.json();
     },
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
@@ -84,7 +86,8 @@ export default function Dashboard() {
 
   const prMutation = useMutation({
     mutationFn: async ({ prs }: { prs: { squat: number; bench: number; deadlift: number } }) => {
-      return await apiRequest("POST", "/api/prs", prs);
+      const res = await apiRequest("POST", "/api/prs", prs);
+      return await res.json();
     },
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
@@ -102,7 +105,8 @@ export default function Dashboard() {
 
   const weighinMutation = useMutation({
     mutationFn: async ({ weight }: { weight: number }) => {
-      return await apiRequest("POST", "/api/weighin", { weight });
+      const res = await apiRequest("POST", "/api/weighin", { weight });
+      return await res.json();
     },
     onSuccess: (data: any, variables: any, context: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
@@ -153,7 +157,8 @@ export default function Dashboard() {
 
   const resetCrewGoalMutation = useMutation({
     mutationFn: async () => {
-      return await apiRequest("POST", "/api/admin/goal/reset");
+      const res = await apiRequest("POST", "/api/admin/goal/reset");
+      return await res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
