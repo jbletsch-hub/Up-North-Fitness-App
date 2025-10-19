@@ -146,17 +146,26 @@ export function useXPPopup() {
   const [xpData, setXPData] = useState<{ amount: number; position?: { x: number; y: number } } | null>(null);
 
   const showXP = (amount: number, event?: React.MouseEvent | MouseEvent) => {
+    console.log("showXP called with:", { amount, hasEvent: !!event });
     if (event) {
-      const target = event.currentTarget as HTMLElement;
-      const rect = target.getBoundingClientRect();
-      setXPData({
-        amount,
-        position: {
-          x: rect.left + rect.width / 2,
-          y: rect.top,
-        },
-      });
+      const target = (event.currentTarget || event.target) as HTMLElement;
+      console.log("Target element:", target);
+      if (target && target.getBoundingClientRect) {
+        const rect = target.getBoundingClientRect();
+        console.log("Rect:", rect);
+        setXPData({
+          amount,
+          position: {
+            x: rect.left + rect.width / 2,
+            y: rect.top,
+          },
+        });
+      } else {
+        console.log("No valid target, showing popup at center");
+        setXPData({ amount });
+      }
     } else {
+      console.log("No event, showing popup at center");
       setXPData({ amount });
     }
   };
