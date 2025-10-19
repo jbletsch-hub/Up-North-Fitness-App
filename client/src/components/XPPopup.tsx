@@ -143,31 +143,47 @@ export function XPPopup({ amount, position, onComplete }: XPPopupProps) {
 }
 
 export function useXPPopup() {
-  const [xpData, setXPData] = useState<{ amount: number; position?: { x: number; y: number } } | null>(null);
+  const [xpQueue, setXpQueue] = useState<Array<{ amount: number; position?: { x: number; y: number }; id: number }>>([]);
+  const [currentId, setCurrentId] = useState(0);
 
   const showXP = (amount: number, event?: React.MouseEvent | MouseEvent) => {
+    const id = Date.now() + Math.random();
     if (event) {
       const target = (event.currentTarget || event.target) as HTMLElement;
       if (target && target.getBoundingClientRect) {
         const rect = target.getBoundingClientRect();
-        setXPData({
+        setXpQueue(prev => [...prev, {
+          id,
           amount,
           position: {
             x: rect.left + rect.width / 2,
             y: rect.top,
           },
-        });
+        }]);
       } else {
-        setXPData({ amount });
+        setXpQueue(prev => [...prev, { id, amount }]);
       }
     } else {
-      setXPData({ amount });
+      setXpQueue(prev => [...prev, { id, amount }]);
     }
   };
 
-  const popup = xpData ? (
-    <XPPopup amount={xpData.amount} position={xpData.position} onComplete={() => setXPData(null)} />
-  ) : null;
+  const handleComplete = (id: number) => {
+    setXpQueue(prev => prev.filter(item => item.id !== id));
+  };
+
+  const popup = (
+    <>
+      {xpQueue.map((xpData) => (
+        <XPPopup 
+          key={xpData.id} 
+          amount={xpData.amount} 
+          position={xpData.position} 
+          onComplete={() => handleComplete(xpData.id)} 
+        />
+      ))}
+    </>
+  );
 
   return { showXP, popup };
 }
