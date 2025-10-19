@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 import { Navigation } from "@/components/Navigation";
 import { CrewGoalMeter } from "@/components/CrewGoalMeter";
 import { LeaderboardCard } from "@/components/LeaderboardCard";
@@ -8,7 +8,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 
 export default function HomePage() {
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
 
   const { data: homeData } = useQuery({
     queryKey: ["/api/home"],
@@ -27,11 +27,11 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation
-        isLoggedIn={isAuthenticated}
-        username={(user as any)?.username}
-        isAdmin={(user as any)?.isAdmin}
-        userLevel={(user as any)?.level}
-        userXP={(user as any)?.xp}
+        isLoggedIn={!!user}
+        username={user?.username}
+        isAdmin={user?.isAdmin}
+        userLevel={user?.level}
+        userXP={user?.xp}
       />
 
       <main className="max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-6">
@@ -42,7 +42,7 @@ export default function HomePage() {
           <ActivityFeed activities={activities} />
         </div>
 
-        {isAuthenticated && (
+        {user && (
           <div className="text-center py-8">
             <Button size="lg" asChild>
               <Link href="/dashboard">Go to Dashboard</Link>

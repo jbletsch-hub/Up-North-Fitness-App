@@ -1,8 +1,6 @@
-import { useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
-import { isUnauthorizedError } from "@/lib/authUtils";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Navigation } from "@/components/Navigation";
 import { CrewGoalMeter } from "@/components/CrewGoalMeter";
@@ -15,25 +13,12 @@ import { useXPPopup } from "@/components/XPPopup";
 
 export default function Dashboard() {
   const { toast } = useToast();
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user, isLoading } = useAuth();
   const { showXP, popup } = useXPPopup();
-
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 500);
-    }
-  }, [isAuthenticated, isLoading, toast]);
 
   const { data: dashboardData } = useQuery({
     queryKey: ["/api/dashboard"],
-    enabled: isAuthenticated,
+    enabled: !!user,
   });
 
   const completeMutation = useMutation({
@@ -44,18 +29,6 @@ export default function Dashboard() {
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       if (data.xp) {
         showXP(15);
-      }
-    },
-    onError: (error: Error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
       }
     },
   });
@@ -76,17 +49,6 @@ export default function Dashboard() {
       });
     },
     onError: (error: Error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-        return;
-      }
       toast({
         title: "Error",
         description: error.message || "Failed to check in",
@@ -110,18 +72,6 @@ export default function Dashboard() {
         description: "Your personal records have been saved.",
       });
     },
-    onError: (error: Error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-      }
-    },
   });
 
   const weighinMutation = useMutation({
@@ -138,18 +88,6 @@ export default function Dashboard() {
         title: "Weight recorded!",
         description: "Your weight has been saved.",
       });
-    },
-    onError: (error: Error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-      }
     },
   });
 
@@ -200,10 +138,10 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background">
       <Navigation
         isLoggedIn={true}
-        username={(user as any)?.username}
-        isAdmin={(user as any)?.isAdmin}
-        userLevel={(user as any)?.level}
-        userXP={(user as any)?.xp}
+        username={user?.username}
+        isAdmin={user?.isAdmin}
+        userLevel={user?.level}
+        userXP={user?.xp}
       />
 
       <main className="max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-6">
