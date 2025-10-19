@@ -5,9 +5,11 @@ import { Redirect, Route } from "wouter";
 export function ProtectedRoute({
   path,
   component: Component,
+  skipProfileCheck = false,
 }: {
   path: string;
   component: () => React.JSX.Element;
+  skipProfileCheck?: boolean;
 }) {
   const { user, isLoading } = useAuth();
 
@@ -25,6 +27,17 @@ export function ProtectedRoute({
     return (
       <Route path={path}>
         <Redirect to="/auth" />
+      </Route>
+    );
+  }
+
+  // Check if profile is incomplete
+  const profileIncomplete = !(user as any)?.firstName || !(user as any)?.profileImageUrl;
+  
+  if (profileIncomplete && !skipProfileCheck) {
+    return (
+      <Route path={path}>
+        <Redirect to="/profile-setup" />
       </Route>
     );
   }
