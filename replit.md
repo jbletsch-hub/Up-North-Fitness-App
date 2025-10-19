@@ -47,6 +47,7 @@ Preferred communication style: Simple, everyday language.
 - ✅ Users can mark goals as complete and delete goals
 - ✅ Completed goals are shown separately with visual distinction
 - ✅ Supports multiple unit types: lbs, kg, reps, miles, km, days, times
+- ✅ Public profiles display user's daily challenges, weekly goals, and lifetime goals for others to follow along
 
 ## System Architecture
 
