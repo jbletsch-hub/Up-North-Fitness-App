@@ -280,22 +280,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No file uploaded" });
       }
 
-      // Save to private object storage directory
-      const privateDir = process.env.PRIVATE_OBJECT_DIR || ".private";
+      // Save to static uploads directory
+      const uploadsDir = "static/uploads";
       const filename = `${userId}-${Date.now()}${path.extname(file.originalname)}`;
-      const filepath = path.join(privateDir, filename);
+      const filepath = path.join(uploadsDir, filename);
 
-      await mkdir(privateDir, { recursive: true });
+      await mkdir(uploadsDir, { recursive: true });
       await writeFile(filepath, file.buffer);
 
       await storage.createProgressPhoto({
         userId,
-        imagePath: filepath,
+        imagePath: `/uploads/${filename}`,
       });
 
       const result = await awardXP(userId, 15, "uploaded a progress photo");
 
-      res.json({ success: true, ...result });
+      res.json({ success: true, xp: result?.xp || 0, ...result });
     } catch (error) {
       console.error("Error uploading photo:", error);
       res.status(500).json({ message: "Failed to upload photo" });

@@ -9,7 +9,10 @@ import { CheckInCard } from "@/components/CheckInCard";
 import { PRTracker } from "@/components/PRTracker";
 import { WeighInCard } from "@/components/WeighInCard";
 import { PhotoUpload } from "@/components/PhotoUpload";
+import { LeaderboardCard } from "@/components/LeaderboardCard";
 import { useXPPopup } from "@/components/XPPopup";
+import { getXPToNextLevel, getLevelProgress } from "@/lib/xpUtils";
+import { Progress } from "@/components/ui/progress";
 
 export default function Dashboard() {
   const { toast } = useToast();
@@ -18,6 +21,11 @@ export default function Dashboard() {
 
   const { data: dashboardData } = useQuery({
     queryKey: ["/api/dashboard"],
+    enabled: !!user,
+  });
+
+  const { data: homeData } = useQuery<{ leaderboard: any[] }>({
+    queryKey: ["/api/home"],
     enabled: !!user,
   });
 
@@ -133,25 +141,38 @@ export default function Dashboard() {
   }
 
   const { user: dashboardUser, challenges, pr, goal, total } = dashboardData as any;
+  const leaderboard = homeData?.leaderboard || [];
+  
+  const xpToNextLevel = getXPToNextLevel(dashboardUser.xp, dashboardUser.level);
+  const levelProgress = getLevelProgress(dashboardUser.xp, dashboardUser.level);
 
   return (
     <div className="min-h-screen bg-background">
       <Navigation
         isLoggedIn={true}
         username={user?.username}
-        isAdmin={user?.isAdmin}
+        isAdmin={user?.isAdmin || false}
         userLevel={user?.level}
         userXP={user?.xp}
       />
 
       <main className="max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-6">
-        <div className="space-y-2">
+        <div className="space-y-3">
           <h1 className="font-display text-4xl tracking-wider">
             {dashboardUser.username?.toUpperCase()}
           </h1>
-          <p className="text-muted-foreground">
-            Level {dashboardUser.level} · {dashboardUser.title} · {dashboardUser.xp.toLocaleString()} XP
-          </p>
+          <div>
+            <p className="text-muted-foreground mb-2">
+              Level {dashboardUser.level} · {dashboardUser.title} · {dashboardUser.xp.toLocaleString()} XP
+            </p>
+            <div className="space-y-1">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Progress to Level {dashboardUser.level + 1}</span>
+                <span className="text-primary font-semibold">{xpToNextLevel.toLocaleString()} XP to go</span>
+              </div>
+              <Progress value={levelProgress} className="h-2" />
+            </div>
+          </div>
         </div>
 
         <CrewGoalMeter current={total} goal={goal} />
@@ -180,6 +201,8 @@ export default function Dashboard() {
             <PhotoUpload onUpload={(file) => photoMutation.mutate(file)} />
           </div>
         </div>
+
+        <LeaderboardCard users={leaderboard} />
       </main>
 
       {popup}
