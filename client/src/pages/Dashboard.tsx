@@ -151,10 +151,19 @@ export default function Dashboard() {
         };
         showXP(data.xpAwarded, fakeEvent as any);
       }
-      toast({
-        title: "PRs updated!",
-        description: "Your personal records have been saved.",
-      });
+      
+      // Show special notification if crew goal was advanced
+      if (data.goalAdvanced) {
+        toast({
+          title: "🎉 Crew Goal Achieved!",
+          description: `Goal automatically advanced from ${data.oldGoal.toLocaleString()} to ${data.newGoal.toLocaleString()} lbs!`,
+        });
+      } else {
+        toast({
+          title: "PRs updated!",
+          description: "Your personal records have been saved.",
+        });
+      }
     },
   });
 

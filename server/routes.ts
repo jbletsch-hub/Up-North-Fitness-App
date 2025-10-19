@@ -265,13 +265,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const total = allPRs.reduce((sum, pr) => sum + pr.squat + pr.bench + pr.deadlift, 0);
       const currentGoal = await storage.getCrewGoal();
       
+      let goalAdvanced = false;
+      let newGoal = currentGoal;
+      
       if (total >= currentGoal) {
         // Automatically advance to next 5000 lb milestone
-        const nextGoal = Math.ceil((total + 1) / 5000) * 5000;
-        await storage.updateCrewGoal(nextGoal);
+        newGoal = Math.ceil((total + 1) / 5000) * 5000;
+        await storage.updateCrewGoal(newGoal);
+        goalAdvanced = true;
+        console.log(`🎯 Crew goal auto-advanced! ${currentGoal} → ${newGoal} (total: ${total})`);
       }
 
-      res.json({ success: true, pr, xpAwarded });
+      res.json({ success: true, pr, xpAwarded, goalAdvanced, oldGoal: currentGoal, newGoal });
     } catch (error) {
       console.error("Error updating PRs:", error);
       res.status(500).json({ message: "Failed to update PRs" });
