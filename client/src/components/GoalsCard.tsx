@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Trophy, Target, Plus, Check, X, Edit } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useXPPopup } from "@/components/XPPopup";
 import {
   Dialog,
   DialogContent,
