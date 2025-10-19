@@ -33,6 +33,12 @@ Preferred communication style: Simple, everyday language.
 - ✅ Enhanced awardXP function to return xpAwarded, leveledUp, and oldLevel fields
 - ✅ Created xpUtils library with functions to calculate XP requirements and level progress
 - ✅ All mutations now consistently use xpAwarded field from API responses
+- ✅ Implemented dynamic XP popup positioning to appear near clicked buttons
+- ✅ Updated all component event handlers to pass click events for popup positioning
+- ✅ Fixed crew goal updates to invalidate /api/home query when PRs are updated
+- ✅ Created GoalsCard component displaying weekly goals and lifetime stats
+- ✅ Added weekly goals tracking (check-ins, challenges completed, total weight lifted)
+- ✅ Added lifetime stats display (total XP, current level, total PRs)
 
 ## System Architecture
 
