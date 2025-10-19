@@ -254,18 +254,18 @@ export default function Dashboard() {
       const res = await apiRequest("POST", "/api/admin/goal/reset");
       return await res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["/api/home"] });
       toast({
-        title: "Crew goal reset!",
-        description: "The crew goal has been reset to 5000 lbs.",
+        title: "Goal advanced!",
+        description: `Crew goal increased to ${data.goal.toLocaleString()} lbs.`,
       });
     },
     onError: (error: Error) => {
       toast({
         title: "Error",
-        description: error.message || "Failed to reset crew goal",
+        description: error.message || "Failed to advance crew goal",
         variant: "destructive",
       });
     },
