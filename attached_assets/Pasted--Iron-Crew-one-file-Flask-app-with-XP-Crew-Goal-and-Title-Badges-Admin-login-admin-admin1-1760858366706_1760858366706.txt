@@ -1,0 +1,156 @@
+# Iron Crew — one-file Flask app with XP, Crew Goal, and Title Badges
+# Admin login: admin / admin123
+# Built for Replit quick testing (MVP)
+
+import os, sqlite3, base64
+from datetime import datetime, date
+from functools import wraps
+from flask import (
+    Flask, render_template, request, redirect,
+    url_for, session, flash, send_from_directory,
+    jsonify, Response
+)
+from werkzeug.utils import secure_filename
+from jinja2 import DictLoader
+
+app = Flask(__name__)
+app.secret_key = "ironcrew-secret-key"
+UPLOAD_FOLDER = os.path.join("static", "uploads")
+ALLOWED_EXTENSIONS = {"png","jpg","jpeg","gif","webp"}
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+DB_PATH = "ironcrew.db"
+
+def get_db():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+# ---------- EMBEDDED ASSETS ----------
+TEMPLATES = {}
+def set_template(name, text): TEMPLATES[name]=text
+def svg_data(emoji):
+    svg=f'<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect width="256" height="256" rx="32" fill="#7c3aed"/><text x="50%" y="54%" text-anchor="middle" font-size="120" font-family="Segoe UI Emoji">{emoji}</text></svg>'
+    return "data:image/svg+xml;base64,"+base64.b64encode(svg.encode()).decode()
+AVATAR_OPTIONS=[svg_data("🏋️"),svg_data("🏋"),svg_data("💪")]
+
+STYLE_CSS="""
+:root{--bg:#0f0f12;--fg:#eaeaf2;--card:#1a1a22;--accent:#f1c40f;--muted:#9aa0a6;--border:#2a2a33;}
+html[data-theme=light]{--bg:#f6f7fb;--fg:#1a1a22;--card:#fff;--accent:#7c3aed;--muted:#57606a;--border:#e6e6e6;}
+body{margin:0;font-family:system-ui;background:var(--bg);color:var(--fg);}
+.topbar{display:flex;justify-content:space-between;padding:12px 16px;background:var(--card);border-bottom:1px solid var(--border);}
+.topbar nav a,.linkbtn{margin-left:12px;color:var(--fg);text-decoration:none;}
+.container{max-width:1100px;margin:24px auto;padding:0 16px;}
+.card{background:var(--card);border-radius:16px;padding:16px;margin-bottom:16px;border:1px solid var(--border);}
+.grid-2,.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+input,select,button{padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--fg);}
+button{background:var(--accent);color:white;border:none;cursor:pointer;}
+.goal-meter{width:100%;height:16px;background:var(--border);border-radius:10px;overflow:hidden;}
+.goal-fill{height:100%;background:var(--accent);transition:width .6s ease;}
+.leaderboard{list-style:none;padding:0;margin:0;}
+.leaderboard li{display:flex;justify-content:space-between;align-items:center;padding:10px;border:1px solid var(--border);border-radius:12px;margin-bottom:8px;}
+.leaderboard .left{display:flex;align-items:center;gap:10px;}
+.avatar{width:32px;height:32px;border-radius:50%;object-fit:cover;}
+.title-badge{display:inline-block;margin-left:8px;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;background:var(--accent);color:#fff;}
+.badge{background:#16a34a;color:white;padding:2px 6px;border-radius:8px;font-size:12px;margin-left:8px;}
+.xp-popup{position:fixed;top:20px;right:20px;background:rgba(0,0,0,.75);color:white;padding:14px 18px;border-radius:14px;font-weight:700;animation:slideIn .7s forwards,fadeOut 2.4s 1.4s forwards;}
+@keyframes slideIn{to{transform:translateY(0);opacity:1;}}
+@keyframes fadeOut{to{opacity:0;transform:translateY(-10px);}}
+"""
+SCRIPT_JS="function showXPPopup(x){const e=document.createElement('div');e.className='xp-popup',e.innerHTML='<div class=\\'xp-amount\\'>+'+x+' XP</div>',document.body.appendChild(e),setTimeout(()=>e.remove(),3e3)}"
+
+# ---------- TEMPLATES ----------
+set_template("layout.html", """<!doctype html><html lang=en data-theme='{{session.get("theme","light")}}'>
+<head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'>
+<title>Iron Crew</title><link rel=stylesheet href='{{url_for("style_css")}}'></head>
+<body><header class=topbar><div class=brand>🛠️ Iron Crew</div><nav>
+<a href='{{url_for("index")}}'>Home</a>
+{%if session.get('user_id')%}
+<a href='{{url_for("dashboard")}}'>Dashboard</a>
+<a href='{{url_for("profile",user_id=session.get("user_id"))}}'>My Profile</a>
+<form action='{{url_for("toggle_theme")}}' method=post style='display:inline'><button class=linkbtn type=submit>Toggle {{'🌙'if session.get('theme','light')=='light'else'☀️'}}</button></form>
+{%if session.get('username')=='admin'%}<a href='{{url_for("admin_panel")}}'>Admin</a>{%endif%}
+<a href='{{url_for("logout")}}'>Logout</a>
+{%else%}<a href='{{url_for("login")}}'>Login</a><a href='{{url_for("register")}}'>Register</a>{%endif%}
+</nav></header><main class=container>{%with m=get_flashed_messages()%}{%if m%}<div class=flash>{%for x in m%}<div>{{x}}</div>{%endfor%}</div>{%endif%}{%endwith%}{%block content%}{%endblock%}</main>
+<script src='{{url_for("script_js")}}'></script></body></html>""")
+
+set_template("index.html", """{%extends"layout.html"%}{%block content%}
+<section class='card'><h2>Crew Goal</h2><div class='goal-meter'><div class='goal-fill' style='width:{{(total/goal*100)if goal else 0}}%'></div></div>
+<p>Total: <b>{{total}}</b> / Goal: <b>{{goal}}</b> lbs</p></section>
+<section class=two-col><div class=card><h3>Leaderboard</h3><ol class=leaderboard>
+{%for u in leaderboard%}
+<li><div class=left><img class=avatar src='{{u["avatar"]or avatars[0]}}'><a href='{{url_for("profile",user_id=u["id"])}}'>{{u["username"]}}</a><span class=title-badge>{{u["title"]}}</span></div><span>Lv {{u["level"]}} · {{u["xp"]}} XP</span></li>
+{%endfor%}{%if not leaderboard%}<li>No members yet.</li>{%endif%}</ol></div>
+<div class=card><h3>Activity</h3><ul class=feed>{%for a in feed%}<li><b>{{a["username"]or'Someone'}}</b> — {{a["detail"]}} <small>{{a["created_at"]}}</small>{%if a["xp_awarded"]%}<span class=badge>+{{a["xp_awarded"]}} XP</span>{%endif%}</li>{%endfor%}</ul></div></section>{%endblock%}""")
+
+set_template("login.html","""{%extends"layout.html"%}{%block content%}<h2>Login</h2><form method=post class=card><label>User<input name=username></label><label>Pass<input type=password name=password></label><button>Login</button></form><p>Admin: admin / admin123</p>{%endblock%}""")
+
+set_template("register.html","""{%extends"layout.html"%}{%block content%}<h2>Create Account</h2><form method=post class=card>
+<label>User<input name=username></label><label>Pass<input type=password name=password></label><label>Avatar<select name=avatar><option value='{{avatars[0]}}'>Dumbbell</option><option value='{{avatars[1]}}'>Barbell</option><option value='{{avatars[2]}}'>Kettlebell</option></select></label><button>Register</button></form>{%endblock%}""")
+
+set_template("dashboard.html","""{%extends"layout.html"%}{%block content%}<h2>{{user['username']}} — Lv {{user['level']}} ({{user['title']}})</h2>
+<section class=grid-2><div class=card><h3>Daily Challenges</h3><ul>{%for c in todays%}<li><form method=post action='{{url_for("complete_challenge",udc_id=c["udc_id"])}}'><span class='{{"done"if c["completed"]else""}}'>{{c["text"]}}</span>{%if not c["completed"]%}<button>Done (+15 XP)</button>{%else%}<span class=badge>✓</span>{%endif%}</form></li>{%endfor%}</ul></div>
+<div class=card><h3>Check-In</h3><form method=post action='{{url_for("check_in")}}'><button>Check In (+15 XP)</button></form><p>Streak: <b>{{user['streak_count']}}</b></p></div></section>
+<section class=grid-2><div class=card><h3>PR Tracker (+10 XP / day)</h3><form method=post action='{{url_for("update_pr")}}'><label>Squat<input name=squat type=number value='{{pr["squat"]}}'></label><label>Bench<input name=bench type=number value='{{pr["bench"]}}'></label><label>Deadlift<input name=deadlift type=number value='{{pr["deadlift"]}}'></label><button>Update</button></form></div>
+<div class=card><h3>Weigh-In (+15 XP)</h3><form method=post action='{{url_for("weigh_in")}}'><input name=weight type=number step=.1 value='{{user["weight"]or""}}'><button>Save</button></form>
+<h3>Progress Photo (+15 XP)</h3><form method=post enctype=multipart/form-data action='{{url_for("upload_photo")}}'><input type=file name=photo accept=image/*><button>Upload</button></form></div></section>
+<section class=card><h3>Crew Progress</h3><p>{{total}} / {{goal}} lbs</p><div class=goal-meter><div class=goal-fill style='width:{{(total/goal*100)if goal else 0}}%'></div></div></section>{%endblock%}""")
+
+set_template("profile.html","""{%extends"layout.html"%}{%block content%}<div class=card><div class=profile-header><img class=avatar src='{{user["avatar"]or avatars[0]}}'><div><h2>{{user["username"]}}</h2><p>Lv {{user["level"]}} — {{user["title"]}} — {{user["xp"]}} XP</p></div></div>
+<h3>PRs</h3><ul><li>Squat <b>{{pr["squat"]}}</b></li><li>Bench <b>{{pr["bench"]}}</b></li><li>Deadlift <b>{{pr["deadlift"]}}</b></li><li>Total <b>{{pr["squat"]+pr["bench"]+pr["deadlift"]}}</b></li></ul>
+<h3>Photos</h3>{%for ph in photos%}<img src='{{ph["image_path"]}}' width=100>{%endfor%}<h3>Activity</h3><ul>{%for a in acts%}<li>{{a["detail"]}} <small>{{a["created_at"]}}</small>{%if a["xp_awarded"]%}<span class=badge>+{{a["xp_awarded"]}} XP</span>{%endif%}</li>{%endfor%}</ul></div>{%endblock%}""")
+
+set_template("admin.html","""{%extends"layout.html"%}{%block content%}<h2>Admin</h2><div class=card><h3>Users</h3><table><tr><th>Name</th><th>Lvl</th><th>XP</th><th></th></tr>{%for u in users%}<tr><td>{{u["username"]}}</td><td>{{u["level"]}}</td><td>{{u["xp"]}}</td><td><form method=post action='{{url_for("admin_delete_user",user_id=u["id"])}}'><button>Del</button></form></td></tr>{%endfor%}</table></div><div class=card><h3>Challenges</h3><form method=post action='{{url_for("admin_add_challenge")}}'><input name=text><button>Add</button></form><ul>{%for c in pool%}<li>{{c["text"]}}</li>{%endfor%}</ul></div><div class=card><h3>Crew Goal</h3><p>{{goal}} lbs</p><form method=post action='{{url_for("admin_set_goal")}}'><input name=goal type=number value='{{goal}}'><button>Set</button></form></div>{%endblock%}""")
+
+app.jinja_loader=DictLoader(TEMPLATES)
+
+@app.route("/static/style.css");def style_css():return Response(STYLE_CSS,mimetype="text/css")
+@app.route("/static/script.js");def script_js():return Response(SCRIPT_JS,mimetype="application/javascript")
+
+# ---------- DB INIT ----------
+def init_db():
+    conn=get_db();c=conn.cursor()
+    c.execute("""CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY,username TEXT UNIQUE,password TEXT,is_admin INT DEFAULT 0,avatar TEXT,xp INT DEFAULT 0,level INT DEFAULT 1,title TEXT DEFAULT 'Rookie 1',streak_count INT DEFAULT 0,last_checkin_date TEXT,last_pr_update_date TEXT,weight REAL,last_weighin_date TEXT);""")
+    c.execute("""CREATE TABLE IF NOT EXISTS prs(user_id INT PRIMARY KEY,squat INT DEFAULT 0,bench INT DEFAULT 0,deadlift INT DEFAULT 0);""")
+    c.execute("""CREATE TABLE IF NOT EXISTS activity(id INTEGER PRIMARY KEY,user_id INT,type TEXT,detail TEXT,xp_awarded INT DEFAULT 0,created_at TEXT);""")
+    c.execute("""CREATE TABLE IF NOT EXISTS challenge_pool(id INTEGER PRIMARY KEY,text TEXT);""")
+    c.execute("""CREATE TABLE IF NOT EXISTS user_daily_challenges(id INTEGER PRIMARY KEY,user_id INT,date TEXT,challenge_id INT,completed INT DEFAULT 0);""")
+    c.execute("""CREATE TABLE IF NOT EXISTS progress_photos(id INTEGER PRIMARY KEY,user_id INT,image_path TEXT,created_at TEXT);""")
+    c.execute("""CREATE TABLE IF NOT EXISTS crew_state(id INTEGER PRIMARY KEY CHECK(id=1),current_goal INT DEFAULT 5000);""")
+    c.execute("INSERT OR IGNORE INTO crew_state(id,current_goal)VALUES(1,5000)");conn.commit();conn.close()
+
+# ---------- AUTH ----------
+def login_required(f):
+    @wraps(f)
+    def w(*a,**k):
+        if"user_id"not in session:return redirect(url_for("login"))
+        return f(*a,**k)
+    return w
+def admin_required(f):
+    @wraps(f)
+    def w(*a,**k):
+        if"username"not in session or session.get("username")!="admin":return redirect(url_for("login"))
+        return f(*a,**k)
+    return w
+
+# ---------- LEVEL SYSTEM ----------
+TITLE_BUCKETS=["Rookie 1","Rookie 2","Rookie 3","Amateur","Veteran","Meathead","Beast","Hulk","Olympian","Titan"]
+def xp_needed_for_level(l):return int(100*(1.6**(l-1)))if l<50 else 10**9
+def recalc_level(x):
+    l,r=1,x
+    while l<50:
+        need=xp_needed_for_level(l)
+        if r>=need:r-=need;l+=1
+        else:break
+    return l
+def title_for_level(l):
+    if l>=50:return"Immortal"
+    return TITLE_BUCKETS[(l-1)//5]
+
+def award_xp(conn,uid,amt,why):
+    c=conn.cursor();c.execute("SELECT xp,level FROM users WHERE id=?",(uid,));r=c.fetchone()
+    if not r:return
+    xp=r["xp"]+amt;lvl=recalc_level(xp);title=title_for_level(lvl)
+    c.execute("UPDATE users SET xp=?,level=?,title=? WHERE id=?",(xp,lvl,title,uid))
+    c.execute("INSERT INTO activity(user_id,type,detail
