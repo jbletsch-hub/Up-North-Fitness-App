@@ -1,20 +1,37 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Trophy } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Trophy, RefreshCw } from "lucide-react";
 
 interface CrewGoalMeterProps {
   current: number;
   goal: number;
+  isAdmin?: boolean;
+  onReset?: () => void;
 }
 
-export function CrewGoalMeter({ current, goal }: CrewGoalMeterProps) {
+export function CrewGoalMeter({ current, goal, isAdmin, onReset }: CrewGoalMeterProps) {
   const percentage = Math.min((current / goal) * 100, 100);
   const isComplete = current >= goal;
 
   return (
     <Card className="border-card-border">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
         <CardTitle className="text-2xl font-display tracking-wider">CREW GOAL</CardTitle>
-        <Trophy className={`h-6 w-6 ${isComplete ? 'text-primary animate-pulse' : 'text-muted-foreground'}`} />
+        <div className="flex items-center gap-2">
+          <Trophy className={`h-6 w-6 ${isComplete ? 'text-primary animate-pulse' : 'text-muted-foreground'}`} />
+          {isAdmin && onReset && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={onReset}
+              data-testid="button-reset-crew-goal"
+              className="text-xs"
+            >
+              <RefreshCw className="h-3 w-3 mr-1" />
+              Reset to 5000
+            </Button>
+          )}
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="relative h-6 w-full overflow-hidden rounded-full bg-border">

@@ -138,6 +138,27 @@ export default function Dashboard() {
     },
   });
 
+  const resetCrewGoalMutation = useMutation({
+    mutationFn: async () => {
+      return await apiRequest("POST", "/api/admin/goal/reset");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/home"] });
+      toast({
+        title: "Crew goal reset!",
+        description: "The crew goal has been reset to 5000 lbs.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to reset crew goal",
+        variant: "destructive",
+      });
+    },
+  });
+
   if (isLoading || !dashboardData) {
     return <div className="min-h-screen bg-background flex items-center justify-center">
       <div className="text-center">
@@ -181,7 +202,12 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <CrewGoalMeter current={total} goal={goal} />
+        <CrewGoalMeter 
+          current={total} 
+          goal={goal} 
+          isAdmin={user?.isAdmin}
+          onReset={() => resetCrewGoalMutation.mutate()}
+        />
 
         <div className="grid md:grid-cols-2 gap-6">
           <DailyChallenges

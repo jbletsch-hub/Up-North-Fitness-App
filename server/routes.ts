@@ -460,6 +460,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/admin/goal/reset", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+
+      await storage.updateCrewGoal(5000);
+      res.json({ success: true, goal: 5000 });
+    } catch (error) {
+      console.error("Error resetting goal:", error);
+      res.status(500).json({ message: "Failed to reset goal" });
+    }
+  });
+
   // Goals endpoints
   app.get("/api/goals", isAuthenticated, async (req: any, res) => {
     try {
