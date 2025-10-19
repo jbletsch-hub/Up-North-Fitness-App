@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
@@ -29,14 +30,16 @@ export default function Dashboard() {
     enabled: !!user,
   });
 
+  const [lastEvent, setLastEvent] = useState<React.MouseEvent | MouseEvent | null>(null);
+
   const completeMutation = useMutation({
     mutationFn: async (challengeId: string) => {
       return await apiRequest("POST", `/api/challenges/${challengeId}/complete`);
     },
     onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
-      if (data.xpAwarded) {
-        showXP(data.xpAwarded);
+      if (data.xpAwarded && lastEvent) {
+        showXP(data.xpAwarded, lastEvent);
       }
     },
   });
@@ -48,8 +51,8 @@ export default function Dashboard() {
     onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      if (data.xpAwarded) {
-        showXP(data.xpAwarded);
+      if (data.xpAwarded && lastEvent) {
+        showXP(data.xpAwarded, lastEvent);
       }
       toast({
         title: "Checked in!",
@@ -72,8 +75,9 @@ export default function Dashboard() {
     onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      if (data.xpAwarded > 0) {
-        showXP(data.xpAwarded);
+      queryClient.invalidateQueries({ queryKey: ["/api/home"] });
+      if (data.xpAwarded > 0 && lastEvent) {
+        showXP(data.xpAwarded, lastEvent);
       }
       toast({
         title: "PRs updated!",
@@ -89,8 +93,8 @@ export default function Dashboard() {
     onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      if (data.xpAwarded > 0) {
-        showXP(data.xpAwarded);
+      if (data.xpAwarded > 0 && lastEvent) {
+        showXP(data.xpAwarded, lastEvent);
       }
       toast({
         title: "Weight recorded!",
@@ -116,8 +120,8 @@ export default function Dashboard() {
     onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      if (data.xpAwarded) {
-        showXP(data.xpAwarded);
+      if (data.xpAwarded && lastEvent) {
+        showXP(data.xpAwarded, lastEvent);
       }
       toast({
         title: "Photo uploaded!",
@@ -181,25 +185,40 @@ export default function Dashboard() {
         <div className="grid md:grid-cols-2 gap-6">
           <DailyChallenges
             challenges={challenges}
-            onComplete={(id) => completeMutation.mutate(id)}
+            onComplete={(id, event) => {
+              setLastEvent(event);
+              completeMutation.mutate(id);
+            }}
           />
           <CheckInCard
             streak={dashboardUser.streakCount}
-            onCheckIn={() => checkinMutation.mutate()}
+            onCheckIn={(event) => {
+              setLastEvent(event);
+              checkinMutation.mutate();
+            }}
           />
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
           <PRTracker
             initialPRs={pr}
-            onUpdate={(prs) => prMutation.mutate(prs)}
+            onUpdate={(prs, event) => {
+              setLastEvent(event);
+              prMutation.mutate(prs);
+            }}
           />
           <div className="space-y-6">
             <WeighInCard
               currentWeight={dashboardUser.weight}
-              onWeighIn={(weight) => weighinMutation.mutate(weight)}
+              onWeighIn={(weight, event) => {
+                setLastEvent(event);
+                weighinMutation.mutate(weight);
+              }}
             />
-            <PhotoUpload onUpload={(file) => photoMutation.mutate(file)} />
+            <PhotoUpload onUpload={(file, event) => {
+              setLastEvent(event);
+              photoMutation.mutate(file);
+            }} />
           </div>
         </div>
 

@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Camera } from "lucide-react";
 
 interface PhotoUploadProps {
-  onUpload?: (file: File) => void;
+  onUpload?: (file: File, event: React.FormEvent) => void;
 }
 
 export function PhotoUpload({ onUpload }: PhotoUploadProps) {
@@ -21,7 +21,7 @@ export function PhotoUpload({ onUpload }: PhotoUploadProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedFile) {
-      onUpload?.(selectedFile);
+      onUpload?.(selectedFile, e);
       console.log("Photo uploaded:", selectedFile.name);
       setSelectedFile(null);
       (e.target as HTMLFormElement).reset();

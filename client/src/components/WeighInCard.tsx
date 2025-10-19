@@ -7,7 +7,7 @@ import { Scale } from "lucide-react";
 
 interface WeighInCardProps {
   currentWeight?: number;
-  onWeighIn?: (weight: number) => void;
+  onWeighIn?: (weight: number, event: React.FormEvent) => void;
 }
 
 export function WeighInCard({ currentWeight, onWeighIn }: WeighInCardProps) {
@@ -15,7 +15,7 @@ export function WeighInCard({ currentWeight, onWeighIn }: WeighInCardProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onWeighIn?.(weight);
+    onWeighIn?.(weight, e);
     console.log("Weight saved:", weight);
   };
 

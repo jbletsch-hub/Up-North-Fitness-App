@@ -13,7 +13,7 @@ interface PRs {
 
 interface PRTrackerProps {
   initialPRs: PRs;
-  onUpdate?: (prs: PRs) => void;
+  onUpdate?: (prs: PRs, event: React.FormEvent) => void;
 }
 
 export function PRTracker({ initialPRs, onUpdate }: PRTrackerProps) {
@@ -23,7 +23,7 @@ export function PRTracker({ initialPRs, onUpdate }: PRTrackerProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onUpdate?.(prs);
+    onUpdate?.(prs, e);
     console.log("PRs updated:", prs);
   };
 

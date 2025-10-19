@@ -5,17 +5,17 @@ import { Flame } from "lucide-react";
 
 interface CheckInCardProps {
   streak: number;
-  onCheckIn?: () => void;
+  onCheckIn?: (event: React.MouseEvent) => void;
 }
 
 export function CheckInCard({ streak: initialStreak, onCheckIn }: CheckInCardProps) {
   const [streak, setStreak] = useState(initialStreak);
   const [checkedIn, setCheckedIn] = useState(false);
 
-  const handleCheckIn = () => {
+  const handleCheckIn = (event: React.MouseEvent) => {
     setStreak((prev) => prev + 1);
     setCheckedIn(true);
-    onCheckIn?.();
+    onCheckIn?.(event);
     console.log("Checked in! New streak:", streak + 1);
   };
 

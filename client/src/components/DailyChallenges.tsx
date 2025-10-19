@@ -12,17 +12,17 @@ interface Challenge {
 
 interface DailyChallengesProps {
   challenges: Challenge[];
-  onComplete?: (id: string) => void;
+  onComplete?: (id: string, event: React.MouseEvent) => void;
 }
 
 export function DailyChallenges({ challenges: initialChallenges, onComplete }: DailyChallengesProps) {
   const [challenges, setChallenges] = useState(initialChallenges);
 
-  const handleComplete = (id: string) => {
+  const handleComplete = (id: string, event: React.MouseEvent) => {
     setChallenges((prev) =>
       prev.map((c) => (c.id === id ? { ...c, completed: true } : c))
     );
-    onComplete?.(id);
+    onComplete?.(id, event);
     console.log("Challenge completed:", id);
   };
 
@@ -59,7 +59,7 @@ export function DailyChallenges({ challenges: initialChallenges, onComplete }: D
               ) : (
                 <Button
                   size="sm"
-                  onClick={() => handleComplete(challenge.id)}
+                  onClick={(e) => handleComplete(challenge.id, e)}
                   data-testid={`button-complete-${challenge.id}`}
                 >
                   Done (+15 XP)
