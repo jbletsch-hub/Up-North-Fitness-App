@@ -260,6 +260,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         deadlift: parseInt(deadlift) || 0,
       });
 
+      // Check if crew goal is reached and auto-advance
+      const allPRs = await storage.getAllPRs();
+      const total = allPRs.reduce((sum, pr) => sum + pr.squat + pr.bench + pr.deadlift, 0);
+      const currentGoal = await storage.getCrewGoal();
+      
+      if (total >= currentGoal) {
+        // Automatically advance to next 5000 lb milestone
+        const nextGoal = Math.ceil((total + 1) / 5000) * 5000;
+        await storage.updateCrewGoal(nextGoal);
+      }
+
       res.json({ success: true, pr, xpAwarded });
     } catch (error) {
       console.error("Error updating PRs:", error);
