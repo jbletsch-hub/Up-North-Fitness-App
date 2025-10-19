@@ -6,7 +6,7 @@ Iron Crew is a fullstack fitness tracking application that combines workout logg
 
 The application is built as a modern web app using React on the frontend and Express on the backend, with PostgreSQL (via Neon) for data persistence and Replit Auth for authentication.
 
-**Current Status:** Fully functional with complete authentication, XP system, daily challenges, PR tracking, check-ins, weigh-ins, and photo uploads. All frontend components are connected to live backend APIs.
+**Current Status:** Fully functional with username/password authentication, XP system, daily challenges, PR tracking, check-ins, weigh-ins, and photo uploads. All frontend components are connected to live backend APIs.
 
 ## User Preferences
 
@@ -14,13 +14,15 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (October 19, 2025)
 
-- ✅ Completed full backend API implementation with all routes
-- ✅ Connected all frontend components to real API endpoints
-- ✅ Implemented user creation flow via /api/auth/user endpoint
-- ✅ Fixed routing to properly handle authenticated and unauthenticated states
-- ✅ Added XP popup animations for gamification feedback
-- ✅ Integrated toast notifications for user actions
-- ✅ Tested authentication flow with Replit Auth (OIDC)
+- ✅ Replaced Replit Auth with username/password authentication using passport-local
+- ✅ Added password field to users table in database schema
+- ✅ Created server/auth.ts with local authentication strategy and session management
+- ✅ Built AuthPage component with login/register forms in two-column layout
+- ✅ Implemented new useAuth hook with AuthContext for state management
+- ✅ Created ProtectedRoute component for authenticated route protection
+- ✅ Updated all API routes to use new auth endpoints (/api/register, /api/login, /api/logout, /api/user)
+- ✅ Removed Replit Auth dependencies and cleaned up old auth files
+- ✅ Application running successfully with new authentication flow
 
 ## System Architecture
 
@@ -82,14 +84,14 @@ Preferred communication style: Simple, everyday language.
 ### Database Schema
 
 **Core Tables:**
-- `users`: Extended Replit Auth user model with XP, level, title, streaks, weight
+- `users`: User accounts with username, hashed password, email, XP, level, title, streaks, weight, admin flag
 - `prs`: Personal records (squat, bench, deadlift) linked to users
 - `activities`: Activity feed entries with type, detail, and XP awarded
 - `challengePool`: Master list of available daily challenges
 - `userDailyChallenges`: Daily challenge assignments with completion status
 - `progressPhotos`: Uploaded progress photos with metadata
 - `crewState`: Shared crew goal tracking (total lifted vs. goal)
-- `sessions`: Session storage for Replit Auth
+- `sessions`: Session storage for passport authentication
 
 **Key Relationships:**
 - One-to-one: User → PR record
@@ -103,30 +105,32 @@ Preferred communication style: Simple, everyday language.
 ### Authentication & Authorization
 
 **Authentication Provider:**
-- Replit Auth via OpenID Connect (OIDC)
-- Passport.js strategy for OIDC integration
+- Username/password authentication via passport-local strategy
+- Passwords hashed using bcrypt with salt rounds
 - Session-based authentication with secure HTTP-only cookies
-- 1-week session TTL
+- PostgreSQL session store via connect-pg-simple
+- 1-week session TTL (7 days)
 
 **User Flow:**
-- Unauthenticated users land on marketing/landing page
-- Login redirects to Replit OIDC flow
-- Successful auth creates/updates user record and establishes session
-- Protected routes check `isAuthenticated` middleware
-- 401 responses trigger client-side redirect to login
+- Unauthenticated users are redirected to /auth page
+- Users can register with username, password, and optional email
+- Login authenticates against bcrypt-hashed passwords
+- Successful auth establishes session and redirects to home page
+- Protected routes use ProtectedRoute component that checks authentication
+- 401 responses trigger redirect to /auth page
 
 **Authorization:**
 - Admin flag on user model for privileged access
-- Admin-only routes for challenge pool management (future feature)
+- Admin-only routes for user management, challenge pool, and crew goal settings
+- isAuthenticated middleware protects all authenticated routes
 
 ## External Dependencies
 
 ### Third-Party Services
 
 **Replit Platform:**
-- Replit Auth (OIDC) for authentication
 - Replit-specific Vite plugins for development tools (cartographer, dev-banner, runtime-error-modal)
-- Environment variables: REPL_ID, REPLIT_DOMAINS, ISSUER_URL, SESSION_SECRET
+- Environment variables: REPL_ID, SESSION_SECRET
 
 **Database:**
 - Neon Serverless PostgreSQL via `@neondatabase/serverless`
@@ -148,10 +152,10 @@ Preferred communication style: Simple, everyday language.
 - zod (schema validation)
 
 **Backend:**
-- express, passport, openid-client
-- bcrypt (password hashing, if needed for future features)
+- express, passport, passport-local
+- bcrypt (password hashing)
 - multer (file uploads for progress photos)
-- memoizee (caching OIDC config)
+- connect-pg-simple (PostgreSQL session store)
 
 **Build & Development:**
 - vite, @vitejs/plugin-react
@@ -170,7 +174,5 @@ Preferred communication style: Simple, everyday language.
 
 - `DATABASE_URL`: Neon PostgreSQL connection string
 - `SESSION_SECRET`: Secret for session encryption
-- `REPL_ID`: Replit environment identifier
-- `REPLIT_DOMAINS`: Allowed domains for OIDC
-- `ISSUER_URL`: OIDC issuer endpoint (defaults to replit.com/oidc)
+- `REPL_ID`: Replit environment identifier (optional)
 - `NODE_ENV`: development/production flag
