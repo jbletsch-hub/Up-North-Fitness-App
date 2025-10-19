@@ -115,6 +115,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication routes (/api/register, /api/login, /api/logout, /api/user)
   setupAuth(app);
 
+  // Profile setup endpoint
+  app.post("/api/profile/setup", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const { firstName, lastName, profilePicture } = req.body;
+
+      if (!firstName || !profilePicture) {
+        return res.status(400).json({ message: "First name and profile picture are required" });
+      }
+
+      const user = await storage.updateUserProfile(userId, firstName, lastName, profilePicture);
+      res.json({ success: true, user });
+    } catch (error) {
+      console.error("Error setting up profile:", error);
+      res.status(500).json({ message: "Failed to setup profile" });
+    }
+  });
+
   // Home page data
   app.get("/api/home", async (req, res) => {
     try {

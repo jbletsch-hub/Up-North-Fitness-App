@@ -95,7 +95,7 @@ export default function ProfileSetup() {
   }
 
   // If profile already complete, redirect
-  if (user?.firstName && user?.profileImageUrl) {
+  if ((user as any)?.firstName && (user as any)?.profileImageUrl) {
     setLocation("/");
     return null;
   }

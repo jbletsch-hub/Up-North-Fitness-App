@@ -46,6 +46,7 @@ export interface IStorage {
   updateUserStreak(id: string, streakCount: number, lastCheckinDate: string): Promise<User>;
   updateUserWeight(id: string, weight: number, lastWeighinDate: string): Promise<User>;
   updateUserPRDate(id: string, lastPrUpdateDate: string): Promise<User>;
+  updateUserProfile(id: string, firstName: string, lastName: string | undefined, profileImageUrl: string): Promise<User>;
   
   // PR operations
   getPR(userId: string): Promise<PR | undefined>;
@@ -186,6 +187,15 @@ export class DatabaseStorage implements IStorage {
     const [user] = await db
       .update(users)
       .set({ lastPrUpdateDate })
+      .where(eq(users.id, id))
+      .returning();
+    return user;
+  }
+
+  async updateUserProfile(id: string, firstName: string, lastName: string | undefined, profileImageUrl: string): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({ firstName, lastName, profileImageUrl })
       .where(eq(users.id, id))
       .returning();
     return user;
