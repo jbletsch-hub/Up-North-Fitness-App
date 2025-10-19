@@ -35,8 +35,8 @@ export default function Dashboard() {
     },
     onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
-      if (data.xp) {
-        showXP(15);
+      if (data.xpAwarded) {
+        showXP(data.xpAwarded);
       }
     },
   });
@@ -48,8 +48,8 @@ export default function Dashboard() {
     onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      if (data.xp) {
-        showXP(15);
+      if (data.xpAwarded) {
+        showXP(data.xpAwarded);
       }
       toast({
         title: "Checked in!",
@@ -106,6 +106,7 @@ export default function Dashboard() {
       const response = await fetch("/api/photos", {
         method: "POST",
         body: formData,
+        credentials: "include",
       });
       if (!response.ok) {
         throw new Error("Failed to upload photo");
@@ -115,8 +116,8 @@ export default function Dashboard() {
     onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      if (data.xp) {
-        showXP(15);
+      if (data.xpAwarded) {
+        showXP(data.xpAwarded);
       }
       toast({
         title: "Photo uploaded!",

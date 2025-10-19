@@ -38,6 +38,7 @@ async function awardXP(userId: string, amount: number, reason: string) {
   const user = await storage.getUser(userId);
   if (!user) return;
 
+  const oldLevel = user.level;
   const newXP = user.xp + amount;
   const { level, title } = calculateLevelAndTitle(newXP);
 
@@ -49,7 +50,16 @@ async function awardXP(userId: string, amount: number, reason: string) {
     xpAwarded: amount,
   });
 
-  return { xp: newXP, level, title };
+  const leveledUp = level > oldLevel;
+
+  return { 
+    xp: newXP, 
+    xpAwarded: amount,
+    level, 
+    title,
+    leveledUp,
+    oldLevel
+  };
 }
 
 async function assignDailyChallenges(userId: string, date: string) {
@@ -295,7 +305,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const result = await awardXP(userId, 15, "uploaded a progress photo");
 
-      res.json({ success: true, xp: result?.xp || 0, ...result });
+      res.json({ success: true, ...result });
     } catch (error) {
       console.error("Error uploading photo:", error);
       res.status(500).json({ message: "Failed to upload photo" });
