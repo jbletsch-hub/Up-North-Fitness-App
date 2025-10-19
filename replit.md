@@ -6,7 +6,7 @@ Iron Crew is a fullstack fitness tracking application that combines workout logg
 
 The application is built as a modern web app using React on the frontend and Express on the backend, with PostgreSQL (via Neon) for data persistence and Replit Auth for authentication.
 
-**Current Status:** Fully functional with username/password authentication, XP system, daily challenges, PR tracking, check-ins, weigh-ins, and photo uploads. All frontend components are connected to live backend APIs.
+**Current Status:** Fully functional with username/password authentication, XP system with level progression tracking, daily challenges, PR tracking, check-ins, weigh-ins, photo uploads, leaderboards, and user profiles. All frontend components are connected to live backend APIs with consistent XP popup feedback.
 
 ## User Preferences
 
@@ -14,6 +14,7 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (October 19, 2025)
 
+### Authentication Migration
 - ✅ Replaced Replit Auth with username/password authentication using passport-local
 - ✅ Added password field to users table in database schema
 - ✅ Created server/auth.ts with local authentication strategy and session management
@@ -22,7 +23,16 @@ Preferred communication style: Simple, everyday language.
 - ✅ Created ProtectedRoute component for authenticated route protection
 - ✅ Updated all API routes to use new auth endpoints (/api/register, /api/login, /api/logout, /api/user)
 - ✅ Removed Replit Auth dependencies and cleaned up old auth files
-- ✅ Application running successfully with new authentication flow
+
+### Feature Enhancements
+- ✅ Fixed progress photo upload to use static/uploads directory (not object storage)
+- ✅ Added leaderboard display to Dashboard page showing top users by XP
+- ✅ Created ProfilePage component (/profile/:username) with user stats, PRs, photos, and activity feed
+- ✅ Added XP-to-next-level progress bar on Dashboard showing level advancement
+- ✅ Fixed XP popup to show consistently for all XP-earning actions (check-ins, challenges, PRs, weigh-ins, photos)
+- ✅ Enhanced awardXP function to return xpAwarded, leveledUp, and oldLevel fields
+- ✅ Created xpUtils library with functions to calculate XP requirements and level progress
+- ✅ All mutations now consistently use xpAwarded field from API responses
 
 ## System Architecture
 
@@ -49,10 +59,11 @@ Preferred communication style: Simple, everyday language.
 - Theme state persisted to localStorage
 
 **Key Design Patterns:**
-- Component composition with feature-focused components (CheckInCard, PRTracker, etc.)
+- Component composition with feature-focused components (CheckInCard, PRTracker, LeaderboardCard, etc.)
 - Custom hooks for reusable logic (useAuth, useXPPopup, use-toast)
-- Portal-based UI for popups (XPPopup component)
+- Portal-based UI for popups (XPPopup component showing XP rewards)
 - Centralized API request handling through queryClient utility
+- XP utilities (xpUtils.ts) for level calculation and progress tracking
 
 ### Backend Architecture
 
@@ -77,9 +88,12 @@ Preferred communication style: Simple, everyday language.
 **XP & Gamification System:**
 - Level calculation based on exponential XP curve (1.6 multiplier)
 - Title progression through 10 tiers (Rookie 1 → Immortal at level 50)
-- XP awards: +15 for check-ins/photos/challenges, +10 for PR updates
-- Activity feed tracking all XP-earning actions
-- Daily challenge pool with random assignment
+- XP awards: +15 for check-ins/photos/challenges/weigh-ins, +10 for PR updates (once per day)
+- XP popup displays on every XP-earning action via portal-based component
+- Activity feed tracking all XP-earning actions with timestamps
+- Daily challenge pool with random assignment (4 challenges per day)
+- Leaderboard showing top users ranked by total XP
+- Level progress tracking showing XP to next level with visual progress bar
 
 ### Database Schema
 
@@ -167,8 +181,10 @@ Preferred communication style: Simple, everyday language.
 **Progress Photos:**
 - Multer with memory storage for initial file handling
 - Files written to `static/uploads` directory
+- Stored as `/uploads/{userId}-{timestamp}.{ext}` for unique naming
 - Allowed extensions: png, jpg, jpeg, gif, webp
-- File serving via Express static middleware (implied)
+- File serving via Express static middleware
+- Photo upload awards +15 XP with popup notification
 
 ### Environment Variables Required
 
