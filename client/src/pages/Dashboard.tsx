@@ -11,6 +11,7 @@ import { PRTracker } from "@/components/PRTracker";
 import { WeighInCard } from "@/components/WeighInCard";
 import { PhotoUpload } from "@/components/PhotoUpload";
 import { LeaderboardCard } from "@/components/LeaderboardCard";
+import { GoalsCard } from "@/components/GoalsCard";
 import { useXPPopup } from "@/components/XPPopup";
 import { getXPToNextLevel, getLevelProgress } from "@/lib/xpUtils";
 import { Progress } from "@/components/ui/progress";
@@ -223,6 +224,19 @@ export default function Dashboard() {
         </div>
 
         <LeaderboardCard users={leaderboard} />
+
+        <GoalsCard
+          weeklyGoals={[
+            { label: "Check-ins", current: dashboardUser.streakCount, target: 7, unit: "days" },
+            { label: "Challenges Completed", current: challenges.filter((c: any) => c.completed).length, target: 28, unit: "" },
+            { label: "Total Weight Lifted", current: (pr.squat + pr.bench + pr.deadlift), target: 1000, unit: "lbs" },
+          ]}
+          lifetimeStats={[
+            { label: "Total XP Earned", value: dashboardUser.xp, unit: "XP" },
+            { label: "Current Level", value: dashboardUser.level, unit: "" },
+            { label: "Total PRs", value: (pr.squat + pr.bench + pr.deadlift), unit: "lbs" },
+          ]}
+        />
       </main>
 
       {popup}
