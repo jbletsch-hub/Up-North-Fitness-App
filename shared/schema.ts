@@ -28,6 +28,8 @@ export const sessions = pgTable(
 // Users table - extended for Iron Crew functionality
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  username: varchar("username").unique().notNull(),
+  password: varchar("password").notNull(),
   email: varchar("email").unique(),
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
@@ -36,7 +38,6 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").defaultNow(),
   
   // Iron Crew specific fields
-  username: varchar("username").unique(),
   isAdmin: boolean("is_admin").default(false),
   xp: integer("xp").default(0).notNull(),
   level: integer("level").default(1).notNull(),
@@ -48,6 +49,20 @@ export const users = pgTable("users", {
   lastWeighinDate: varchar("last_weighin_date"),
 });
 
+export const insertUserSchema = createInsertSchema(users).omit({ 
+  id: true, 
+  createdAt: true, 
+  updatedAt: true,
+  xp: true,
+  level: true,
+  title: true,
+  streakCount: true,
+  lastCheckinDate: true,
+  lastPrUpdateDate: true,
+  lastWeighinDate: true,
+});
+
+export type InsertUser = z.infer<typeof insertUserSchema>;
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 
