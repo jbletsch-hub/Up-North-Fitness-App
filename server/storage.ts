@@ -85,6 +85,27 @@ export class DatabaseStorage implements IStorage {
     });
   }
 
+  async seedAdminUser(hashPasswordFn: (password: string) => Promise<string>): Promise<void> {
+    try {
+      const adminUser = await this.getUserByUsername("admin");
+      if (!adminUser) {
+        const hashedPassword = await hashPasswordFn("admin123");
+        await this.createUser({
+          id: "admin",
+          username: "admin",
+          password: hashedPassword,
+          isAdmin: true,
+          xp: 0,
+          level: 1,
+          title: "Rookie 1",
+        });
+        console.log("✅ Admin user created (username: admin, password: admin123)");
+      }
+    } catch (error) {
+      console.error("Error seeding admin user:", error);
+    }
+  }
+
   // User operations
   async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
