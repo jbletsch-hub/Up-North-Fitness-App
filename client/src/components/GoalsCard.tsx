@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { Trophy, Target, Plus, Check, X } from "lucide-react";
+import { Trophy, Target, Plus, Check, X, Edit } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -38,10 +38,13 @@ interface UserGoal {
 export function GoalsCard() {
   const { toast } = useToast();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
+  const [selectedGoal, setSelectedGoal] = useState<UserGoal | null>(null);
   const [goalType, setGoalType] = useState<"weekly" | "lifetime">("weekly");
   const [title, setTitle] = useState("");
   const [targetValue, setTargetValue] = useState("");
   const [unit, setUnit] = useState("lbs");
+  const [newProgress, setNewProgress] = useState("");
 
   const { data: weeklyGoals = [], isLoading: weeklyLoading } = useQuery({
     queryKey: ["/api/goals", { type: "weekly" }],
@@ -104,6 +107,23 @@ export function GoalsCard() {
     },
   });
 
+  const updateProgressMutation = useMutation({
+    mutationFn: async ({ id, currentValue }: { id: string; currentValue: number }) => {
+      return await apiRequest("PATCH", `/api/goals/${id}/progress`, { currentValue });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/goals"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/profile"] });
+      setIsUpdateDialogOpen(false);
+      setSelectedGoal(null);
+      setNewProgress("");
+      toast({
+        title: "Progress updated!",
+        description: "Your goal progress has been saved.",
+      });
+    },
+  });
+
   const handleCreateGoal = () => {
     if (!title || !targetValue) {
       toast({
@@ -119,6 +139,22 @@ export function GoalsCard() {
       title,
       targetValue: parseFloat(targetValue),
       unit,
+    });
+  };
+
+  const handleUpdateProgress = () => {
+    if (!selectedGoal || !newProgress) {
+      toast({
+        title: "Missing information",
+        description: "Please enter a valid number",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    updateProgressMutation.mutate({
+      id: selectedGoal.id,
+      currentValue: parseFloat(newProgress),
     });
   };
 
@@ -222,6 +258,18 @@ export function GoalsCard() {
                     <Button
                       size="icon"
                       variant="ghost"
+                      onClick={() => {
+                        setSelectedGoal(goal);
+                        setNewProgress(goal.currentValue.toString());
+                        setIsUpdateDialogOpen(true);
+                      }}
+                      data-testid={`button-update-goal-${goal.id}`}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="icon"
+                      variant="ghost"
                       onClick={() => completeGoalMutation.mutate(goal.id)}
                       data-testid={`button-complete-goal-${goal.id}`}
                     >
@@ -268,9 +316,44 @@ export function GoalsCard() {
   }
 
   return (
-    <div className="grid md:grid-cols-2 gap-6">
-      {renderGoalSection(weeklyGoals, "weekly")}
-      {renderGoalSection(lifetimeGoals, "lifetime")}
-    </div>
+    <>
+      <div className="grid md:grid-cols-2 gap-6">
+        {renderGoalSection(weeklyGoals, "weekly")}
+        {renderGoalSection(lifetimeGoals, "lifetime")}
+      </div>
+
+      {/* Update Progress Dialog */}
+      <Dialog open={isUpdateDialogOpen} onOpenChange={setIsUpdateDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Update Progress</DialogTitle>
+            <DialogDescription>
+              Update your current progress for: {selectedGoal?.title}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="newProgress">Current Value</Label>
+              <Input
+                id="newProgress"
+                type="number"
+                value={newProgress}
+                onChange={(e) => setNewProgress(e.target.value)}
+                placeholder={`Enter value in ${selectedGoal?.unit}`}
+                data-testid="input-update-progress"
+              />
+              <p className="text-sm text-muted-foreground mt-1">
+                Target: {selectedGoal?.targetValue} {selectedGoal?.unit}
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleUpdateProgress} data-testid="button-save-progress">
+              Save Progress
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
