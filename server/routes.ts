@@ -269,8 +269,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let newGoal = currentGoal;
       
       if (total >= currentGoal) {
-        // Automatically advance to next 5000 lb milestone
-        newGoal = Math.ceil((total + 1) / 5000) * 5000;
+        // Automatically advance by 250 lbs
+        newGoal = currentGoal + 250;
         await storage.updateCrewGoal(newGoal);
         goalAdvanced = true;
         console.log(`🎯 Crew goal auto-advanced! ${currentGoal} → ${newGoal} (total: ${total})`);
@@ -500,12 +500,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Forbidden" });
       }
 
-      // Get current total lifted and set new goal to next 5000 milestone
-      const allPRs = await storage.getAllPRs();
-      const total = allPRs.reduce((sum, pr) => sum + pr.squat + pr.bench + pr.deadlift, 0);
-      
-      // Calculate next milestone (round up to next 5000 increment)
-      const nextGoal = Math.ceil((total + 1) / 5000) * 5000;
+      // Get current goal and add 250 lbs
+      const currentGoal = await storage.getCrewGoal();
+      const nextGoal = currentGoal + 250;
       
       await storage.updateCrewGoal(nextGoal);
       res.json({ success: true, goal: nextGoal });
