@@ -225,18 +225,7 @@ export default function Dashboard() {
 
         <LeaderboardCard users={leaderboard} />
 
-        <GoalsCard
-          weeklyGoals={[
-            { label: "Check-ins", current: dashboardUser.streakCount, target: 7, unit: "days" },
-            { label: "Challenges Completed", current: challenges.filter((c: any) => c.completed).length, target: 28, unit: "" },
-            { label: "Total Weight Lifted", current: (pr.squat + pr.bench + pr.deadlift), target: 1000, unit: "lbs" },
-          ]}
-          lifetimeStats={[
-            { label: "Total XP Earned", value: dashboardUser.xp, unit: "XP" },
-            { label: "Current Level", value: dashboardUser.level, unit: "" },
-            { label: "Total PRs", value: (pr.squat + pr.bench + pr.deadlift), unit: "lbs" },
-          ]}
-        />
+        <GoalsCard />
       </main>
 
       {popup}

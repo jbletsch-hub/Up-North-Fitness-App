@@ -1,69 +1,276 @@
+import { useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { Trophy, Target } from "lucide-react";
+import { Trophy, Target, Plus, Check, X } from "lucide-react";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-interface Goal {
-  label: string;
-  current: number;
-  target: number;
-  unit?: string;
+interface UserGoal {
+  id: string;
+  type: string;
+  title: string;
+  targetValue: number;
+  currentValue: number;
+  unit: string;
+  completed: boolean;
 }
 
-interface GoalsCardProps {
-  weeklyGoals: Goal[];
-  lifetimeStats?: { label: string; value: number; unit?: string }[];
-}
+export function GoalsCard() {
+  const { toast } = useToast();
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [goalType, setGoalType] = useState<"weekly" | "lifetime">("weekly");
+  const [title, setTitle] = useState("");
+  const [targetValue, setTargetValue] = useState("");
+  const [unit, setUnit] = useState("lbs");
 
-export function GoalsCard({ weeklyGoals, lifetimeStats }: GoalsCardProps) {
-  return (
-    <div className="grid md:grid-cols-2 gap-6">
-      {/* Weekly Goals */}
+  const { data: weeklyGoals = [], isLoading: weeklyLoading } = useQuery({
+    queryKey: ["/api/goals", { type: "weekly" }],
+    queryFn: async () => {
+      const response = await fetch("/api/goals?type=weekly");
+      if (!response.ok) throw new Error("Failed to fetch weekly goals");
+      return response.json();
+    },
+  });
+
+  const { data: lifetimeGoals = [], isLoading: lifetimeLoading } = useQuery({
+    queryKey: ["/api/goals", { type: "lifetime" }],
+    queryFn: async () => {
+      const response = await fetch("/api/goals?type=lifetime");
+      if (!response.ok) throw new Error("Failed to fetch lifetime goals");
+      return response.json();
+    },
+  });
+
+  const createGoalMutation = useMutation({
+    mutationFn: async (goal: { type: string; title: string; targetValue: number; unit: string }) => {
+      return await apiRequest("POST", "/api/goals", goal);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/goals"] });
+      setIsAddDialogOpen(false);
+      setTitle("");
+      setTargetValue("");
+      setUnit("lbs");
+      toast({
+        title: "Goal created!",
+        description: "Your new goal has been added.",
+      });
+    },
+  });
+
+  const completeGoalMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return await apiRequest("PATCH", `/api/goals/${id}/complete`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/goals"] });
+      toast({
+        title: "Goal completed!",
+        description: "Congratulations on reaching your goal!",
+      });
+    },
+  });
+
+  const deleteGoalMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return await apiRequest("DELETE", `/api/goals/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/goals"] });
+      toast({
+        title: "Goal deleted",
+        description: "Your goal has been removed.",
+      });
+    },
+  });
+
+  const handleCreateGoal = () => {
+    if (!title || !targetValue) {
+      toast({
+        title: "Missing information",
+        description: "Please fill in all fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    createGoalMutation.mutate({
+      type: goalType,
+      title,
+      targetValue: parseFloat(targetValue),
+      unit,
+    });
+  };
+
+  const renderGoalSection = (goals: UserGoal[], type: "weekly" | "lifetime") => {
+    const activeGoals = goals.filter((g) => !g.completed);
+    const completedGoals = goals.filter((g) => g.completed);
+
+    return (
       <Card className="border-card-border">
         <CardHeader>
-          <CardTitle className="text-xl font-display tracking-wider flex items-center gap-2">
-            <Target className="h-5 w-5 text-chart-2" />
-            WEEKLY GOALS
+          <CardTitle className="text-xl font-display tracking-wider flex items-center gap-2 justify-between">
+            <div className="flex items-center gap-2">
+              {type === "weekly" ? (
+                <Target className="h-5 w-5 text-chart-2" />
+              ) : (
+                <Trophy className="h-5 w-5 text-primary" />
+              )}
+              {type === "weekly" ? "WEEKLY GOALS" : "LIFETIME GOALS"}
+            </div>
+            <Dialog open={isAddDialogOpen && goalType === type} onOpenChange={(open) => {
+              setIsAddDialogOpen(open);
+              if (open) setGoalType(type);
+            }}>
+              <DialogTrigger asChild>
+                <Button size="icon" variant="ghost" data-testid={`button-add-${type}-goal`}>
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add {type === "weekly" ? "Weekly" : "Lifetime"} Goal</DialogTitle>
+                  <DialogDescription>
+                    Set a new goal to track your progress
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="title">Goal Title</Label>
+                    <Input
+                      id="title"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      placeholder="e.g., Bench press 225 lbs"
+                      data-testid="input-goal-title"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="target">Target Value</Label>
+                    <Input
+                      id="target"
+                      type="number"
+                      value={targetValue}
+                      onChange={(e) => setTargetValue(e.target.value)}
+                      placeholder="e.g., 225"
+                      data-testid="input-goal-target"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="unit">Unit</Label>
+                    <Select value={unit} onValueChange={setUnit}>
+                      <SelectTrigger data-testid="select-goal-unit">
+                        <SelectValue placeholder="Select unit" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="lbs">lbs</SelectItem>
+                        <SelectItem value="kg">kg</SelectItem>
+                        <SelectItem value="reps">reps</SelectItem>
+                        <SelectItem value="miles">miles</SelectItem>
+                        <SelectItem value="km">km</SelectItem>
+                        <SelectItem value="days">days</SelectItem>
+                        <SelectItem value="times">times</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button onClick={handleCreateGoal} data-testid="button-create-goal">
+                    Create Goal
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {weeklyGoals.map((goal, index) => {
-            const progress = Math.min(100, (goal.current / goal.target) * 100);
+          {activeGoals.length === 0 && (
+            <p className="text-muted-foreground text-sm text-center py-4">
+              No active goals. Click + to add one!
+            </p>
+          )}
+          {activeGoals.map((goal) => {
+            const progress = Math.min(100, (goal.currentValue / goal.targetValue) * 100);
             return (
-              <div key={index} className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="font-medium">{goal.label}</span>
-                  <span className="text-muted-foreground">
-                    {goal.current} / {goal.target} {goal.unit || ""}
-                  </span>
+              <div key={goal.id} className="space-y-2" data-testid={`goal-${goal.id}`}>
+                <div className="flex justify-between items-center">
+                  <span className="font-medium">{goal.title}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-muted-foreground text-sm">
+                      {goal.currentValue} / {goal.targetValue} {goal.unit}
+                    </span>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => completeGoalMutation.mutate(goal.id)}
+                      data-testid={`button-complete-goal-${goal.id}`}
+                    >
+                      <Check className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => deleteGoalMutation.mutate(goal.id)}
+                      data-testid={`button-delete-goal-${goal.id}`}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
                 <Progress value={progress} className="h-2" />
               </div>
             );
           })}
+          {completedGoals.length > 0 && (
+            <div className="pt-4 border-t border-border">
+              <p className="text-sm font-medium text-muted-foreground mb-2">Completed</p>
+              {completedGoals.map((goal) => (
+                <div
+                  key={goal.id}
+                  className="flex justify-between items-center py-2 opacity-60"
+                  data-testid={`completed-goal-${goal.id}`}
+                >
+                  <span className="text-sm line-through">{goal.title}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {goal.targetValue} {goal.unit} ✓
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
+    );
+  };
 
-      {/* Lifetime Stats */}
-      {lifetimeStats && lifetimeStats.length > 0 && (
-        <Card className="border-card-border">
-          <CardHeader>
-            <CardTitle className="text-xl font-display tracking-wider flex items-center gap-2">
-              <Trophy className="h-5 w-5 text-primary" />
-              LIFETIME STATS
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {lifetimeStats.map((stat, index) => (
-              <div key={index} className="flex justify-between items-center">
-                <span className="text-muted-foreground">{stat.label}</span>
-                <span className="font-display text-2xl text-primary">
-                  {stat.value.toLocaleString()} {stat.unit || ""}
-                </span>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      )}
+  if (weeklyLoading || lifetimeLoading) {
+    return <div className="text-center py-8">Loading goals...</div>;
+  }
+
+  return (
+    <div className="grid md:grid-cols-2 gap-6">
+      {renderGoalSection(weeklyGoals, "weekly")}
+      {renderGoalSection(lifetimeGoals, "lifetime")}
     </div>
   );
 }

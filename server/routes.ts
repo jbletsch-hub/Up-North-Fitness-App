@@ -448,6 +448,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Goals endpoints
+  app.get("/api/goals", isAuthenticated, async (req: any, res) => {
+    try {
+      const { type } = req.query;
+      const goals = await storage.getUserGoals(req.user.id, type);
+      res.json(goals);
+    } catch (error) {
+      console.error("Error fetching goals:", error);
+      res.status(500).json({ error: "Failed to fetch goals" });
+    }
+  });
+
+  app.post("/api/goals", isAuthenticated, async (req: any, res) => {
+    try {
+      const { type, title, targetValue, unit, currentValue } = req.body;
+      const goal = await storage.createGoal({
+        userId: req.user.id,
+        type,
+        title,
+        targetValue,
+        currentValue: currentValue || 0,
+        unit,
+        completed: false,
+      });
+      res.status(201).json(goal);
+    } catch (error) {
+      console.error("Error creating goal:", error);
+      res.status(500).json({ error: "Failed to create goal" });
+    }
+  });
+
+  app.patch("/api/goals/:id/progress", isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const { currentValue } = req.body;
+      const goal = await storage.updateGoalProgress(id, currentValue);
+      res.json(goal);
+    } catch (error) {
+      console.error("Error updating goal progress:", error);
+      res.status(500).json({ error: "Failed to update goal progress" });
+    }
+  });
+
+  app.patch("/api/goals/:id/complete", isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const goal = await storage.completeGoal(id);
+      res.json(goal);
+    } catch (error) {
+      console.error("Error completing goal:", error);
+      res.status(500).json({ error: "Failed to complete goal" });
+    }
+  });
+
+  app.delete("/api/goals/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      await storage.deleteGoal(id);
+      res.sendStatus(204);
+    } catch (error) {
+      console.error("Error deleting goal:", error);
+      res.status(500).json({ error: "Failed to delete goal" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
