@@ -133,6 +133,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update display name endpoint
+  app.post("/api/profile/display-name", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const { displayName } = req.body;
+
+      if (!displayName || displayName.trim().length === 0) {
+        return res.status(400).json({ message: "Display name is required" });
+      }
+
+      if (displayName.length > 50) {
+        return res.status(400).json({ message: "Display name must be 50 characters or less" });
+      }
+
+      const user = await storage.updateUserDisplayName(userId, displayName.trim());
+      res.json({ success: true, user });
+    } catch (error) {
+      console.error("Error updating display name:", error);
+      res.status(500).json({ message: "Failed to update display name" });
+    }
+  });
+
   // Home page data
   app.get("/api/home", async (req, res) => {
     try {

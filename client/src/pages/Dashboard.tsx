@@ -12,6 +12,7 @@ import { WeighInCard } from "@/components/WeighInCard";
 import { PhotoUpload } from "@/components/PhotoUpload";
 import { LeaderboardCard } from "@/components/LeaderboardCard";
 import { GoalsCard } from "@/components/GoalsCard";
+import { DisplayNameEditor } from "@/components/DisplayNameEditor";
 import { useXPPopup } from "@/components/XPPopup";
 import { getXPToNextLevel, getLevelProgress } from "@/lib/xpUtils";
 import { Progress } from "@/components/ui/progress";
@@ -311,9 +312,12 @@ export default function Dashboard() {
 
       <main className="max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-6">
         <div className="space-y-3">
-          <h1 className="font-display text-4xl tracking-wider">
-            {dashboardUser.username?.toUpperCase()}
-          </h1>
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <h1 className="font-display text-4xl tracking-wider">
+              {dashboardUser.username?.toUpperCase()}
+            </h1>
+            <DisplayNameEditor />
+          </div>
           <div>
             <p className="text-muted-foreground mb-2">
               Level {dashboardUser.level} · {dashboardUser.title} · {dashboardUser.xp.toLocaleString()} XP

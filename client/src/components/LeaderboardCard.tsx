@@ -7,6 +7,7 @@ import { Medal } from "lucide-react";
 interface LeaderboardUser {
   id: string;
   username: string;
+  displayName?: string;
   avatar: string;
   level: number;
   xp: number;
@@ -50,7 +51,7 @@ export function LeaderboardCard({ users }: LeaderboardCardProps) {
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-semibold">{user.username}</span>
+                      <span className="font-semibold">{user.displayName || user.username}</span>
                       <Badge
                         variant="secondary"
                         className="text-xs bg-chart-2 text-white border-0"
