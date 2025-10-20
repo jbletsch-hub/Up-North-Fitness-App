@@ -390,7 +390,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get user profile
   app.get("/api/profile/:username", async (req, res) => {
     try {
-      const { username } = req.params;
+      // Trim username to handle URL-encoded spaces and leading/trailing whitespace
+      const username = decodeURIComponent(req.params.username).trim();
       const user = await storage.getUserByUsername(username);
 
       if (!user) {

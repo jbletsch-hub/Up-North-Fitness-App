@@ -49,7 +49,9 @@ export function setupAuth(app: Express) {
   passport.use(
     new LocalStrategy(async (username, password, done) => {
       try {
-        const user = await storage.getUserByUsername(username);
+        // Trim username to handle leading/trailing spaces
+        const trimmedUsername = username?.trim();
+        const user = await storage.getUserByUsername(trimmedUsername);
         if (!user || !user.password) {
           return done(null, false);
         }
@@ -78,7 +80,10 @@ export function setupAuth(app: Express) {
 
   app.post("/api/register", async (req, res, next) => {
     try {
-      const { username, password, email } = req.body;
+      let { username, password, email } = req.body;
+      
+      // Trim username to prevent issues with leading/trailing spaces
+      username = username?.trim();
       
       if (!username || !password) {
         return res.status(400).send("Username and password are required");
