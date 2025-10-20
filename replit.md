@@ -12,9 +12,21 @@ The application is built as a modern web app using React on the frontend and Exp
 
 Preferred communication style: Simple, everyday language.
 
-## Recent Changes (October 19, 2025)
+## Recent Changes (October 20, 2025)
 
-### Latest Updates - Profile Setup Flow for New Users
+### Latest Updates - Display Name & Input Fixes
+- ✅ Added customizable leaderboard display name feature
+- ✅ Users can choose to display their name, username, or custom text on leaderboard
+- ✅ Created DisplayNameEditor component with dialog interface and radio options
+- ✅ Added displayName field to users schema with POST /api/profile/display-name endpoint
+- ✅ Leaderboard now shows displayName if set, otherwise falls back to username
+- ✅ Display name editor accessible via button on Dashboard page
+- ✅ Fixed weight input fields auto-inserting "0" when typing
+- ✅ Fixed PR input fields (squat, bench, deadlift) auto-inserting "0" when typing
+- ✅ Updated input components to use string state internally, converting to numbers on submit
+- ✅ Users can now freely clear and type in number fields without interference
+
+### Previous Updates - Profile Setup Flow for New Users
 - ✅ Added profile setup requirement for new users after registration
 - ✅ Created ProfileSetup page (/profile-setup) with name inputs and profile picture selector
 - ✅ Added 10 gym-themed stock images for profile picture selection
