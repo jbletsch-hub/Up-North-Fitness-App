@@ -162,26 +162,34 @@ export class ObjectStorageService {
   }
 
   normalizeObjectEntityPath(rawPath: string): string {
+    console.log("[NORMALIZE] Input rawPath:", rawPath);
+    
     if (!rawPath.startsWith("https://storage.googleapis.com/")) {
+      console.log("[NORMALIZE] Not a GCS URL, returning as-is");
       return rawPath;
     }
 
     // Extract the path from the URL by removing query parameters and domain
     const url = new URL(rawPath);
     const rawObjectPath = url.pathname;
+    console.log("[NORMALIZE] Extracted pathname:", rawObjectPath);
 
     let objectEntityDir = this.getPrivateObjectDir();
     if (!objectEntityDir.endsWith("/")) {
       objectEntityDir = `${objectEntityDir}/`;
     }
+    console.log("[NORMALIZE] Private object dir:", objectEntityDir);
 
     if (!rawObjectPath.startsWith(objectEntityDir)) {
+      console.log("[NORMALIZE] Path doesn't start with private dir, returning pathname");
       return rawObjectPath;
     }
 
     // Extract the entity ID from the path
     const entityId = rawObjectPath.slice(objectEntityDir.length);
-    return `/objects/${entityId}`;
+    const result = `/objects/${entityId}`;
+    console.log("[NORMALIZE] Final normalized path:", result);
+    return result;
   }
 
   // Tries to set the ACL policy for the object entity and return the normalized path.

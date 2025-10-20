@@ -361,6 +361,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.id;
       const { photoURL } = req.body;
 
+      console.log("[PHOTO UPLOAD] Received photoURL:", photoURL);
+
       if (!photoURL) {
         return res.status(400).json({ message: "No photo URL provided" });
       }
@@ -369,6 +371,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { ObjectStorageService } = await import("./objectStorage");
       const objectStorageService = new ObjectStorageService();
 
+      console.log("[PHOTO UPLOAD] Normalizing path...");
       // Set ACL policy for the uploaded photo (public visibility so anyone can view profiles)
       const objectPath = await objectStorageService.trySetObjectEntityAclPolicy(
         photoURL,
@@ -378,6 +381,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       );
 
+      console.log("[PHOTO UPLOAD] Normalized objectPath:", objectPath);
+
       // Save to database
       await storage.createProgressPhoto({
         userId,
@@ -386,10 +391,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const result = await awardXP(userId, 15, "uploaded a progress photo");
 
+      console.log("[PHOTO UPLOAD] Success! XP awarded:", result.xpAwarded);
       res.json({ success: true, objectPath, ...result });
     } catch (error) {
-      console.error("Error saving photo:", error);
-      res.status(500).json({ message: "Failed to save photo" });
+      console.error("[PHOTO UPLOAD] Error saving photo:", error);
+      res.status(500).json({ message: "Failed to save photo", error: String(error) });
     }
   });
 
@@ -399,10 +405,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { ObjectStorageService } = await import("./objectStorage");
       const objectStorageService = new ObjectStorageService();
       const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+      console.log("[PHOTO UPLOAD] Generated upload URL:", uploadURL);
       res.json({ uploadURL });
     } catch (error) {
-      console.error("Error getting upload URL:", error);
-      res.status(500).json({ message: "Failed to get upload URL" });
+      console.error("[PHOTO UPLOAD] Error getting upload URL:", error);
+      res.status(500).json({ message: "Failed to get upload URL", error: String(error) });
     }
   });
 
