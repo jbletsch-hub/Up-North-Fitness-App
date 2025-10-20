@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Trash2, Plus, Users, Trophy, Zap, RefreshCw, UserX } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Trash2, Plus, Users, Trophy, Zap, RefreshCw, UserX, Edit2 } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
 
@@ -20,6 +21,8 @@ export default function AdminPage() {
   const [newGoal, setNewGoal] = useState("");
   const [selectedUser, setSelectedUser] = useState("");
   const [xpAmount, setXpAmount] = useState("");
+  const [editingDisplayName, setEditingDisplayName] = useState<{ userId: string; currentName: string } | null>(null);
+  const [newDisplayName, setNewDisplayName] = useState("");
 
   // Redirect non-admins
   if (user && !user.isAdmin) {
@@ -157,6 +160,22 @@ export default function AdminPage() {
       toast({
         title: "User deleted",
         description: "The user has been removed from the platform.",
+      });
+    },
+  });
+
+  const updateDisplayNameMutation = useMutation({
+    mutationFn: async ({ userId, displayName }: { userId: string; displayName: string }) => {
+      const res = await apiRequest("POST", `/api/admin/users/${userId}/display-name`, { displayName });
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/home"] });
+      setEditingDisplayName(null);
+      setNewDisplayName("");
+      toast({
+        title: "Display name updated!",
+        description: "The user's leaderboard display name has been changed.",
       });
     },
   });
@@ -369,19 +388,92 @@ export default function AdminPage() {
                       <div className="text-sm text-muted-foreground">
                         Level {u.level} • {u.xp.toLocaleString()} XP
                       </div>
+                      {u.displayName && (
+                        <div className="text-xs text-muted-foreground">
+                          Leaderboard name: {u.displayName}
+                        </div>
+                      )}
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => {
-                        if (confirm(`Are you sure you want to delete ${u.username}? This action cannot be undone.`)) {
-                          deleteUserMutation.mutate(u.id);
+                    <div className="flex gap-1">
+                      <Dialog open={editingDisplayName?.userId === u.id} onOpenChange={(open) => {
+                        if (!open) {
+                          setEditingDisplayName(null);
+                          setNewDisplayName("");
                         }
-                      }}
-                      data-testid={`button-delete-user-${u.id}`}
-                    >
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
+                      }}>
+                        <DialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              setEditingDisplayName({ userId: u.id, currentName: u.displayName || u.username });
+                              setNewDisplayName(u.displayName || u.username);
+                            }}
+                            data-testid={`button-edit-displayname-${u.id}`}
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Edit Display Name for {u.username}</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="display-name-input">Display Name (max 50 characters)</Label>
+                              <Input
+                                id="display-name-input"
+                                value={newDisplayName}
+                                onChange={(e) => setNewDisplayName(e.target.value)}
+                                maxLength={50}
+                                placeholder="Enter display name..."
+                                data-testid="input-edit-displayname"
+                              />
+                              <p className="text-xs text-muted-foreground">
+                                This will appear on the leaderboard. Current: {u.displayName || "Not set"}
+                              </p>
+                            </div>
+                          </div>
+                          <DialogFooter>
+                            <Button
+                              variant="outline"
+                              onClick={() => {
+                                setEditingDisplayName(null);
+                                setNewDisplayName("");
+                              }}
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              onClick={() => {
+                                if (newDisplayName.trim() && editingDisplayName) {
+                                  updateDisplayNameMutation.mutate({
+                                    userId: editingDisplayName.userId,
+                                    displayName: newDisplayName.trim(),
+                                  });
+                                }
+                              }}
+                              disabled={!newDisplayName.trim() || updateDisplayNameMutation.isPending}
+                              data-testid="button-save-displayname"
+                            >
+                              {updateDisplayNameMutation.isPending ? "Saving..." : "Save"}
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          if (confirm(`Are you sure you want to delete ${u.username}? This action cannot be undone.`)) {
+                            deleteUserMutation.mutate(u.id);
+                          }
+                        }}
+                        data-testid={`button-delete-user-${u.id}`}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
                   </div>
                 ))
               ) : (

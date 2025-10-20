@@ -466,6 +466,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/admin/users/:id/display-name", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+
+      const { displayName } = req.body;
+      
+      if (!displayName || displayName.trim().length === 0) {
+        return res.status(400).json({ message: "Display name is required" });
+      }
+
+      if (displayName.length > 50) {
+        return res.status(400).json({ message: "Display name must be 50 characters or less" });
+      }
+
+      const updatedUser = await storage.updateUserDisplayName(req.params.id, displayName.trim());
+      res.json({ success: true, user: updatedUser });
+    } catch (error) {
+      console.error("Error updating display name:", error);
+      res.status(500).json({ message: "Failed to update display name" });
+    }
+  });
+
   app.get("/api/admin/challenges", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.id;

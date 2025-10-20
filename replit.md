@@ -8,6 +8,19 @@ The application is built as a modern web app using React for the frontend, Expre
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes (October 20, 2025)
+
+### Admin Display Name Control & Edit Functionality
+- ✅ Admins can now edit leaderboard display names for all users
+- ✅ Added POST /api/admin/users/:id/display-name endpoint for admin updates
+- ✅ Admin page shows current display names with edit icon buttons
+- ✅ Dialog-based display name editor with 50-character validation
+- ✅ Added edit functionality for weight and PR entries with visual feedback
+- ✅ WeighInCard and PRTracker show current values and dynamic button text
+- ✅ Backend enforces daily XP limits to prevent farming
+- ✅ Fixed profile navigation issues and enhanced error handling
+- ✅ Photo upload validation and better error messaging
+
 ## System Architecture
 
 ### Frontend Architecture
