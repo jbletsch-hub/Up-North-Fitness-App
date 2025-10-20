@@ -10,6 +10,8 @@ import { CheckInCard } from "@/components/CheckInCard";
 import { PRTracker } from "@/components/PRTracker";
 import { WeighInCard } from "@/components/WeighInCard";
 import { PhotoUpload } from "@/components/PhotoUpload";
+import { ObjectUploader } from "@/components/ObjectUploader";
+import type { UploadResult } from "@uppy/core";
 import { LeaderboardCard } from "@/components/LeaderboardCard";
 import { GoalsCard } from "@/components/GoalsCard";
 import { DisplayNameEditor } from "@/components/DisplayNameEditor";
@@ -215,61 +217,33 @@ export default function Dashboard() {
     },
   });
 
+  const [uploadPosition, setUploadPosition] = useState<{ x: number; y: number } | null>(null);
+
   const photoMutation = useMutation({
-    mutationFn: async ({ file, position }: { file: File; position?: { x: number; y: number } }) => {
-      try {
-        // Step 1: Get upload URL from backend
-        console.log("[PHOTO] Step 1: Getting upload URL...");
-        const urlResponse = await apiRequest("POST", "/api/photos/upload-url");
-        const { uploadURL } = await urlResponse.json();
-        console.log("[PHOTO] Step 1 complete. Upload URL:", uploadURL);
-
-        // Step 2: Upload file directly to object storage
-        console.log("[PHOTO] Step 2: Uploading to cloud storage...");
-        const uploadResponse = await fetch(uploadURL, {
-          method: "PUT",
-          body: file,
-          headers: {
-            "Content-Type": file.type,
-          },
-        });
-
-        console.log("[PHOTO] Step 2: Upload response status:", uploadResponse.status);
-        if (!uploadResponse.ok) {
-          const errorText = await uploadResponse.text();
-          console.error("[PHOTO] Step 2 failed:", errorText);
-          throw new Error(`Failed to upload photo to storage: ${uploadResponse.status} - ${errorText}`);
-        }
-
-        // Step 3: Save photo record to database
-        console.log("[PHOTO] Step 3: Saving to database...");
-        const response = await apiRequest("POST", "/api/photos", {
-          photoURL: uploadURL,
-        });
-        const data = await response.json();
-        console.log("[PHOTO] Step 3 complete. XP awarded:", data.xpAwarded);
-        return { data, position };
-      } catch (error) {
-        console.error("[PHOTO] Upload failed:", error);
-        throw error;
-      }
+    mutationFn: async (photoURL: string) => {
+      console.log("[PHOTO] Saving to database...", photoURL);
+      const response = await apiRequest("POST", "/api/photos", {
+        photoURL,
+      });
+      const data = await response.json();
+      console.log("[PHOTO] Success! XP awarded:", data.xpAwarded);
+      return data;
     },
-    onSuccess: (response: any) => {
-      const { data, position } = response;
+    onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      if (data.xpAwarded && position) {
+      if (data.xpAwarded && uploadPosition) {
         const fakeEvent = {
           currentTarget: {
             getBoundingClientRect: () => ({
-              left: position.x - 50,
-              top: position.y,
+              left: uploadPosition.x - 50,
+              top: uploadPosition.y,
               width: 100,
               height: 40,
-              right: position.x + 50,
-              bottom: position.y + 40,
-              x: position.x - 50,
-              y: position.y,
+              right: uploadPosition.x + 50,
+              bottom: uploadPosition.y + 40,
+              x: uploadPosition.x - 50,
+              y: uploadPosition.y,
             }),
           },
         };
@@ -413,14 +387,31 @@ export default function Dashboard() {
                 weighinMutation.mutate({ weight, position });
               }}
             />
-            <PhotoUpload onUpload={(file, event) => {
-              const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
-              const position = {
-                x: rect.left + rect.width / 2,
-                y: rect.top,
-              };
-              photoMutation.mutate({ file, position });
-            }} />
+            <ObjectUploader
+              maxNumberOfFiles={1}
+              maxFileSize={10485760}
+              onGetUploadParameters={async () => {
+                console.log("[PHOTO] Getting upload URL...");
+                const response = await apiRequest("POST", "/api/photos/upload-url");
+                const { uploadURL } = await response.json();
+                console.log("[PHOTO] Got upload URL:", uploadURL);
+                return {
+                  method: "PUT" as const,
+                  url: uploadURL,
+                };
+              }}
+              onComplete={(result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
+                console.log("[PHOTO] Upload complete:", result);
+                if (result.successful && result.successful.length > 0) {
+                  const uploadedFile = result.successful[0];
+                  const uploadURL = uploadedFile.uploadURL;
+                  console.log("[PHOTO] Calling mutation with uploadURL:", uploadURL);
+                  photoMutation.mutate(uploadURL);
+                }
+              }}
+            >
+              <span>📸 Upload Photo</span>
+            </ObjectUploader>
           </div>
         </div>
 
