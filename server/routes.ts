@@ -355,35 +355,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Upload progress photo
-  app.post("/api/photos", isAuthenticated, upload.single("photo"), async (req: any, res) => {
+  // Upload progress photo (using object storage)
+  app.post("/api/photos", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.id;
-      const file = req.file;
+      const { photoURL } = req.body;
 
-      if (!file) {
-        return res.status(400).json({ message: "No file uploaded" });
+      if (!photoURL) {
+        return res.status(400).json({ message: "No photo URL provided" });
       }
 
-      // Save to static uploads directory
-      const uploadsDir = "static/uploads";
-      const filename = `${userId}-${Date.now()}${path.extname(file.originalname)}`;
-      const filepath = path.join(uploadsDir, filename);
+      // Import ObjectStorageService here to avoid circular dependency
+      const { ObjectStorageService } = await import("./objectStorage");
+      const objectStorageService = new ObjectStorageService();
 
-      await mkdir(uploadsDir, { recursive: true });
-      await writeFile(filepath, file.buffer);
+      // Set ACL policy for the uploaded photo (public visibility so anyone can view profiles)
+      const objectPath = await objectStorageService.trySetObjectEntityAclPolicy(
+        photoURL,
+        {
+          owner: userId,
+          visibility: "public", // Public so anyone can view user profiles
+        }
+      );
 
+      // Save to database
       await storage.createProgressPhoto({
         userId,
-        imagePath: `/uploads/${filename}`,
+        imagePath: objectPath,
       });
 
       const result = await awardXP(userId, 15, "uploaded a progress photo");
 
-      res.json({ success: true, ...result });
+      res.json({ success: true, objectPath, ...result });
     } catch (error) {
-      console.error("Error uploading photo:", error);
-      res.status(500).json({ message: "Failed to upload photo" });
+      console.error("Error saving photo:", error);
+      res.status(500).json({ message: "Failed to save photo" });
+    }
+  });
+
+  // Get upload URL for progress photo
+  app.post("/api/photos/upload-url", isAuthenticated, async (req, res) => {
+    try {
+      const { ObjectStorageService } = await import("./objectStorage");
+      const objectStorageService = new ObjectStorageService();
+      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+      res.json({ uploadURL });
+    } catch (error) {
+      console.error("Error getting upload URL:", error);
+      res.status(500).json({ message: "Failed to get upload URL" });
+    }
+  });
+
+  // Serve uploaded photos from object storage
+  app.get("/objects/:objectPath(*)", async (req, res) => {
+    try {
+      const { ObjectStorageService, ObjectNotFoundError } = await import("./objectStorage");
+      const objectStorageService = new ObjectStorageService();
+      
+      const objectFile = await objectStorageService.getObjectEntityFile(req.path);
+      await objectStorageService.downloadObject(objectFile, res);
+    } catch (error) {
+      console.error("Error serving object:", error);
+      const { ObjectNotFoundError } = await import("./objectStorage");
+      if (error instanceof ObjectNotFoundError) {
+        return res.sendStatus(404);
+      }
+      return res.sendStatus(500);
     }
   });
 

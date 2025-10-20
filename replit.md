@@ -10,6 +10,15 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (October 20, 2025)
 
+### Object Storage Migration for Published Deployments
+- ✅ **Migrated photo uploads to Replit Object Storage** for persistence in published environments
+- ✅ Created `server/objectStorage.ts` and `server/objectAcl.ts` for storage management
+- ✅ Added GET `/objects/:objectPath` endpoint to serve photos from object storage
+- ✅ Added POST `/api/photos/upload-url` endpoint to get presigned upload URLs
+- ✅ Updated photo upload flow: get URL → upload to storage → save record
+- ✅ Photos now persist across deployments and work in published version
+- ✅ Public visibility for photos (anyone can view user profiles)
+
 ### Admin Display Name Control & Edit Functionality
 - ✅ Admins can now edit leaderboard display names for all users
 - ✅ Added POST /api/admin/users/:id/display-name endpoint for admin updates
@@ -19,7 +28,6 @@ Preferred communication style: Simple, everyday language.
 - ✅ WeighInCard and PRTracker show current values and dynamic button text
 - ✅ Backend enforces daily XP limits to prevent farming
 - ✅ Fixed profile navigation issues and enhanced error handling
-- ✅ Photo upload validation and better error messaging
 
 ## System Architecture
 

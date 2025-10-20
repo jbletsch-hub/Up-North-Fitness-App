@@ -217,17 +217,29 @@ export default function Dashboard() {
 
   const photoMutation = useMutation({
     mutationFn: async ({ file, position }: { file: File; position?: { x: number; y: number } }) => {
-      const formData = new FormData();
-      formData.append("photo", file);
-      const response = await fetch("/api/photos", {
-        method: "POST",
-        body: formData,
-        credentials: "include",
+      // Step 1: Get upload URL from backend
+      const urlResponse = await apiRequest("POST", "/api/photos/upload-url");
+      const { uploadURL } = await urlResponse.json();
+
+      // Step 2: Upload file directly to object storage
+      const uploadResponse = await fetch(uploadURL, {
+        method: "PUT",
+        body: file,
+        headers: {
+          "Content-Type": file.type,
+        },
       });
-      if (!response.ok) {
-        throw new Error("Failed to upload photo");
+
+      if (!uploadResponse.ok) {
+        throw new Error("Failed to upload photo to storage");
       }
-      return { data: await response.json(), position };
+
+      // Step 3: Save photo record to database
+      const response = await apiRequest("POST", "/api/photos", {
+        photoURL: uploadURL,
+      });
+      const data = await response.json();
+      return { data, position };
     },
     onSuccess: (response: any) => {
       const { data, position } = response;
