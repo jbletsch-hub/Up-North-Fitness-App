@@ -217,29 +217,42 @@ export default function Dashboard() {
 
   const photoMutation = useMutation({
     mutationFn: async ({ file, position }: { file: File; position?: { x: number; y: number } }) => {
-      // Step 1: Get upload URL from backend
-      const urlResponse = await apiRequest("POST", "/api/photos/upload-url");
-      const { uploadURL } = await urlResponse.json();
+      try {
+        // Step 1: Get upload URL from backend
+        console.log("[PHOTO] Step 1: Getting upload URL...");
+        const urlResponse = await apiRequest("POST", "/api/photos/upload-url");
+        const { uploadURL } = await urlResponse.json();
+        console.log("[PHOTO] Step 1 complete. Upload URL:", uploadURL);
 
-      // Step 2: Upload file directly to object storage
-      const uploadResponse = await fetch(uploadURL, {
-        method: "PUT",
-        body: file,
-        headers: {
-          "Content-Type": file.type,
-        },
-      });
+        // Step 2: Upload file directly to object storage
+        console.log("[PHOTO] Step 2: Uploading to cloud storage...");
+        const uploadResponse = await fetch(uploadURL, {
+          method: "PUT",
+          body: file,
+          headers: {
+            "Content-Type": file.type,
+          },
+        });
 
-      if (!uploadResponse.ok) {
-        throw new Error("Failed to upload photo to storage");
+        console.log("[PHOTO] Step 2: Upload response status:", uploadResponse.status);
+        if (!uploadResponse.ok) {
+          const errorText = await uploadResponse.text();
+          console.error("[PHOTO] Step 2 failed:", errorText);
+          throw new Error(`Failed to upload photo to storage: ${uploadResponse.status} - ${errorText}`);
+        }
+
+        // Step 3: Save photo record to database
+        console.log("[PHOTO] Step 3: Saving to database...");
+        const response = await apiRequest("POST", "/api/photos", {
+          photoURL: uploadURL,
+        });
+        const data = await response.json();
+        console.log("[PHOTO] Step 3 complete. XP awarded:", data.xpAwarded);
+        return { data, position };
+      } catch (error) {
+        console.error("[PHOTO] Upload failed:", error);
+        throw error;
       }
-
-      // Step 3: Save photo record to database
-      const response = await apiRequest("POST", "/api/photos", {
-        photoURL: uploadURL,
-      });
-      const data = await response.json();
-      return { data, position };
     },
     onSuccess: (response: any) => {
       const { data, position } = response;
