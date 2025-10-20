@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,10 +21,22 @@ export function PRTracker({ initialPRs, onUpdate }: PRTrackerProps) {
   const [bench, setBench] = useState<string>(initialPRs.bench.toString());
   const [deadlift, setDeadlift] = useState<string>(initialPRs.deadlift.toString());
 
+  // Update inputs when initialPRs prop changes
+  useEffect(() => {
+    setSquat(initialPRs.squat.toString());
+    setBench(initialPRs.bench.toString());
+    setDeadlift(initialPRs.deadlift.toString());
+  }, [initialPRs]);
+
   const squatNum = parseInt(squat) || 0;
   const benchNum = parseInt(bench) || 0;
   const deadliftNum = parseInt(deadlift) || 0;
   const total = squatNum + benchNum + deadliftNum;
+
+  const hasChanged = 
+    squatNum !== initialPRs.squat || 
+    benchNum !== initialPRs.bench || 
+    deadliftNum !== initialPRs.deadlift;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,7 +56,7 @@ export function PRTracker({ initialPRs, onUpdate }: PRTrackerProps) {
           <TrendingUp className="h-5 w-5 text-primary" />
           PR TRACKER
         </CardTitle>
-        <p className="text-sm text-muted-foreground">+10 XP per day</p>
+        <p className="text-sm text-muted-foreground">+10 XP once per day</p>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -85,8 +97,13 @@ export function PRTracker({ initialPRs, onUpdate }: PRTrackerProps) {
               <span className="text-sm font-medium">Total:</span>
               <span className="font-display text-2xl text-primary">{total} lbs</span>
             </div>
+            {hasChanged && (
+              <p className="text-xs text-muted-foreground mb-2 text-center">
+                Previous total: {initialPRs.squat + initialPRs.bench + initialPRs.deadlift} lbs
+              </p>
+            )}
             <Button type="submit" className="w-full" data-testid="button-update-prs">
-              Update PRs
+              {hasChanged ? "Update PRs" : "Save PRs"}
             </Button>
           </div>
         </form>
