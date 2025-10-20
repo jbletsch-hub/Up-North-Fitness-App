@@ -14,7 +14,18 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes (October 20, 2025)
 
-### Latest Updates - Display Name & Input Fixes
+### Latest Updates - Profile Navigation & Error Handling
+- ✅ Fixed "User not found" error when clicking profile button
+- ✅ Cleaned up usernames with trailing spaces in database
+- ✅ Updated registration endpoint to trim usernames on creation
+- ✅ Updated login strategy to trim usernames during authentication
+- ✅ Updated profile endpoint to decode and trim URL parameters
+- ✅ Enhanced ProfilePage with error states and retry logic
+- ✅ Enhanced PhotoUpload with file validation (10MB limit, image type checking)
+- ✅ Added toast notifications for file upload errors instead of crashes
+- ✅ Shows selected file name and size before upload
+
+### Previous Updates - Display Name & Input Fixes
 - ✅ Added customizable leaderboard display name feature
 - ✅ Users can choose to display their name, username, or custom text on leaderboard
 - ✅ Created DisplayNameEditor component with dialog interface and radio options
