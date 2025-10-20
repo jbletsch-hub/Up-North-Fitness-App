@@ -12,18 +12,21 @@ export default function ProfilePage() {
   const params = useParams();
   const username = params.username || "";
 
-  const { data: profileData, isLoading } = useQuery({
+  const { data: profileData, isLoading, error } = useQuery({
     queryKey: ["/api/profile", username],
     queryFn: async () => {
       const response = await fetch(`/api/profile/${username}`);
       if (!response.ok) {
-        throw new Error("Failed to fetch profile");
+        const errorData = await response.json().catch(() => ({ message: "Failed to fetch profile" }));
+        throw new Error(errorData.message || "Failed to fetch profile");
       }
       return response.json();
     },
+    enabled: !!username,
+    retry: 2,
   });
 
-  if (isLoading || !profileData) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -31,6 +34,34 @@ export default function ProfilePage() {
         </div>
       </div>
     );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation
+          isLoggedIn={!!user}
+          username={user?.username}
+          isAdmin={user?.isAdmin || false}
+          userLevel={user?.level}
+          userXP={user?.xp}
+        />
+        <main className="max-w-7xl mx-auto px-4 md:px-6 py-6">
+          <Card className="border-card-border">
+            <CardContent className="py-12 text-center">
+              <p className="text-xl font-display mb-2">User Not Found</p>
+              <p className="text-muted-foreground">
+                {(error as Error).message || "The profile you're looking for doesn't exist."}
+              </p>
+            </CardContent>
+          </Card>
+        </main>
+      </div>
+    );
+  }
+
+  if (!profileData) {
+    return null;
   }
 
   const { user: profileUser, pr, photos, activities, challenges = [], weeklyGoals = [], lifetimeGoals = [] } = profileData;
