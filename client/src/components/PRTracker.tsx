@@ -17,12 +17,22 @@ interface PRTrackerProps {
 }
 
 export function PRTracker({ initialPRs, onUpdate }: PRTrackerProps) {
-  const [prs, setPRs] = useState(initialPRs);
+  const [squat, setSquat] = useState<string>(initialPRs.squat.toString());
+  const [bench, setBench] = useState<string>(initialPRs.bench.toString());
+  const [deadlift, setDeadlift] = useState<string>(initialPRs.deadlift.toString());
 
-  const total = prs.squat + prs.bench + prs.deadlift;
+  const squatNum = parseInt(squat) || 0;
+  const benchNum = parseInt(bench) || 0;
+  const deadliftNum = parseInt(deadlift) || 0;
+  const total = squatNum + benchNum + deadliftNum;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const prs = {
+      squat: squatNum,
+      bench: benchNum,
+      deadlift: deadliftNum,
+    };
     onUpdate?.(prs, e);
     console.log("PRs updated:", prs);
   };
@@ -44,8 +54,8 @@ export function PRTracker({ initialPRs, onUpdate }: PRTrackerProps) {
               <Input
                 id="squat"
                 type="number"
-                value={prs.squat}
-                onChange={(e) => setPRs({ ...prs, squat: parseInt(e.target.value) || 0 })}
+                value={squat}
+                onChange={(e) => setSquat(e.target.value)}
                 data-testid="input-squat"
               />
             </div>
@@ -54,8 +64,8 @@ export function PRTracker({ initialPRs, onUpdate }: PRTrackerProps) {
               <Input
                 id="bench"
                 type="number"
-                value={prs.bench}
-                onChange={(e) => setPRs({ ...prs, bench: parseInt(e.target.value) || 0 })}
+                value={bench}
+                onChange={(e) => setBench(e.target.value)}
                 data-testid="input-bench"
               />
             </div>
@@ -64,8 +74,8 @@ export function PRTracker({ initialPRs, onUpdate }: PRTrackerProps) {
               <Input
                 id="deadlift"
                 type="number"
-                value={prs.deadlift}
-                onChange={(e) => setPRs({ ...prs, deadlift: parseInt(e.target.value) || 0 })}
+                value={deadlift}
+                onChange={(e) => setDeadlift(e.target.value)}
                 data-testid="input-deadlift"
               />
             </div>

@@ -11,12 +11,13 @@ interface WeighInCardProps {
 }
 
 export function WeighInCard({ currentWeight, onWeighIn }: WeighInCardProps) {
-  const [weight, setWeight] = useState(currentWeight || 0);
+  const [weight, setWeight] = useState<string>(currentWeight?.toString() || '');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onWeighIn?.(weight, e);
-    console.log("Weight saved:", weight);
+    const weightValue = parseFloat(weight) || 0;
+    onWeighIn?.(weightValue, e);
+    console.log("Weight saved:", weightValue);
   };
 
   return (
@@ -37,7 +38,7 @@ export function WeighInCard({ currentWeight, onWeighIn }: WeighInCardProps) {
               type="number"
               step="0.1"
               value={weight}
-              onChange={(e) => setWeight(parseFloat(e.target.value) || 0)}
+              onChange={(e) => setWeight(e.target.value)}
               placeholder="Enter your weight"
               data-testid="input-weight"
             />
