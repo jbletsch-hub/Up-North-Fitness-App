@@ -8,9 +8,21 @@ The application is built as a modern web app using React for the frontend, Expre
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
-## Recent Changes (October 20, 2025)
+## Recent Changes
 
-### Object Storage Migration for Published Deployments
+### October 22, 2025 - Admin XP Management & Level Recalculation
+- ✅ **Added Remove XP feature** for admins to subtract XP from users
+- ✅ Added POST `/api/admin/users/:userId/xp/remove` endpoint with automatic level recalculation
+- ✅ Updated AdminPage with "Remove XP" button alongside "Add XP"
+- ✅ **Added System-wide Level Recalculation** to fix stuck levels
+- ✅ Added POST `/api/admin/recalculate-levels` endpoint to fix all user levels based on their XP
+- ✅ Created "System Tools" card in AdminPage with "Recalculate All Levels" button
+- ✅ All XP changes now properly recalculate user level and title
+- ✅ Fixed level calculation bug where users could get stuck at incorrect levels
+- ✅ Improved ObjectUploader component using @uppy/react for better photo uploads
+- ✅ Added Uppy CSS styling for professional upload modal interface
+
+### October 20, 2025 - Object Storage & Admin Controls
 - ✅ **Migrated photo uploads to Replit Object Storage** for persistence in published environments
 - ✅ Created `server/objectStorage.ts` and `server/objectAcl.ts` for storage management
 - ✅ Added GET `/objects/:objectPath` endpoint to serve photos from object storage
@@ -18,8 +30,6 @@ Preferred communication style: Simple, everyday language.
 - ✅ Updated photo upload flow: get URL → upload to storage → save record
 - ✅ Photos now persist across deployments and work in published version
 - ✅ Public visibility for photos (anyone can view user profiles)
-
-### Admin Display Name Control & Edit Functionality
 - ✅ Admins can now edit leaderboard display names for all users
 - ✅ Added POST /api/admin/users/:id/display-name endpoint for admin updates
 - ✅ Admin page shows current display names with edit icon buttons
