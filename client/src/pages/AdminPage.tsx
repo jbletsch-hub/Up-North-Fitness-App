@@ -195,6 +195,20 @@ export default function AdminPage() {
     },
   });
 
+  const recalculateLevelsMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", "/api/admin/recalculate-levels");
+      return await res.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/home"] });
+      toast({
+        title: "Levels recalculated!",
+        description: `Updated ${data.usersUpdated} user(s) to their correct levels.`,
+      });
+    },
+  });
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation
@@ -516,6 +530,39 @@ export default function AdminPage() {
                   No users found.
                 </p>
               )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* System Tools */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <RefreshCw className="h-5 w-5" />
+              System Tools
+            </CardTitle>
+            <CardDescription>Maintenance and system-wide operations</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
+                <Label className="text-sm font-medium">Fix Level Calculation Issues</Label>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Recalculates all user levels based on their current XP. Use this if users are stuck at incorrect levels.
+                </p>
+                <Button
+                  onClick={() => {
+                    if (confirm("This will recalculate levels for all users based on their XP. Continue?")) {
+                      recalculateLevelsMutation.mutate();
+                    }
+                  }}
+                  disabled={recalculateLevelsMutation.isPending}
+                  data-testid="button-recalculate-levels"
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  {recalculateLevelsMutation.isPending ? "Recalculating..." : "Recalculate All Levels"}
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>

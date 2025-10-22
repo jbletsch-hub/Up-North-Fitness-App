@@ -726,6 +726,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/admin/recalculate-levels", isAuthenticated, async (req: any, res) => {
+    try {
+      const adminId = req.user.id;
+      const admin = await storage.getUser(adminId);
+
+      if (!admin?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+
+      const allUsers = await storage.getAllUsers();
+      let updated = 0;
+
+      for (const user of allUsers) {
+        const { level, title } = calculateLevelAndTitle(user.xp);
+        if (user.level !== level || user.title !== title) {
+          await storage.updateUserXP(user.id, user.xp, level, title);
+          updated++;
+        }
+      }
+
+      res.json({ success: true, usersUpdated: updated });
+    } catch (error) {
+      console.error("Error recalculating levels:", error);
+      res.status(500).json({ message: "Failed to recalculate levels" });
+    }
+  });
+
   // Goals endpoints
   app.get("/api/goals", isAuthenticated, async (req: any, res) => {
     try {
