@@ -673,6 +673,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/admin/users/:userId/xp/remove", isAuthenticated, async (req: any, res) => {
+    try {
+      const adminId = req.user.id;
+      const admin = await storage.getUser(adminId);
+
+      if (!admin?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+
+      const { userId } = req.params;
+      const { xp } = req.body;
+      
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const newXP = Math.max(0, user.xp - parseInt(xp));
+      const { level, title } = calculateLevelAndTitle(newXP);
+      await storage.updateUserXP(userId, newXP, level, title);
+
+      res.json({ success: true, newXP, level, title });
+    } catch (error) {
+      console.error("Error removing XP:", error);
+      res.status(500).json({ message: "Failed to remove XP" });
+    }
+  });
+
   app.post("/api/admin/users/:userId/xp/reset", isAuthenticated, async (req: any, res) => {
     try {
       const adminId = req.user.id;

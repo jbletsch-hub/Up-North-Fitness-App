@@ -135,6 +135,21 @@ export default function AdminPage() {
     },
   });
 
+  const removeXPMutation = useMutation({
+    mutationFn: async ({ userId, xp }: { userId: string; xp: number }) => {
+      const res = await apiRequest("POST", `/api/admin/users/${userId}/xp/remove`, { xp });
+      return await res.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/home"] });
+      setXpAmount("");
+      toast({
+        title: "XP removed!",
+        description: `User now has ${data.newXP.toLocaleString()} XP (Level ${data.level}).`,
+      });
+    },
+  });
+
   const resetXPMutation = useMutation({
     mutationFn: async (userId: string) => {
       const res = await apiRequest("POST", `/api/admin/users/${userId}/xp/reset`);
@@ -308,28 +323,48 @@ export default function AdminPage() {
               <div className="space-y-4 p-4 border rounded-lg bg-card/50">
                 <div className="space-y-2">
                   <Label htmlFor="xp-amount">XP Amount</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="xp-amount"
-                      type="number"
-                      placeholder="e.g., 100"
-                      value={xpAmount}
-                      onChange={(e) => setXpAmount(e.target.value)}
-                      data-testid="input-xp-amount"
-                    />
-                    <Button
-                      onClick={() => {
-                        const xp = parseInt(xpAmount);
-                        if (xp && selectedUser) {
-                          addXPMutation.mutate({ userId: selectedUser, xp });
-                        }
-                      }}
-                      disabled={!xpAmount || parseInt(xpAmount) <= 0}
-                      data-testid="button-add-xp"
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add XP
-                    </Button>
+                  <div className="space-y-2">
+                    <div className="flex gap-2">
+                      <Input
+                        id="xp-amount"
+                        type="number"
+                        placeholder="e.g., 100"
+                        value={xpAmount}
+                        onChange={(e) => setXpAmount(e.target.value)}
+                        data-testid="input-xp-amount"
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={() => {
+                          const xp = parseInt(xpAmount);
+                          if (xp && selectedUser) {
+                            addXPMutation.mutate({ userId: selectedUser, xp });
+                          }
+                        }}
+                        disabled={!xpAmount || parseInt(xpAmount) <= 0}
+                        className="flex-1"
+                        data-testid="button-add-xp"
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add XP
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          const xp = parseInt(xpAmount);
+                          if (xp && selectedUser) {
+                            removeXPMutation.mutate({ userId: selectedUser, xp });
+                          }
+                        }}
+                        disabled={!xpAmount || parseInt(xpAmount) <= 0}
+                        variant="outline"
+                        className="flex-1"
+                        data-testid="button-remove-xp"
+                      >
+                        <Zap className="h-4 w-4 mr-2" />
+                        Remove XP
+                      </Button>
+                    </div>
                   </div>
                 </div>
 
