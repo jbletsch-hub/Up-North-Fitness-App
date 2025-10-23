@@ -1,7 +1,12 @@
-// Calculate XP required for a given level (same as backend formula)
+// Calculate cumulative XP threshold to reach a specific level (matches backend)
 export function getXPForLevel(level: number): number {
   if (level === 1) return 0;
-  return Math.floor(100 * Math.pow(1.6, level - 1));
+  
+  let totalXP = 0;
+  for (let i = 1; i < level; i++) {
+    totalXP += Math.floor(100 * Math.pow(1.6, i - 1));
+  }
+  return totalXP;
 }
 
 // Calculate how much XP is needed to reach the next level
