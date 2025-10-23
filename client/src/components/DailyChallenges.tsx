@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, Target } from "lucide-react";
+import { Check, Target, RefreshCw } from "lucide-react";
 
 interface Challenge {
   id: string;
@@ -13,9 +13,18 @@ interface Challenge {
 interface DailyChallengesProps {
   challenges: Challenge[];
   onComplete?: (id: string, event: React.MouseEvent) => void;
+  canReroll?: boolean;
+  onReroll?: () => void;
+  isRerolling?: boolean;
 }
 
-export function DailyChallenges({ challenges: initialChallenges, onComplete }: DailyChallengesProps) {
+export function DailyChallenges({ 
+  challenges: initialChallenges, 
+  onComplete,
+  canReroll = false,
+  onReroll,
+  isRerolling = false
+}: DailyChallengesProps) {
   const [challenges, setChallenges] = useState(initialChallenges);
 
   const handleComplete = (id: string, event: React.MouseEvent) => {
@@ -28,11 +37,23 @@ export function DailyChallenges({ challenges: initialChallenges, onComplete }: D
 
   return (
     <Card className="border-card-border">
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
         <CardTitle className="text-xl font-display tracking-wider flex items-center gap-2">
           <Target className="h-5 w-5 text-primary" />
           DAILY CHALLENGES
         </CardTitle>
+        {canReroll && onReroll && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onReroll}
+            disabled={isRerolling}
+            data-testid="button-reroll-challenges"
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${isRerolling ? 'animate-spin' : ''}`} />
+            Reroll (1/day)
+          </Button>
+        )}
       </CardHeader>
       <CardContent>
         <div className="space-y-2">

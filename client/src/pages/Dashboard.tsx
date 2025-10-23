@@ -87,6 +87,27 @@ export default function Dashboard() {
     },
   });
 
+  const rerollMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", "/api/challenges/reroll");
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
+      toast({
+        title: "Challenges rerolled!",
+        description: "You've been assigned 3 new challenges for today.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to reroll challenges",
+        variant: "destructive",
+      });
+    },
+  });
+
   const checkinMutation = useMutation({
     mutationFn: async (position?: { x: number; y: number }) => {
       const res = await apiRequest("POST", "/api/checkin");
@@ -299,6 +320,12 @@ export default function Dashboard() {
   const xpToNextLevel = getXPToNextLevel(dashboardUser.xp, dashboardUser.level);
   const levelProgress = getLevelProgress(dashboardUser.xp, dashboardUser.level);
 
+  // Determine if user can reroll challenges
+  const today = new Date().toISOString().split("T")[0];
+  const hasCompletedChallengeToday = challenges.some((c: any) => c.completed);
+  const hasRerolledToday = dashboardUser.lastRerollDate === today;
+  const canReroll = !hasRerolledToday && !hasCompletedChallengeToday;
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation
@@ -351,6 +378,9 @@ export default function Dashboard() {
               };
               completeMutation.mutate({ challengeId: id, position });
             }}
+            canReroll={canReroll}
+            onReroll={() => rerollMutation.mutate()}
+            isRerolling={rerollMutation.isPending}
           />
           <CheckInCard
             streak={dashboardUser.streakCount}
