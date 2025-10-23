@@ -127,6 +127,8 @@ export default function AdminPage() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/home"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       setXpAmount("");
       toast({
         title: "XP added!",
@@ -142,6 +144,8 @@ export default function AdminPage() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/home"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       setXpAmount("");
       toast({
         title: "XP removed!",
@@ -157,6 +161,8 @@ export default function AdminPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/home"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       toast({
         title: "XP reset!",
         description: "User XP has been reset to 0.",
@@ -202,6 +208,8 @@ export default function AdminPage() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/home"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       toast({
         title: "Levels recalculated!",
         description: `Updated ${data.usersUpdated} user(s) to their correct levels.`,
