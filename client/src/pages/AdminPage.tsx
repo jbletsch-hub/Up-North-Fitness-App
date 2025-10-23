@@ -126,13 +126,13 @@ export default function AdminPage() {
       return await res.json();
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/home"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/home"], refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ["/api/user"], refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"], refetchType: 'all' });
       setXpAmount("");
       toast({
         title: "XP added!",
-        description: `User now has ${data.newXP.toLocaleString()} XP.`,
+        description: `User now has ${data.newXP.toLocaleString()} XP (Level ${data.level}).`,
       });
     },
   });
@@ -143,9 +143,9 @@ export default function AdminPage() {
       return await res.json();
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/home"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/home"], refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ["/api/user"], refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"], refetchType: 'all' });
       setXpAmount("");
       toast({
         title: "XP removed!",
@@ -160,9 +160,9 @@ export default function AdminPage() {
       return await res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/home"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/home"], refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ["/api/user"], refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"], refetchType: 'all' });
       toast({
         title: "XP reset!",
         description: "User XP has been reset to 0.",
@@ -212,8 +212,11 @@ export default function AdminPage() {
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"], refetchType: 'all' });
       toast({
         title: "Levels recalculated!",
-        description: `Updated ${data.usersUpdated} user(s) to their correct levels.`,
+        description: `Updated ${data.usersUpdated} user(s). Refreshing page...`,
       });
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
     },
   });
 

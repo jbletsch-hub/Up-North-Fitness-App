@@ -408,7 +408,9 @@ export default function Dashboard() {
                   const uploadedFile = result.successful[0];
                   const uploadURL = uploadedFile.uploadURL;
                   console.log("[PHOTO] Calling mutation with uploadURL:", uploadURL);
-                  photoMutation.mutate(uploadURL);
+                  if (uploadURL) {
+                    photoMutation.mutate(uploadURL);
+                  }
                 }
               }}
             >

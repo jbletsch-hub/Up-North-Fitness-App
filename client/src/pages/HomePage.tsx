@@ -29,7 +29,7 @@ export default function HomePage() {
       <Navigation
         isLoggedIn={!!user}
         username={user?.username}
-        isAdmin={user?.isAdmin}
+        isAdmin={user?.isAdmin ?? undefined}
         userLevel={user?.level}
         userXP={user?.xp}
         userTitle={user?.title}
