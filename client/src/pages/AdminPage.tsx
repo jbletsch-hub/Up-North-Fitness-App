@@ -47,7 +47,7 @@ export default function AdminPage() {
 
   const addChallengeMutation = useMutation({
     mutationFn: async (description: string) => {
-      const res = await apiRequest("POST", "/api/admin/challenges", { description });
+      const res = await apiRequest("POST", "/api/admin/challenges", { text: description });
       return await res.json();
     },
     onSuccess: () => {
