@@ -391,7 +391,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const result = await awardXP(userId, 15, "uploaded a progress photo");
 
-      console.log("[PHOTO UPLOAD] Success! XP awarded:", result.xpAwarded);
+      console.log("[PHOTO UPLOAD] Success! XP awarded:", result?.xpAwarded || 0);
       res.json({ success: true, objectPath, ...result });
     } catch (error) {
       console.error("[PHOTO UPLOAD] Error saving photo:", error);

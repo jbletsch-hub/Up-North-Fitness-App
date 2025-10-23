@@ -10,6 +10,22 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### October 23, 2025 - XP Calculations & Challenge Pool
+- ✅ **Fixed XP threshold calculation bug** in `client/src/lib/xpUtils.ts`
+- ✅ Frontend now correctly calculates cumulative XP requirements matching backend
+- ✅ Level 4 now correctly shows 516 XP requirement (was showing 409 XP)
+- ✅ Progress bars and XP goals now display accurate values
+- ✅ **Fixed "Add Challenge" feature** - Frontend was sending `description`, backend expected `text`
+- ✅ **Added 45 fitness challenges** to challenge pool (55 total):
+  - Strength & Bodyweight exercises (push-ups, planks, squats, lunges, etc.)
+  - Cardio & Movement challenges (walking, stairs, dancing, sprints, etc.)
+  - Flexibility & Recovery (stretching, yoga, foam rolling, breathing, etc.)
+  - Nutrition & Hydration (water intake, vegetables, meal prep, etc.)
+  - Mental Health & Habits (sleep, gratitude, meditation, goal setting, etc.)
+- ✅ Fixed TypeScript errors in production build (HomePage, Dashboard, photo upload)
+- ✅ Added `refetchType: 'all'` to all admin mutations for proper cache invalidation
+- ✅ Added automatic page reload after "Recalculate All Levels" to ensure UI updates
+
 ### October 22, 2025 - Admin XP Management & Level Recalculation
 - ✅ **Added Remove XP feature** for admins to subtract XP from users
 - ✅ Added POST `/api/admin/users/:userId/xp/remove` endpoint with automatic level recalculation
