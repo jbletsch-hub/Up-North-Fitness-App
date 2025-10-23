@@ -10,18 +10,25 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-### October 23, 2025 - XP Calculations & Challenge Pool
+### October 23, 2025 - XP Calculations, Challenge Pool & Reroll Feature
 - ✅ **Fixed XP threshold calculation bug** in `client/src/lib/xpUtils.ts`
 - ✅ Frontend now correctly calculates cumulative XP requirements matching backend
 - ✅ Level 4 now correctly shows 516 XP requirement (was showing 409 XP)
 - ✅ Progress bars and XP goals now display accurate values
-- ✅ **Fixed "Add Challenge" feature** - Frontend was sending `description`, backend expected `text`
+- ✅ **Fixed "Add Challenge" bug** - AdminPage was displaying `challenge.description` instead of `challenge.text`
 - ✅ **Added 45 fitness challenges** to challenge pool (55 total):
   - Strength & Bodyweight exercises (push-ups, planks, squats, lunges, etc.)
   - Cardio & Movement challenges (walking, stairs, dancing, sprints, etc.)
   - Flexibility & Recovery (stretching, yoga, foam rolling, breathing, etc.)
   - Nutrition & Hydration (water intake, vegetables, meal prep, etc.)
   - Mental Health & Habits (sleep, gratitude, meditation, goal setting, etc.)
+- ✅ **Added Daily Challenge Reroll Feature**:
+  - Users can reroll their daily challenges once per day
+  - Only allowed if no challenges have been completed yet that day
+  - Added `lastRerollDate` field to users table
+  - Added POST `/api/challenges/reroll` endpoint
+  - Reroll button in DailyChallenges component with spinning icon during loading
+  - New challenges are randomly selected from the pool of 55 challenges
 - ✅ Fixed TypeScript errors in production build (HomePage, Dashboard, photo upload)
 - ✅ Added `refetchType: 'all'` to all admin mutations for proper cache invalidation
 - ✅ Added automatic page reload after "Recalculate All Levels" to ensure UI updates
