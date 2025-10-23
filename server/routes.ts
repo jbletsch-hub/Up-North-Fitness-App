@@ -738,14 +738,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const allUsers = await storage.getAllUsers();
       let updated = 0;
 
+      console.log(`[RECALC] Starting level recalculation for ${allUsers.length} users`);
+
       for (const user of allUsers) {
         const { level, title } = calculateLevelAndTitle(user.xp);
+        console.log(`[RECALC] User ${user.username}: XP=${user.xp}, CurrentLevel=${user.level}, CorrectLevel=${level}, CurrentTitle=${user.title}, CorrectTitle=${title}`);
+        
         if (user.level !== level || user.title !== title) {
+          console.log(`[RECALC] Updating ${user.username} from level ${user.level} to ${level}, title "${user.title}" to "${title}"`);
           await storage.updateUserXP(user.id, user.xp, level, title);
           updated++;
         }
       }
 
+      console.log(`[RECALC] Recalculation complete. Updated ${updated} users.`);
       res.json({ success: true, usersUpdated: updated });
     } catch (error) {
       console.error("Error recalculating levels:", error);
