@@ -46,6 +46,7 @@ export interface IStorage {
   updateUserStreak(id: string, streakCount: number, lastCheckinDate: string): Promise<User>;
   updateUserWeight(id: string, weight: number, lastWeighinDate: string): Promise<User>;
   updateUserPRDate(id: string, lastPrUpdateDate: string): Promise<User>;
+  updateUserRerollDate(id: string, lastRerollDate: string): Promise<User>;
   updateUserProfile(id: string, firstName: string, lastName: string | undefined, profileImageUrl: string): Promise<User>;
   updateUserDisplayName(id: string, displayName: string): Promise<User>;
   
@@ -68,6 +69,7 @@ export interface IStorage {
   getUserDailyChallenges(userId: string, date: string): Promise<Array<UserDailyChallenge & { text: string }>>;
   createUserDailyChallenge(challenge: InsertUserDailyChallenge): Promise<UserDailyChallenge>;
   completeChallenge(id: string): Promise<UserDailyChallenge>;
+  deleteUserDailyChallenges(userId: string, date: string): Promise<void>;
   
   // Progress photos operations
   createProgressPhoto(photo: InsertProgressPhoto): Promise<ProgressPhoto>;
@@ -188,6 +190,15 @@ export class DatabaseStorage implements IStorage {
     const [user] = await db
       .update(users)
       .set({ lastPrUpdateDate })
+      .where(eq(users.id, id))
+      .returning();
+    return user;
+  }
+
+  async updateUserRerollDate(id: string, lastRerollDate: string): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({ lastRerollDate })
       .where(eq(users.id, id))
       .returning();
     return user;
@@ -326,6 +337,12 @@ export class DatabaseStorage implements IStorage {
       .where(eq(userDailyChallenges.id, id))
       .returning();
     return challenge;
+  }
+
+  async deleteUserDailyChallenges(userId: string, date: string): Promise<void> {
+    await db
+      .delete(userDailyChallenges)
+      .where(and(eq(userDailyChallenges.userId, userId), eq(userDailyChallenges.date, date)));
   }
 
   // Progress photos operations

@@ -243,6 +243,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Reroll daily challenges
+  app.post("/api/challenges/reroll", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const today = getTodayDate();
+
+      // Check if user has already rerolled today
+      if (user.lastRerollDate === today) {
+        return res.status(400).json({ message: "You can only reroll once per day" });
+      }
+
+      // Check if any challenges have been completed today
+      const challenges = await storage.getUserDailyChallenges(userId, today);
+      const hasCompleted = challenges.some((c) => c.completed);
+      
+      if (hasCompleted) {
+        return res.status(400).json({ message: "Cannot reroll after completing a challenge" });
+      }
+
+      // Delete current challenges for today
+      await storage.deleteUserDailyChallenges(userId, today);
+
+      // Assign new challenges
+      await assignDailyChallenges(userId, today);
+
+      // Update last reroll date
+      await storage.updateUserRerollDate(userId, today);
+
+      // Get new challenges
+      const newChallenges = await storage.getUserDailyChallenges(userId, today);
+
+      res.json({ success: true, challenges: newChallenges });
+    } catch (error) {
+      console.error("Error rerolling challenges:", error);
+      res.status(500).json({ message: "Failed to reroll challenges" });
+    }
+  });
+
   // Check-in
   app.post("/api/checkin", isAuthenticated, async (req: any, res) => {
     try {
