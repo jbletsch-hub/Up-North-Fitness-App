@@ -48,6 +48,7 @@ export const users = pgTable("users", {
   lastPrUpdateDate: varchar("last_pr_update_date"),
   weight: real("weight"),
   lastWeighinDate: varchar("last_weighin_date"),
+  lastRerollDate: varchar("last_reroll_date"),
 });
 
 export const insertUserSchema = createInsertSchema(users).omit({ 
@@ -61,6 +62,7 @@ export const insertUserSchema = createInsertSchema(users).omit({
   lastCheckinDate: true,
   lastPrUpdateDate: true,
   lastWeighinDate: true,
+  lastRerollDate: true,
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
