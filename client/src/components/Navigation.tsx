@@ -10,9 +10,10 @@ interface NavigationProps {
   isAdmin?: boolean;
   userLevel?: number;
   userXP?: number;
+  userTitle?: string;
 }
 
-export function Navigation({ isLoggedIn, username, isAdmin, userLevel, userXP }: NavigationProps) {
+export function Navigation({ isLoggedIn, username, isAdmin, userLevel, userXP, userTitle }: NavigationProps) {
   const { theme, toggleTheme } = useTheme();
   const [, setLocation] = useLocation();
 
@@ -49,10 +50,9 @@ export function Navigation({ isLoggedIn, username, isAdmin, userLevel, userXP }:
                 </Button>
               )}
               {userLevel !== undefined && (
-                <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-md bg-secondary/50 text-sm">
-                  <span className="font-semibold">Lv {userLevel}</span>
-                  <span className="text-muted-foreground">·</span>
-                  <span className="text-muted-foreground">{userXP} XP</span>
+                <div className="hidden md:flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-md bg-secondary/50 text-sm">
+                  <span className="font-display text-base leading-none">{userTitle || 'Rookie 1'}</span>
+                  <span className="text-xs text-muted-foreground">Lv {userLevel} · {userXP} XP</span>
                 </div>
               )}
               <Button 

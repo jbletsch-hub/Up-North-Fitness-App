@@ -50,19 +50,11 @@ export function LeaderboardCard({ users }: LeaderboardCardProps) {
                     <AvatarFallback>{user.username[0]?.toUpperCase()}</AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-semibold">{user.displayName || user.username}</span>
-                      <Badge
-                        variant="secondary"
-                        className="text-xs bg-chart-2 text-white border-0"
-                      >
-                        {user.title}
-                      </Badge>
-                    </div>
+                    <div className="font-semibold">{user.displayName || user.username}</div>
                   </div>
                   <div className="text-right flex-shrink-0">
-                    <div className="font-display text-lg">Lv {user.level}</div>
-                    <div className="text-xs text-muted-foreground">{user.xp.toLocaleString()} XP</div>
+                    <div className="font-display text-lg">{user.title}</div>
+                    <div className="text-xs text-muted-foreground">Lv {user.level} · {user.xp.toLocaleString()} XP</div>
                   </div>
                 </div>
               </Link>

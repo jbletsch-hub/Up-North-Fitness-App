@@ -74,6 +74,7 @@ export default function ProfilePage() {
         isAdmin={user?.isAdmin || false}
         userLevel={user?.level}
         userXP={user?.xp}
+        userTitle={user?.title}
       />
 
       <main className="max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-6">
@@ -87,8 +88,9 @@ export default function ProfilePage() {
               <Badge variant="default" className="text-xs">ADMIN</Badge>
             )}
           </div>
-          <p className="text-muted-foreground" data-testid="text-profile-stats">
-            Level {profileUser.level} · {profileUser.title} · {profileUser.xp.toLocaleString()} XP
+          <p data-testid="text-profile-stats">
+            <span className="font-display text-2xl text-primary">{profileUser.title}</span>
+            <span className="text-muted-foreground ml-3">Level {profileUser.level} · {profileUser.xp.toLocaleString()} XP</span>
           </p>
           {profileUser.streakCount > 0 && (
             <p className="text-primary font-semibold">

@@ -307,6 +307,7 @@ export default function Dashboard() {
         isAdmin={user?.isAdmin || false}
         userLevel={user?.level}
         userXP={user?.xp}
+        userTitle={user?.title}
       />
 
       <main className="max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-6">
@@ -318,8 +319,9 @@ export default function Dashboard() {
             <DisplayNameEditor />
           </div>
           <div>
-            <p className="text-muted-foreground mb-2">
-              Level {dashboardUser.level} · {dashboardUser.title} · {dashboardUser.xp.toLocaleString()} XP
+            <p className="mb-2">
+              <span className="font-display text-2xl text-primary">{dashboardUser.title}</span>
+              <span className="text-muted-foreground ml-3">Level {dashboardUser.level} · {dashboardUser.xp.toLocaleString()} XP</span>
             </p>
             <div className="space-y-1">
               <div className="flex justify-between text-sm">

@@ -225,6 +225,7 @@ export default function AdminPage() {
         isLoggedIn={true}
         userLevel={user?.level}
         userXP={user?.xp}
+        userTitle={user?.title}
       />
 
       <main className="max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-6">

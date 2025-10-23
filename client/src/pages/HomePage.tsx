@@ -32,6 +32,7 @@ export default function HomePage() {
         isAdmin={user?.isAdmin}
         userLevel={user?.level}
         userXP={user?.xp}
+        userTitle={user?.title}
       />
 
       <main className="max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-6">
