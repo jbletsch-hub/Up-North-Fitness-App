@@ -207,9 +207,9 @@ export default function AdminPage() {
       return await res.json();
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/home"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/home"], refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ["/api/user"], refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"], refetchType: 'all' });
       toast({
         title: "Levels recalculated!",
         description: `Updated ${data.usersUpdated} user(s) to their correct levels.`,
