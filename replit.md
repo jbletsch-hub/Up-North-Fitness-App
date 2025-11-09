@@ -10,6 +10,29 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### November 9, 2025 - Central Time, Weekly Goals & Photo Lightbox
+- ✅ **Implemented Central Time (America/Chicago) for all time-based operations**:
+  - Created `server/utils/timezone.ts` with `getCentralTimeDate()`, `getCentralTimeYesterday()`, and `getCentralTimeWeekStart()`
+  - All check-ins, weigh-ins, daily challenges, and goal resets now use Central Time midnight instead of UTC
+  - Streak calculations properly account for Central Time zone
+  - Users in Central Time zone will see accurate "today" and "yesterday" comparisons
+- ✅ **Weekly Goal Enforcement System**:
+  - Added `weekStart` field to `userGoals` table to track which week a goal belongs to
+  - Users can only create ONE weekly goal per week (enforced at API level)
+  - Weekly goals reset every Sunday at midnight Central Time
+  - Clear error message: "You can only create one weekly goal per week. Your week resets on Sunday."
+  - Weekly goals still award 100 XP upon completion
+- ✅ **Updated Lifetime Goal XP Reward**:
+  - Changed from 1,000 XP to **5,000 XP** for completing lifetime goals
+  - Provides much stronger incentive for long-term fitness commitments
+- ✅ **Clickable Profile Pictures with Zoom**:
+  - Progress photos on profile pages are now clickable
+  - Clicking a photo opens a full-size lightbox/modal view
+  - Modal uses shadcn Dialog component with max-width 4xl
+  - Photos scale to fit screen while maintaining aspect ratio
+  - Smooth hover and click interactions with visual feedback
+  - Close modal by clicking outside or pressing ESC
+
 ### October 23, 2025 - XP Calculations, Challenge Pool & Reroll Feature
 - ✅ **Fixed XP threshold calculation bug** in `client/src/lib/xpUtils.ts`
 - ✅ Frontend now correctly calculates cumulative XP requirements matching backend
