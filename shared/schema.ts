@@ -152,12 +152,14 @@ export const userGoals = pgTable("user_goals", {
   completed: boolean("completed").default(false).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   completedAt: timestamp("completed_at"),
+  weekStart: varchar("week_start"), // For weekly goals: Sunday date of the week (YYYY-MM-DD format)
 });
 
 export const insertUserGoalSchema = createInsertSchema(userGoals).omit({ 
   id: true, 
   createdAt: true,
   completedAt: true,
+  weekStart: true,
 });
 export type InsertUserGoal = z.infer<typeof insertUserGoalSchema>;
 export type UserGoal = typeof userGoals.$inferSelect;

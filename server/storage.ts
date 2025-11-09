@@ -82,10 +82,11 @@ export interface IStorage {
   // User goals operations
   getUserGoals(userId: string, type?: string): Promise<UserGoal[]>;
   getGoal(id: string): Promise<UserGoal | undefined>;
-  createGoal(goal: InsertUserGoal): Promise<UserGoal>;
+  createGoal(goal: InsertUserGoal, weekStart?: string): Promise<UserGoal>;
   updateGoalProgress(id: string, currentValue: number): Promise<UserGoal>;
   completeGoal(id: string): Promise<UserGoal>;
   deleteGoal(id: string): Promise<void>;
+  hasWeeklyGoalThisWeek(userId: string, weekStart: string): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -409,10 +410,11 @@ export class DatabaseStorage implements IStorage {
     return goal;
   }
 
-  async createGoal(goalData: InsertUserGoal): Promise<UserGoal> {
+  async createGoal(goalData: InsertUserGoal, weekStart?: string): Promise<UserGoal> {
+    const values = weekStart ? { ...goalData, weekStart } : goalData;
     const [goal] = await db
       .insert(userGoals)
-      .values(goalData)
+      .values(values)
       .returning();
     return goal;
   }
@@ -437,6 +439,20 @@ export class DatabaseStorage implements IStorage {
 
   async deleteGoal(id: string): Promise<void> {
     await db.delete(userGoals).where(eq(userGoals.id, id));
+  }
+
+  async hasWeeklyGoalThisWeek(userId: string, weekStart: string): Promise<boolean> {
+    const goals = await db
+      .select()
+      .from(userGoals)
+      .where(
+        and(
+          eq(userGoals.userId, userId),
+          eq(userGoals.type, "weekly"),
+          eq(userGoals.weekStart, weekStart)
+        )
+      );
+    return goals.length > 0;
   }
 }
 

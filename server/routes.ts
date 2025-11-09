@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
 import { calculateLevelAndTitle } from "./utils/xpSystem";
-import { getCentralTimeDate, getCentralTimeYesterday } from "./utils/timezone";
+import { getCentralTimeDate, getCentralTimeYesterday, getCentralTimeWeekStart } from "./utils/timezone";
 import multer from "multer";
 import path from "path";
 import { writeFile, mkdir } from "fs/promises";
@@ -817,8 +817,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/goals", isAuthenticated, async (req: any, res) => {
     try {
       const { type, title, targetValue, unit, currentValue } = req.body;
+      const userId = req.user.id;
+      
+      // Check if this is a weekly goal and if user already has one this week
+      if (type === "weekly") {
+        const weekStart = getCentralTimeWeekStart();
+        const hasWeeklyGoal = await storage.hasWeeklyGoalThisWeek(userId, weekStart);
+        
+        if (hasWeeklyGoal) {
+          return res.status(400).json({ 
+            error: "You can only create one weekly goal per week. Your week resets on Sunday." 
+          });
+        }
+        
+        // Create weekly goal with weekStart tracking
+        const goal = await storage.createGoal({
+          userId,
+          type,
+          title,
+          targetValue,
+          currentValue: currentValue || 0,
+          unit,
+          completed: false,
+        }, weekStart);
+        
+        return res.status(201).json(goal);
+      }
+      
+      // Create non-weekly goal (lifetime)
       const goal = await storage.createGoal({
-        userId: req.user.id,
+        userId,
         type,
         title,
         targetValue,
