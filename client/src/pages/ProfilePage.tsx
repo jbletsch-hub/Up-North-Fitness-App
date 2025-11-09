@@ -4,13 +4,16 @@ import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Trophy, TrendingUp, Calendar, Target, Check } from "lucide-react";
 import { useParams } from "wouter";
+import { useState } from "react";
 
 export default function ProfilePage() {
   const { user } = useAuth();
   const params = useParams();
   const username = params.username || "";
+  const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
 
   const { data: profileData, isLoading, error } = useQuery({
     queryKey: ["/api/profile", username],
@@ -313,7 +316,12 @@ export default function ProfilePage() {
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {photos.map((photo: any) => (
-                  <div key={photo.id} className="relative aspect-square rounded-md overflow-hidden bg-muted">
+                  <div 
+                    key={photo.id} 
+                    className="relative aspect-square rounded-md overflow-hidden bg-muted cursor-pointer hover-elevate active-elevate-2 transition-transform"
+                    onClick={() => setSelectedPhoto(photo.imagePath)}
+                    data-testid={`photo-${photo.id}`}
+                  >
                     <img
                       src={photo.imagePath}
                       alt="Progress"
@@ -325,6 +333,20 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
         )}
+        
+        {/* Photo Lightbox Dialog */}
+        <Dialog open={!!selectedPhoto} onOpenChange={(open) => !open && setSelectedPhoto(null)}>
+          <DialogContent className="max-w-4xl p-2">
+            {selectedPhoto && (
+              <img
+                src={selectedPhoto}
+                alt="Progress photo enlarged"
+                className="w-full h-auto max-h-[90vh] object-contain rounded-md"
+                data-testid="photo-enlarged"
+              />
+            )}
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
   );
