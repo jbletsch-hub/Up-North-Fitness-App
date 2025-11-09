@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
 import { calculateLevelAndTitle } from "./utils/xpSystem";
+import { getCentralTimeDate, getCentralTimeYesterday } from "./utils/timezone";
 import multer from "multer";
 import path from "path";
 import { writeFile, mkdir } from "fs/promises";
@@ -17,8 +18,9 @@ function isAuthenticated(req: any, res: any, next: any) {
 
 const upload = multer({ storage: multer.memoryStorage() });
 
+// Use Central Time for all date operations
 function getTodayDate(): string {
-  return new Date().toISOString().split("T")[0];
+  return getCentralTimeDate();
 }
 
 function getRelativeTime(date: Date): string {
@@ -296,9 +298,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const today = getTodayDate();
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-      const yesterdayStr = yesterday.toISOString().split("T")[0];
+      const yesterdayStr = getCentralTimeYesterday();
 
       let newStreak = 1;
       if (user.lastCheckinDate === yesterdayStr) {
@@ -859,7 +859,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const goal = await storage.completeGoal(id);
       
       // Award XP based on goal type
-      const xpAmount = goalBefore.type === "weekly" ? 100 : 1000;
+      const xpAmount = goalBefore.type === "weekly" ? 100 : 5000;
       const xpReason = goalBefore.type === "weekly" 
         ? "completed a weekly goal!" 
         : "completed a lifetime goal!";
