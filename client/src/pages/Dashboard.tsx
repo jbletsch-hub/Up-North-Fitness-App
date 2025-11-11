@@ -15,6 +15,7 @@ import { ObjectUploader } from "@/components/ObjectUploader";
 import type { UploadResult } from "@uppy/core";
 import { LeaderboardCard } from "@/components/LeaderboardCard";
 import { GoalsCard } from "@/components/GoalsCard";
+import { DailyMVLCard } from "@/components/DailyMVLCard";
 import { DisplayNameEditor } from "@/components/DisplayNameEditor";
 import { useXPPopup } from "@/components/XPPopup";
 import { getXPToNextLevel, getLevelProgress } from "@/lib/xpUtils";
@@ -513,6 +514,8 @@ export default function Dashboard() {
             </ObjectUploader>
           </div>
         </div>
+
+        <DailyMVLCard />
 
         <LeaderboardCard users={leaderboard} />
 
