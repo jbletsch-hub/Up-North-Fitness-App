@@ -43,6 +43,7 @@ export interface IStorage {
   getAllUsers(): Promise<User[]>;
   deleteUser(id: string): Promise<void>;
   updateUserXP(id: string, xp: number, level: number, title: string): Promise<User>;
+  updateUserDailyXP(id: string, dailyXp: number, lastDailyXpReset: string): Promise<User>;
   updateUserStreak(id: string, streakCount: number, lastCheckinDate: string): Promise<User>;
   updateUserWeight(id: string, weight: number, lastWeighinDate: string): Promise<User>;
   updateUserPRDate(id: string, lastPrUpdateDate: string): Promise<User>;
@@ -50,6 +51,9 @@ export interface IStorage {
   updateUserCalorieLogDate(id: string, lastCalorieLogDate: string): Promise<User>;
   updateUserProfile(id: string, firstName: string, lastName: string | undefined, profileImageUrl: string): Promise<User>;
   updateUserDisplayName(id: string, displayName: string): Promise<User>;
+  getTodayMVLLeaderboard(limit: number): Promise<User[]>;
+  awardMVLWin(id: string): Promise<User>;
+  resetAllDailyXP(date: string): Promise<void>;
   
   // PR operations
   getPR(userId: string): Promise<PR | undefined>;
@@ -172,6 +176,15 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
+  async updateUserDailyXP(id: string, dailyXp: number, lastDailyXpReset: string): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({ dailyXp, lastDailyXpReset })
+      .where(eq(users.id, id))
+      .returning();
+    return user;
+  }
+
   async updateUserStreak(id: string, streakCount: number, lastCheckinDate: string): Promise<User> {
     const [user] = await db
       .update(users)
@@ -233,6 +246,33 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, id))
       .returning();
     return user;
+  }
+
+  async getTodayMVLLeaderboard(limit: number): Promise<User[]> {
+    const leaderboard = await db
+      .select()
+      .from(users)
+      .orderBy(desc(users.dailyXp))
+      .limit(limit);
+    return leaderboard;
+  }
+
+  async awardMVLWin(id: string): Promise<User> {
+    const user = await this.getUser(id);
+    if (!user) throw new Error("User not found");
+    
+    const [updatedUser] = await db
+      .update(users)
+      .set({ mvlWins: user.mvlWins + 1 })
+      .where(eq(users.id, id))
+      .returning();
+    return updatedUser;
+  }
+
+  async resetAllDailyXP(date: string): Promise<void> {
+    await db
+      .update(users)
+      .set({ dailyXp: 0, lastDailyXpReset: date });
   }
 
   // PR operations

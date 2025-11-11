@@ -52,6 +52,17 @@ async function awardXP(userId: string, amount: number, reason: string) {
     xpAwarded: amount,
   });
 
+  // Track daily XP for MVL (Most Valuable Lifter) leaderboard
+  const today = getTodayDate();
+  let newDailyXP = user.dailyXp + amount;
+  
+  // Reset daily XP if it's a new day
+  if (user.lastDailyXpReset !== today) {
+    newDailyXP = amount;
+  }
+  
+  await storage.updateUserDailyXP(userId, newDailyXP, today);
+
   const leveledUp = level > oldLevel;
 
   return { 
