@@ -1001,6 +1001,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin endpoint to award MVL to yesterday's top earner
+  app.post("/api/admin/award-mvl", isAuthenticated, async (req: any, res) => {
+    try {
+      const adminUser = await storage.getUser(req.user.id);
+      if (!adminUser?.isAdmin) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+
+      // Get current top earner
+      const leaderboard = await storage.getTodayMVLLeaderboard(1);
+      if (!leaderboard || leaderboard.length === 0 || leaderboard[0].dailyXp === 0) {
+        return res.status(400).json({ message: "No eligible MVL winner today" });
+      }
+
+      const winner = leaderboard[0];
+      
+      // Award MVL win
+      await storage.awardMVLWin(winner.id);
+      
+      // Create activity for the win
+      await storage.createActivity({
+        userId: winner.id,
+        type: "achievement",
+        detail: "🏆 Awarded Most Valuable Lifter (MVL) badge!",
+        xpAwarded: 0,
+      });
+
+      // Reset everyone's daily XP for tomorrow
+      const today = getTodayDate();
+      await storage.resetAllDailyXP(today);
+
+      res.json({ 
+        success: true, 
+        winner: {
+          username: winner.username,
+          displayName: winner.displayName,
+          dailyXp: winner.dailyXp,
+          mvlWins: winner.mvlWins + 1
+        }
+      });
+    } catch (error) {
+      console.error("Error awarding MVL:", error);
+      res.status(500).json({ message: "Failed to award MVL" });
+    }
+  });
+
   // PR Leaderboards endpoint
   app.get("/api/leaderboards/prs", async (req, res) => {
     try {
