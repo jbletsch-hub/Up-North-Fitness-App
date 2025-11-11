@@ -220,6 +220,30 @@ export default function AdminPage() {
     },
   });
 
+  const awardMVLMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", "/api/admin/award-mvl");
+      return await res.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/home"], refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ["/api/user"], refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"], refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ["/api/leaderboards/mvl"], refetchType: 'all' });
+      toast({
+        title: "MVL Badge Awarded! 🏆",
+        description: `${data.winner.displayName || data.winner.username} won with ${data.winner.dailyXp} XP!`,
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to award MVL badge",
+        variant: "destructive",
+      });
+    },
+  });
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation
@@ -573,6 +597,26 @@ export default function AdminPage() {
                 >
                   <RefreshCw className="h-4 w-4 mr-2" />
                   {recalculateLevelsMutation.isPending ? "Recalculating..." : "Recalculate All Levels"}
+                </Button>
+              </div>
+              
+              <div className="pt-4 border-t">
+                <Label className="text-sm font-medium">Award Daily MVL Badge</Label>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Awards the Most Valuable Lifter (MVL) badge to today's top XP earner and resets everyone's daily XP counter.
+                </p>
+                <Button
+                  onClick={() => {
+                    if (confirm("Award MVL badge to today's top earner and reset daily XP for everyone?")) {
+                      awardMVLMutation.mutate();
+                    }
+                  }}
+                  disabled={awardMVLMutation.isPending}
+                  data-testid="button-award-mvl"
+                  variant="default"
+                >
+                  <Trophy className="h-4 w-4 mr-2" />
+                  {awardMVLMutation.isPending ? "Awarding..." : "Award MVL Badge"}
                 </Button>
               </div>
             </div>
