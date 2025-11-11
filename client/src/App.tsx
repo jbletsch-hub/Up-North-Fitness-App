@@ -10,6 +10,7 @@ import HomePage from "@/pages/HomePage";
 import Dashboard from "@/pages/Dashboard";
 import ProfilePage from "@/pages/ProfilePage";
 import AdminPage from "@/pages/AdminPage";
+import LeaderboardsPage from "@/pages/LeaderboardsPage";
 import AuthPage from "@/pages/AuthPage";
 import ProfileSetup from "@/pages/ProfileSetup";
 import NotFound from "@/pages/not-found";
@@ -19,6 +20,7 @@ function Router() {
     <Switch>
       <ProtectedRoute path="/" component={HomePage} />
       <ProtectedRoute path="/dashboard" component={Dashboard} />
+      <ProtectedRoute path="/leaderboards" component={LeaderboardsPage} />
       <ProtectedRoute path="/profile/:username" component={ProfilePage} />
       <ProtectedRoute path="/admin" component={AdminPage} />
       <ProtectedRoute path="/profile-setup" component={ProfileSetup} skipProfileCheck={true} />

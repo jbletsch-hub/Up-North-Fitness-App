@@ -41,6 +41,9 @@ export function Navigation({ isLoggedIn, username, isAdmin, userLevel, userXP, u
               <Button variant="ghost" size="sm" asChild data-testid="link-dashboard">
                 <Link href="/dashboard">Dashboard</Link>
               </Button>
+              <Button variant="ghost" size="sm" asChild data-testid="link-leaderboards">
+                <Link href="/leaderboards">Leaderboards</Link>
+              </Button>
               <Button variant="ghost" size="sm" asChild data-testid="link-profile">
                 <Link href={`/profile/${username}`}>Profile</Link>
               </Button>

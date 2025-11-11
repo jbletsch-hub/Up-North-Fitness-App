@@ -9,6 +9,7 @@ import { DailyChallenges } from "@/components/DailyChallenges";
 import { CheckInCard } from "@/components/CheckInCard";
 import { PRTracker } from "@/components/PRTracker";
 import { WeighInCard } from "@/components/WeighInCard";
+import { CalorieTrackerCard } from "@/components/CalorieTrackerCard";
 import { PhotoUpload } from "@/components/PhotoUpload";
 import { ObjectUploader } from "@/components/ObjectUploader";
 import type { UploadResult } from "@uppy/core";
@@ -238,6 +239,46 @@ export default function Dashboard() {
     },
   });
 
+  const calorieMutation = useMutation({
+    mutationFn: async (position?: { x: number; y: number }) => {
+      const res = await apiRequest("POST", "/api/calories");
+      return { data: await res.json(), position };
+    },
+    onSuccess: (response: any) => {
+      const { data, position } = response;
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      if (data.xpAwarded > 0 && position) {
+        const fakeEvent = {
+          currentTarget: {
+            getBoundingClientRect: () => ({
+              left: position.x - 50,
+              top: position.y,
+              width: 100,
+              height: 40,
+              right: position.x + 50,
+              bottom: position.y + 40,
+              x: position.x - 50,
+              y: position.y,
+            }),
+          },
+        };
+        showXP(data.xpAwarded, fakeEvent as any);
+      }
+      toast({
+        title: "Calories logged!",
+        description: "Your daily calorie intake has been recorded.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to log calories",
+        variant: "destructive",
+      });
+    },
+  });
+
   const [uploadPosition, setUploadPosition] = useState<{ x: number; y: number } | null>(null);
 
   const photoMutation = useMutation({
@@ -325,6 +366,18 @@ export default function Dashboard() {
   const hasCompletedChallengeToday = challenges.some((c: any) => c.completed);
   const hasRerolledToday = dashboardUser.lastRerollDate === today;
   const canReroll = !hasRerolledToday && !hasCompletedChallengeToday;
+  
+  // Helper function to get today's date in YYYY-MM-DD format (Central Time)
+  const getTodayDate = () => {
+    const now = new Date();
+    const centralTime = new Date(now.toLocaleString("en-US", { timeZone: "America/Chicago" }));
+    const year = centralTime.getFullYear();
+    const month = String(centralTime.getMonth() + 1).padStart(2, '0');
+    const day = String(centralTime.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+  
+  const hasLoggedCaloriesToday = dashboardUser?.lastCalorieLogDate === getTodayDate();
 
   return (
     <div className="min-h-screen bg-background">
@@ -417,6 +470,18 @@ export default function Dashboard() {
                   y: rect.top,
                 };
                 weighinMutation.mutate({ weight, position });
+              }}
+            />
+            <CalorieTrackerCard
+              hasLoggedToday={hasLoggedCaloriesToday}
+              isPending={calorieMutation.isPending}
+              onLogCalories={(event) => {
+                const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+                const position = {
+                  x: rect.left + rect.width / 2,
+                  y: rect.top,
+                };
+                calorieMutation.mutate(position);
               }}
             />
             <ObjectUploader
