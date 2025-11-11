@@ -10,6 +10,25 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### November 11, 2025 - Mobile-Responsive Navigation & UI
+- ✅ **Implemented Mobile-First Navigation**:
+  - Created MobileNav component using shadcn Sheet (drawer) for mobile menu
+  - Hamburger menu button visible on screens < 768px (md breakpoint)
+  - Mobile menu slides in from left with all navigation links
+  - Desktop navigation remains unchanged for larger screens
+  - Mobile menu includes user level/XP display, Dashboard, Leaderboards, Profile, Admin (if applicable), and Logout
+- ✅ **Made All Page Headers Responsive**:
+  - Dashboard: text-2xl on mobile vs text-4xl on desktop for username
+  - Profile: text-2xl on mobile vs text-4xl on desktop for username
+  - Leaderboards: text-3xl on mobile vs text-5xl on desktop for page title
+  - All titles, stats, and info text scale down appropriately on mobile
+  - Content stacks vertically on small screens, horizontally on larger screens
+- ✅ **Improved Mobile UX**:
+  - Reduced padding and spacing on mobile for better space utilization
+  - Font sizes scale responsively across all breakpoints
+  - Touch-friendly navigation with proper button sizes
+  - All content remains readable and accessible on mobile devices
+
 ### November 11, 2025 - Yearly Goals, Calorie Tracking & PR Leaderboards
 - ✅ **Added Yearly Goals System**:
   - New goal type "yearly" alongside weekly and lifetime goals
