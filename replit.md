@@ -26,6 +26,7 @@ Preferred communication style: Simple, everyday language.
     - Goal completion rewards: Weekly goal (100 XP), Yearly goal (2,000 XP), Lifetime goal (5,000 XP).
     - Features include an animated XP popup, an activity feed, random daily challenges with a reroll option, and dual leaderboards (XP and PR rankings).
     - Daily MVL (Most Valuable Lifter) competition tracks and rewards the highest daily XP earner, with an associated leaderboard and badge.
+    - Challenge selection uses Fisher-Yates shuffle algorithm for truly random distribution without patterns or bias.
 - **Timezone Management:** All time-based operations (check-ins, weigh-ins, daily challenges, goal resets, streaks) are now anchored to Central Time (America/Chicago).
 - **Goal Management:** Supports weekly, yearly, and lifetime goals with specific reset logic and enforcement (e.g., one yearly goal per year, one weekly goal per week).
 - **Admin Controls:** Functionality for adding/removing XP, recalculating user levels, and editing user display names.

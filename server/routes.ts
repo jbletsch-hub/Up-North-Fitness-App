@@ -75,6 +75,16 @@ async function awardXP(userId: string, amount: number, reason: string) {
   };
 }
 
+// Fisher-Yates shuffle algorithm for proper randomization
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
 async function assignDailyChallenges(userId: string, date: string) {
   const existing = await storage.getUserDailyChallenges(userId, date);
   if (existing.length > 0) return;
@@ -100,7 +110,7 @@ async function assignDailyChallenges(userId: string, date: string) {
     }
 
     const refreshedChallenges = await storage.getAllChallenges();
-    const selected = refreshedChallenges.sort(() => Math.random() - 0.5).slice(0, 4);
+    const selected = shuffleArray(refreshedChallenges).slice(0, 4);
 
     for (const challenge of selected) {
       await storage.createUserDailyChallenge({
@@ -111,7 +121,7 @@ async function assignDailyChallenges(userId: string, date: string) {
       });
     }
   } else {
-    const selected = allChallenges.sort(() => Math.random() - 0.5).slice(0, 4);
+    const selected = shuffleArray(allChallenges).slice(0, 4);
 
     for (const challenge of selected) {
       await storage.createUserDailyChallenge({
