@@ -390,21 +390,21 @@ export default function Dashboard() {
         userTitle={user?.title}
       />
 
-      <main className="max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-6">
-        <div className="space-y-3">
-          <div className="flex items-center justify-between flex-wrap gap-3">
-            <h1 className="font-display text-4xl tracking-wider">
+      <main className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6">
+        <div className="space-y-2 md:space-y-3">
+          <div className="flex items-center justify-between flex-wrap gap-2 md:gap-3">
+            <h1 className="font-display text-2xl md:text-4xl tracking-wider">
               {dashboardUser.username?.toUpperCase()}
             </h1>
             <DisplayNameEditor />
           </div>
           <div>
-            <p className="mb-2">
-              <span className="font-display text-2xl text-primary">{dashboardUser.title}</span>
-              <span className="text-muted-foreground ml-3">Level {dashboardUser.level} · {dashboardUser.xp.toLocaleString()} XP</span>
-            </p>
+            <div className="mb-2 flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-0">
+              <span className="font-display text-xl md:text-2xl text-primary">{dashboardUser.title}</span>
+              <span className="text-sm md:text-base text-muted-foreground sm:ml-3">Level {dashboardUser.level} · {dashboardUser.xp.toLocaleString()} XP</span>
+            </div>
             <div className="space-y-1">
-              <div className="flex justify-between text-sm">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-1 text-xs md:text-sm">
                 <span className="text-muted-foreground">Progress to Level {dashboardUser.level + 1}</span>
                 <span className="text-primary font-semibold">{xpToNextLevel.toLocaleString()} XP to go</span>
               </div>

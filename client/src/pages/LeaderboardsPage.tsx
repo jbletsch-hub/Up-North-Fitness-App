@@ -49,9 +49,9 @@ export default function LeaderboardsPage() {
                 className="flex items-center justify-between p-3 rounded-lg bg-card-hover"
                 data-testid={`pr-${title.toLowerCase().split(' ')[0]}-${index + 1}`}
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 md:gap-3">
                   <div
-                    className={`font-display text-2xl ${
+                    className={`font-display text-xl md:text-2xl ${
                       index === 0
                         ? "text-yellow-500"
                         : index === 1
@@ -64,7 +64,7 @@ export default function LeaderboardsPage() {
                   <div>
                     <Link href={`/profile/${record.username}`}>
                       <p
-                        className="font-semibold hover:text-primary cursor-pointer"
+                        className="font-semibold hover:text-primary cursor-pointer text-sm md:text-base"
                         data-testid={`text-username-${index + 1}`}
                       >
                         {record.displayName || record.username}
@@ -73,7 +73,7 @@ export default function LeaderboardsPage() {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-display text-xl font-bold" data-testid={`text-value-${index + 1}`}>
+                  <p className="font-display text-base md:text-xl font-bold" data-testid={`text-value-${index + 1}`}>
                     {record.value} {unit}
                   </p>
                 </div>
@@ -96,10 +96,10 @@ export default function LeaderboardsPage() {
         userTitle={user?.title}
       />
 
-      <main className="max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-6">
-        <div className="text-center space-y-2">
-          <h1 className="font-display text-4xl md:text-5xl font-bold">Leaderboards</h1>
-          <p className="text-muted-foreground">See who's leading the pack</p>
+      <main className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6">
+        <div className="text-center space-y-1 md:space-y-2">
+          <h1 className="font-display text-3xl md:text-5xl font-bold">Leaderboards</h1>
+          <p className="text-sm md:text-base text-muted-foreground">See who's leading the pack</p>
         </div>
 
         {/* XP Leaderboard */}
@@ -119,8 +119,8 @@ export default function LeaderboardsPage() {
                   className="flex items-center justify-between p-3 rounded-lg bg-card-hover"
                   data-testid={`leaderboard-xp-${index + 1}`}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="font-display text-xl font-bold text-muted-foreground w-8">
+                  <div className="flex items-center gap-2 md:gap-3">
+                    <div className="font-display text-base md:text-xl font-bold text-muted-foreground w-6 md:w-8">
                       #{index + 1}
                     </div>
                     <div>
@@ -136,7 +136,7 @@ export default function LeaderboardsPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-display text-xl font-bold" data-testid={`text-xp-${index + 1}`}>
+                    <p className="font-display text-base md:text-xl font-bold" data-testid={`text-xp-${index + 1}`}>
                       {u.xp.toLocaleString()} XP
                     </p>
                     <p className="text-sm text-muted-foreground">Level {u.level}</p>

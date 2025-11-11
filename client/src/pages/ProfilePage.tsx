@@ -80,21 +80,21 @@ export default function ProfilePage() {
         userTitle={user?.title}
       />
 
-      <main className="max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-6">
+      <main className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6">
         {/* Profile Header */}
         <div className="space-y-2">
-          <div className="flex items-center gap-3">
-            <h1 className="font-display text-4xl tracking-wider" data-testid="text-profile-username">
+          <div className="flex items-center gap-2 md:gap-3">
+            <h1 className="font-display text-2xl md:text-4xl tracking-wider" data-testid="text-profile-username">
               {profileUser.username?.toUpperCase()}
             </h1>
             {profileUser.isAdmin && (
               <Badge variant="default" className="text-xs">ADMIN</Badge>
             )}
           </div>
-          <p data-testid="text-profile-stats">
-            <span className="font-display text-2xl text-primary">{profileUser.title}</span>
-            <span className="text-muted-foreground ml-3">Level {profileUser.level} · {profileUser.xp.toLocaleString()} XP</span>
-          </p>
+          <div data-testid="text-profile-stats" className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-0">
+            <span className="font-display text-xl md:text-2xl text-primary">{profileUser.title}</span>
+            <span className="text-sm md:text-base text-muted-foreground sm:ml-3">Level {profileUser.level} · {profileUser.xp.toLocaleString()} XP</span>
+          </div>
           {profileUser.streakCount > 0 && (
             <p className="text-primary font-semibold">
               🔥 {profileUser.streakCount} day streak
