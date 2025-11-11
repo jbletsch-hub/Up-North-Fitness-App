@@ -4,6 +4,7 @@ import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trophy, Award } from "lucide-react";
 import { Link } from "wouter";
+import { MVLBadge } from "@/components/MVLBadge";
 
 export default function LeaderboardsPage() {
   const { user } = useAuth();
@@ -124,14 +125,17 @@ export default function LeaderboardsPage() {
                       #{index + 1}
                     </div>
                     <div>
-                      <Link href={`/profile/${u.username}`}>
-                        <p
-                          className="font-semibold hover:text-primary cursor-pointer"
-                          data-testid={`text-username-${index + 1}`}
-                        >
-                          {u.displayName || u.username}
-                        </p>
-                      </Link>
+                      <div className="flex items-center gap-2">
+                        <Link href={`/profile/${u.username}`}>
+                          <p
+                            className="font-semibold hover:text-primary cursor-pointer"
+                            data-testid={`text-username-${index + 1}`}
+                          >
+                            {u.displayName || u.username}
+                          </p>
+                        </Link>
+                        <MVLBadge mvlWins={u.mvlWins} size="sm" />
+                      </div>
                       <p className="text-sm text-muted-foreground">{u.title}</p>
                     </div>
                   </div>

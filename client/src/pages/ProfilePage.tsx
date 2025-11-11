@@ -8,6 +8,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Trophy, TrendingUp, Calendar, Target, Check } from "lucide-react";
 import { useParams } from "wouter";
 import { useState } from "react";
+import { MVLBadge } from "@/components/MVLBadge";
 
 export default function ProfilePage() {
   const { user } = useAuth();
@@ -83,13 +84,14 @@ export default function ProfilePage() {
       <main className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6">
         {/* Profile Header */}
         <div className="space-y-2">
-          <div className="flex items-center gap-2 md:gap-3">
+          <div className="flex items-center gap-2 md:gap-3 flex-wrap">
             <h1 className="font-display text-2xl md:text-4xl tracking-wider" data-testid="text-profile-username">
               {profileUser.username?.toUpperCase()}
             </h1>
             {profileUser.isAdmin && (
               <Badge variant="default" className="text-xs">ADMIN</Badge>
             )}
+            <MVLBadge mvlWins={profileUser.mvlWins} size="md" />
           </div>
           <div data-testid="text-profile-stats" className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-0">
             <span className="font-display text-xl md:text-2xl text-primary">{profileUser.title}</span>
