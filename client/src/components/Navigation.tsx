@@ -3,6 +3,7 @@ import { Moon, Sun, Dumbbell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "./ThemeProvider";
 import { apiRequest } from "@/lib/queryClient";
+import { MobileNav } from "./MobileNav";
 
 interface NavigationProps {
   isLoggedIn: boolean;
@@ -38,34 +39,46 @@ export function Navigation({ isLoggedIn, username, isAdmin, userLevel, userXP, u
         <nav className="flex items-center gap-2">
           {isLoggedIn ? (
             <>
-              <Button variant="ghost" size="sm" asChild data-testid="link-dashboard">
-                <Link href="/dashboard">Dashboard</Link>
-              </Button>
-              <Button variant="ghost" size="sm" asChild data-testid="link-leaderboards">
-                <Link href="/leaderboards">Leaderboards</Link>
-              </Button>
-              <Button variant="ghost" size="sm" asChild data-testid="link-profile">
-                <Link href={`/profile/${username}`}>Profile</Link>
-              </Button>
-              {isAdmin && (
-                <Button variant="ghost" size="sm" asChild data-testid="link-admin">
-                  <Link href="/admin">Admin</Link>
+              {/* Mobile Menu */}
+              <MobileNav
+                username={username}
+                isAdmin={isAdmin}
+                userLevel={userLevel}
+                userXP={userXP}
+                userTitle={userTitle}
+              />
+              
+              {/* Desktop Navigation */}
+              <div className="hidden md:flex items-center gap-2">
+                <Button variant="ghost" size="sm" asChild data-testid="link-dashboard">
+                  <Link href="/dashboard">Dashboard</Link>
                 </Button>
-              )}
-              {userLevel !== undefined && (
-                <div className="hidden md:flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-md bg-secondary/50 text-sm">
-                  <span className="font-display text-base leading-none">{userTitle || 'Rookie 1'}</span>
-                  <span className="text-xs text-muted-foreground">Lv {userLevel} · {userXP} XP</span>
-                </div>
-              )}
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={handleLogout}
-                data-testid="button-logout"
-              >
-                Logout
-              </Button>
+                <Button variant="ghost" size="sm" asChild data-testid="link-leaderboards">
+                  <Link href="/leaderboards">Leaderboards</Link>
+                </Button>
+                <Button variant="ghost" size="sm" asChild data-testid="link-profile">
+                  <Link href={`/profile/${username}`}>Profile</Link>
+                </Button>
+                {isAdmin && (
+                  <Button variant="ghost" size="sm" asChild data-testid="link-admin">
+                    <Link href="/admin">Admin</Link>
+                  </Button>
+                )}
+                {userLevel !== undefined && (
+                  <div className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-md bg-secondary/50 text-sm">
+                    <span className="font-display text-base leading-none">{userTitle || 'Rookie 1'}</span>
+                    <span className="text-xs text-muted-foreground">Lv {userLevel} · {userXP} XP</span>
+                  </div>
+                )}
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={handleLogout}
+                  data-testid="button-logout"
+                >
+                  Logout
+                </Button>
+              </div>
             </>
           ) : (
             <>
