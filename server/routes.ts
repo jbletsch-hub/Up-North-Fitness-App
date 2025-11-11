@@ -919,7 +919,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         xpAmount = 100;
         xpReason = "completed a weekly goal!";
       } else if (goalBefore.type === "yearly") {
-        xpAmount = 10000;
+        xpAmount = 2000;
         xpReason = "completed a yearly goal!";
       } else {
         xpAmount = 5000;

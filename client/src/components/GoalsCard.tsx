@@ -210,7 +210,7 @@ export function GoalsCard() {
 
     const getXPReward = () => {
       if (type === "weekly") return "100 XP";
-      if (type === "yearly") return "10,000 XP";
+      if (type === "yearly") return "2,000 XP";
       return "5,000 XP";
     };
 

@@ -15,7 +15,7 @@ Preferred communication style: Simple, everyday language.
   - New goal type "yearly" alongside weekly and lifetime goals
   - Users can only create ONE yearly goal per year (enforced at API level)
   - Yearly goals reset every January 1st at midnight Central Time
-  - Completing a yearly goal awards **10,000 XP** (highest goal reward)
+  - Completing a yearly goal awards **2,000 XP**
   - Added `yearStart` field to `userGoals` table to track which year a goal belongs to
   - GoalsCard component updated to 3-column layout (Weekly, Yearly, Lifetime)
   - Clear error message: "You can only create one yearly goal per year. Your year resets on January 1st."
@@ -144,7 +144,7 @@ Preferred communication style: Simple, everyday language.
       - All 3 challenges: 50 XP bonus
     - Goal completion rewards:
       - Weekly goal: 100 XP
-      - Yearly goal: 10,000 XP (NEW)
+      - Yearly goal: 2,000 XP (NEW)
       - Lifetime goal: 5,000 XP
     - Animated XP popup on earning actions.
     - Activity feed for XP-earning actions.
