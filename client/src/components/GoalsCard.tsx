@@ -42,7 +42,7 @@ export function GoalsCard() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
   const [selectedGoal, setSelectedGoal] = useState<UserGoal | null>(null);
-  const [goalType, setGoalType] = useState<"weekly" | "lifetime">("weekly");
+  const [goalType, setGoalType] = useState<"weekly" | "lifetime" | "yearly">("weekly");
   const [title, setTitle] = useState("");
   const [targetValue, setTargetValue] = useState("");
   const [unit, setUnit] = useState("lbs");
@@ -62,6 +62,15 @@ export function GoalsCard() {
     queryFn: async () => {
       const response = await fetch("/api/goals?type=lifetime");
       if (!response.ok) throw new Error("Failed to fetch lifetime goals");
+      return response.json();
+    },
+  });
+
+  const { data: yearlyGoals = [], isLoading: yearlyLoading } = useQuery({
+    queryKey: ["/api/goals", { type: "yearly" }],
+    queryFn: async () => {
+      const response = await fetch("/api/goals?type=yearly");
+      if (!response.ok) throw new Error("Failed to fetch yearly goals");
       return response.json();
     },
   });
@@ -183,21 +192,35 @@ export function GoalsCard() {
     });
   };
 
-  const renderGoalSection = (goals: UserGoal[], type: "weekly" | "lifetime") => {
+  const renderGoalSection = (goals: UserGoal[], type: "weekly" | "lifetime" | "yearly") => {
     const activeGoals = goals.filter((g) => !g.completed);
     const completedGoals = goals.filter((g) => g.completed);
+
+    const getIcon = () => {
+      if (type === "weekly") return <Target className="h-5 w-5 text-chart-2" />;
+      if (type === "yearly") return <Trophy className="h-5 w-5 text-chart-1" />;
+      return <Trophy className="h-5 w-5 text-primary" />;
+    };
+
+    const getTitle = () => {
+      if (type === "weekly") return "WEEKLY GOALS";
+      if (type === "yearly") return "YEARLY GOALS";
+      return "LIFETIME GOALS";
+    };
+
+    const getXPReward = () => {
+      if (type === "weekly") return "100 XP";
+      if (type === "yearly") return "10,000 XP";
+      return "5,000 XP";
+    };
 
     return (
       <Card className="border-card-border">
         <CardHeader>
           <CardTitle className="text-xl font-display tracking-wider flex items-center gap-2 justify-between">
             <div className="flex items-center gap-2">
-              {type === "weekly" ? (
-                <Target className="h-5 w-5 text-chart-2" />
-              ) : (
-                <Trophy className="h-5 w-5 text-primary" />
-              )}
-              {type === "weekly" ? "WEEKLY GOALS" : "LIFETIME GOALS"}
+              {getIcon()}
+              {getTitle()}
             </div>
             <Dialog open={isAddDialogOpen && goalType === type} onOpenChange={(open) => {
               setIsAddDialogOpen(open);
@@ -210,9 +233,9 @@ export function GoalsCard() {
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Add {type === "weekly" ? "Weekly" : "Lifetime"} Goal</DialogTitle>
+                  <DialogTitle>Add {type === "weekly" ? "Weekly" : type === "yearly" ? "Yearly" : "Lifetime"} Goal</DialogTitle>
                   <DialogDescription>
-                    Set a new goal to track your progress
+                    Set a new goal to track your progress. Rewards: {getXPReward()}
                   </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4">
@@ -343,14 +366,15 @@ export function GoalsCard() {
     );
   };
 
-  if (weeklyLoading || lifetimeLoading) {
+  if (weeklyLoading || lifetimeLoading || yearlyLoading) {
     return <div className="text-center py-8">Loading goals...</div>;
   }
 
   return (
     <>
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-3 gap-6">
         {renderGoalSection(weeklyGoals, "weekly")}
+        {renderGoalSection(yearlyGoals, "yearly")}
         {renderGoalSection(lifetimeGoals, "lifetime")}
       </div>
 
