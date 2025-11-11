@@ -1,14 +1,45 @@
 # Iron Crew - Fitness Tracking & Gamification Platform
 
 ## Overview
-Iron Crew is a fullstack fitness tracking application that integrates workout logging with gamification. It enables users to track personal records (PRs), complete daily challenges, upload progress photos, and earn experience points (XP). The platform features a leveling system, streak tracking, collaborative crew goals, and leaderboards, drawing inspiration from fitness and gamification apps.
+Iron Crew is a fullstack fitness tracking application that integrates workout logging with gamification. It enables users to track personal records (PRs), complete daily challenges, upload progress photos, and earn experience points (XP). The platform features a leveling system, streak tracking, collaborative crew goals, leaderboards, and goal tracking. Drawing inspiration from fitness and gamification apps, Iron Crew now includes yearly goals, calorie tracking, and dedicated PR leaderboards.
 
-The application is built as a modern web app using React for the frontend, Express for the backend, and PostgreSQL (via Neon) for data persistence. It includes a complete XP system with level progression, daily challenges, PR tracking, check-ins, weigh-ins, photo uploads, and user profiles. New users are guided through a profile setup flow.
+The application is built as a modern web app using React for the frontend, Express for the backend, and PostgreSQL (via Neon) for data persistence. It includes a complete XP system with level progression, daily challenges, PR tracking, check-ins, weigh-ins, calorie logging, photo uploads, and user profiles. New users are guided through a profile setup flow.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
+
+### November 11, 2025 - Yearly Goals, Calorie Tracking & PR Leaderboards
+- ✅ **Added Yearly Goals System**:
+  - New goal type "yearly" alongside weekly and lifetime goals
+  - Users can only create ONE yearly goal per year (enforced at API level)
+  - Yearly goals reset every January 1st at midnight Central Time
+  - Completing a yearly goal awards **10,000 XP** (highest goal reward)
+  - Added `yearStart` field to `userGoals` table to track which year a goal belongs to
+  - GoalsCard component updated to 3-column layout (Weekly, Yearly, Lifetime)
+  - Clear error message: "You can only create one yearly goal per year. Your year resets on January 1st."
+- ✅ **Implemented Calorie Tracking Feature**:
+  - New CalorieTrackerCard on Dashboard for daily nutrition accountability
+  - Awards 15 XP once per day for logging calories
+  - Added `lastCalorieLogDate` field to users table
+  - Uses Central Time for daily reset logic
+  - Button updates to "Logged Today ✓" after use and becomes disabled
+  - POST `/api/calories` endpoint for tracking
+- ✅ **Created PR Leaderboards Page**:
+  - New dedicated Leaderboards page at `/leaderboards`
+  - Two tabs: "XP Rankings" and "PR Rankings"
+  - PR Rankings shows three separate leaderboards:
+    - Top Bench Press (top 3 users)
+    - Top Squat (top 3 users)  
+    - Top Deadlift (top 3 users)
+  - Each leaderboard displays rank, username, and weight lifted
+  - Auto-updates when users record new PRs
+  - GET `/api/leaderboards/prs` endpoint queries top performers
+- ✅ **Enhanced Navigation**:
+  - Added "Leaderboards" tab to main navigation
+  - Separate from dashboard's inline leaderboard card
+  - Provides full view of both XP and PR rankings
 
 ### November 9, 2025 - Central Time, Weekly Goals & Photo Lightbox
 - ✅ **Implemented Central Time (America/Chicago) for all time-based operations**:
@@ -103,14 +134,30 @@ Preferred communication style: Simple, everyday language.
 - **XP & Gamification System:**
     - Level calculation with exponential XP curve (1.6 multiplier).
     - 10-tier title progression (Rookie 1 to Immortal).
-    - XP awards for various actions (e.g., check-ins, photos, PR updates) with daily limits.
+    - XP awards for various actions with daily limits:
+      - Check-in: 30 XP
+      - Weigh-in: 15 XP
+      - PR update: 30 XP
+      - Progress photo: 25 XP
+      - Calorie log: 15 XP (NEW)
+      - Daily challenge: 25 XP each (3 per day)
+      - All 3 challenges: 50 XP bonus
+    - Goal completion rewards:
+      - Weekly goal: 100 XP
+      - Yearly goal: 10,000 XP (NEW)
+      - Lifetime goal: 5,000 XP
     - Animated XP popup on earning actions.
     - Activity feed for XP-earning actions.
-    - Random daily challenges.
-    - Leaderboard based on total XP.
+    - Random daily challenges with reroll option.
+    - Dual leaderboards: XP rankings and PR rankings (NEW).
 
 ### Database Schema
 - **Core Tables:** `users`, `prs`, `activities`, `challengePool`, `userDailyChallenges`, `progressPhotos`, `crewState`, `userGoals`, `sessions`.
+- **Key Fields (New)**:
+  - `users.lastCalorieLogDate`: Text field storing YYYY-MM-DD format for daily calorie tracking
+  - `userGoals.type`: Supports "weekly", "yearly", "lifetime"
+  - `userGoals.yearStart`: Integer tracking which year a yearly goal belongs to
+  - `userGoals.weekStart`: Date tracking which week a weekly goal belongs to
 - **Relationships:** One-to-one (User → PR), One-to-many (User → Activities, Photos, Challenges, Goals), Singleton (Crew State).
 - **Authentication & Authorization:** `passport-local` strategy with `bcrypt` for password hashing, secure HTTP-only session cookies (7-day TTL). `isAuthenticated` middleware for route protection. Admin flag for privileged access.
 
