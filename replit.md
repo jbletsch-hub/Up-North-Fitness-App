@@ -28,7 +28,7 @@ Preferred communication style: Simple, everyday language.
     - Daily MVL (Most Valuable Lifter) competition tracks and rewards the highest daily XP earner, with an associated leaderboard and badge.
     - Challenge selection uses Fisher-Yates shuffle algorithm for truly random distribution without patterns or bias.
 - **Timezone Management:** All time-based operations (check-ins, weigh-ins, daily challenges, goal resets, streaks) are now anchored to Central Time (America/Chicago).
-- **Goal Management:** Supports weekly, yearly, and lifetime goals with specific reset logic and enforcement (e.g., one yearly goal per year, one weekly goal per week).
+- **Goal Management:** Supports weekly, yearly, and lifetime goals with specific reset logic and enforcement (e.g., one yearly goal per year, up to 3 weekly goals per week).
 - **Admin Controls:** Functionality for adding/removing XP, recalculating user levels, and editing user display names.
 
 ### Database Schema

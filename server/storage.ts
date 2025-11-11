@@ -510,7 +510,7 @@ export class DatabaseStorage implements IStorage {
           eq(userGoals.weekStart, weekStart)
         )
       );
-    return goals.length > 0;
+    return goals.length >= 3;
   }
 
   async hasYearlyGoalThisYear(userId: string, yearStart: string): Promise<boolean> {

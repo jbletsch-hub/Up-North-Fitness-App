@@ -840,14 +840,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { type, title, targetValue, unit, currentValue } = req.body;
       const userId = req.user.id;
       
-      // Check if this is a weekly goal and if user already has one this week
+      // Check if this is a weekly goal and if user already has 3 this week
       if (type === "weekly") {
         const weekStart = getCentralTimeWeekStart();
-        const hasWeeklyGoal = await storage.hasWeeklyGoalThisWeek(userId, weekStart);
+        const hasMaxWeeklyGoals = await storage.hasWeeklyGoalThisWeek(userId, weekStart);
         
-        if (hasWeeklyGoal) {
+        if (hasMaxWeeklyGoals) {
           return res.status(400).json({ 
-            error: "You can only create one weekly goal per week. Your week resets on Sunday." 
+            error: "You can only create 3 weekly goals per week. Your week resets on Sunday." 
           });
         }
         
