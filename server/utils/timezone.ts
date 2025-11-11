@@ -59,3 +59,17 @@ export function getCentralTimeYesterday(): string {
   
   return `${year}-${month}-${day}`;
 }
+
+/**
+ * Gets the start of the current year (January 1st) in Central Time as YYYY-MM-DD
+ */
+export function getCentralTimeYearStart(): string {
+  const now = new Date();
+  const centralTime = new Date(now.toLocaleString("en-US", { timeZone: "America/Chicago" }));
+  
+  // Get current year
+  const year = centralTime.getFullYear();
+  
+  // January 1st of current year
+  return `${year}-01-01`;
+}

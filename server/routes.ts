@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
 import { calculateLevelAndTitle } from "./utils/xpSystem";
-import { getCentralTimeDate, getCentralTimeYesterday, getCentralTimeWeekStart } from "./utils/timezone";
+import { getCentralTimeDate, getCentralTimeYesterday, getCentralTimeWeekStart, getCentralTimeYearStart } from "./utils/timezone";
 import multer from "multer";
 import path from "path";
 import { writeFile, mkdir } from "fs/promises";
@@ -843,8 +843,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         return res.status(201).json(goal);
       }
+
+      // Check if this is a yearly goal and if user already has one this year
+      if (type === "yearly") {
+        const yearStart = getCentralTimeYearStart();
+        const hasYearlyGoal = await storage.hasYearlyGoalThisYear(userId, yearStart);
+        
+        if (hasYearlyGoal) {
+          return res.status(400).json({ 
+            error: "You can only create one yearly goal per year. Your year resets on January 1st." 
+          });
+        }
+        
+        // Create yearly goal with yearStart tracking
+        const goal = await storage.createGoal({
+          userId,
+          type,
+          title,
+          targetValue,
+          currentValue: currentValue || 0,
+          unit,
+          completed: false,
+        }, undefined, yearStart);
+        
+        return res.status(201).json(goal);
+      }
       
-      // Create non-weekly goal (lifetime)
+      // Create lifetime goal
       const goal = await storage.createGoal({
         userId,
         type,
@@ -887,10 +912,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const goal = await storage.completeGoal(id);
       
       // Award XP based on goal type
-      const xpAmount = goalBefore.type === "weekly" ? 100 : 5000;
-      const xpReason = goalBefore.type === "weekly" 
-        ? "completed a weekly goal!" 
-        : "completed a lifetime goal!";
+      let xpAmount: number;
+      let xpReason: string;
+      
+      if (goalBefore.type === "weekly") {
+        xpAmount = 100;
+        xpReason = "completed a weekly goal!";
+      } else if (goalBefore.type === "yearly") {
+        xpAmount = 10000;
+        xpReason = "completed a yearly goal!";
+      } else {
+        xpAmount = 5000;
+        xpReason = "completed a lifetime goal!";
+      }
+      
       const result = await awardXP(userId, xpAmount, xpReason);
 
       res.json({ ...goal, ...result });
@@ -908,6 +943,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting goal:", error);
       res.status(500).json({ error: "Failed to delete goal" });
+    }
+  });
+
+  // Calorie tracking endpoint
+  app.post("/api/calories", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const today = getTodayDate();
+
+      // Check if user already logged calories today
+      if (user.lastCalorieLogDate === today) {
+        return res.status(400).json({ message: "You can only log calories once per day" });
+      }
+
+      // Update user's last calorie log date
+      await storage.updateUserCalorieLogDate(userId, today);
+
+      // Award 15 XP for logging calories
+      const result = await awardXP(userId, 15, "logged daily calories");
+
+      res.json({ 
+        success: true, 
+        ...result 
+      });
+    } catch (error) {
+      console.error("Error logging calories:", error);
+      res.status(500).json({ message: "Failed to log calories" });
+    }
+  });
+
+  // PR Leaderboards endpoint
+  app.get("/api/leaderboards/prs", async (req, res) => {
+    try {
+      const leaderboards = await storage.getPRLeaderboards();
+      res.json(leaderboards);
+    } catch (error) {
+      console.error("Error fetching PR leaderboards:", error);
+      res.status(500).json({ message: "Failed to fetch PR leaderboards" });
     }
   });
 

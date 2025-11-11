@@ -49,6 +49,7 @@ export const users = pgTable("users", {
   weight: real("weight"),
   lastWeighinDate: varchar("last_weighin_date"),
   lastRerollDate: varchar("last_reroll_date"),
+  lastCalorieLogDate: varchar("last_calorie_log_date"),
 });
 
 export const insertUserSchema = createInsertSchema(users).omit({ 
@@ -63,6 +64,7 @@ export const insertUserSchema = createInsertSchema(users).omit({
   lastPrUpdateDate: true,
   lastWeighinDate: true,
   lastRerollDate: true,
+  lastCalorieLogDate: true,
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -144,7 +146,7 @@ export type CrewState = typeof crewState.$inferSelect;
 export const userGoals = pgTable("user_goals", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
-  type: varchar("type").notNull(), // "weekly" or "lifetime"
+  type: varchar("type").notNull(), // "weekly", "lifetime", or "yearly"
   title: text("title").notNull(),
   targetValue: real("target_value").notNull(),
   currentValue: real("current_value").default(0).notNull(),
@@ -153,6 +155,7 @@ export const userGoals = pgTable("user_goals", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   completedAt: timestamp("completed_at"),
   weekStart: varchar("week_start"), // For weekly goals: Sunday date of the week (YYYY-MM-DD format)
+  yearStart: varchar("year_start"), // For yearly goals: January 1st date of the year (YYYY-MM-DD format)
 });
 
 export const insertUserGoalSchema = createInsertSchema(userGoals).omit({ 
@@ -160,6 +163,7 @@ export const insertUserGoalSchema = createInsertSchema(userGoals).omit({
   createdAt: true,
   completedAt: true,
   weekStart: true,
+  yearStart: true,
 });
 export type InsertUserGoal = z.infer<typeof insertUserGoalSchema>;
 export type UserGoal = typeof userGoals.$inferSelect;

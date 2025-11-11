@@ -47,6 +47,7 @@ export interface IStorage {
   updateUserWeight(id: string, weight: number, lastWeighinDate: string): Promise<User>;
   updateUserPRDate(id: string, lastPrUpdateDate: string): Promise<User>;
   updateUserRerollDate(id: string, lastRerollDate: string): Promise<User>;
+  updateUserCalorieLogDate(id: string, lastCalorieLogDate: string): Promise<User>;
   updateUserProfile(id: string, firstName: string, lastName: string | undefined, profileImageUrl: string): Promise<User>;
   updateUserDisplayName(id: string, displayName: string): Promise<User>;
   
@@ -82,11 +83,13 @@ export interface IStorage {
   // User goals operations
   getUserGoals(userId: string, type?: string): Promise<UserGoal[]>;
   getGoal(id: string): Promise<UserGoal | undefined>;
-  createGoal(goal: InsertUserGoal, weekStart?: string): Promise<UserGoal>;
+  createGoal(goal: InsertUserGoal, weekStart?: string, yearStart?: string): Promise<UserGoal>;
   updateGoalProgress(id: string, currentValue: number): Promise<UserGoal>;
   completeGoal(id: string): Promise<UserGoal>;
   deleteGoal(id: string): Promise<void>;
   hasWeeklyGoalThisWeek(userId: string, weekStart: string): Promise<boolean>;
+  hasYearlyGoalThisYear(userId: string, yearStart: string): Promise<boolean>;
+  getPRLeaderboards(): Promise<{ bench: any[], squat: any[], deadlift: any[] }>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -200,6 +203,15 @@ export class DatabaseStorage implements IStorage {
     const [user] = await db
       .update(users)
       .set({ lastRerollDate })
+      .where(eq(users.id, id))
+      .returning();
+    return user;
+  }
+
+  async updateUserCalorieLogDate(id: string, lastCalorieLogDate: string): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({ lastCalorieLogDate })
       .where(eq(users.id, id))
       .returning();
     return user;
@@ -410,8 +422,14 @@ export class DatabaseStorage implements IStorage {
     return goal;
   }
 
-  async createGoal(goalData: InsertUserGoal, weekStart?: string): Promise<UserGoal> {
-    const values = weekStart ? { ...goalData, weekStart } : goalData;
+  async createGoal(goalData: InsertUserGoal, weekStart?: string, yearStart?: string): Promise<UserGoal> {
+    let values: any = goalData;
+    if (weekStart) {
+      values = { ...goalData, weekStart };
+    }
+    if (yearStart) {
+      values = { ...values, yearStart };
+    }
     const [goal] = await db
       .insert(userGoals)
       .values(values)
@@ -453,6 +471,68 @@ export class DatabaseStorage implements IStorage {
         )
       );
     return goals.length > 0;
+  }
+
+  async hasYearlyGoalThisYear(userId: string, yearStart: string): Promise<boolean> {
+    const goals = await db
+      .select()
+      .from(userGoals)
+      .where(
+        and(
+          eq(userGoals.userId, userId),
+          eq(userGoals.type, "yearly"),
+          eq(userGoals.yearStart, yearStart)
+        )
+      );
+    return goals.length > 0;
+  }
+
+  async getPRLeaderboards(): Promise<{ bench: any[], squat: any[], deadlift: any[] }> {
+    // Get top 3 for each lift
+    const benchTop = await db
+      .select({
+        userId: prs.userId,
+        value: prs.bench,
+        username: users.username,
+        displayName: users.displayName,
+      })
+      .from(prs)
+      .innerJoin(users, eq(prs.userId, users.id))
+      .where(sql`${prs.bench} > 0`)
+      .orderBy(sql`${prs.bench} DESC`)
+      .limit(3);
+
+    const squatTop = await db
+      .select({
+        userId: prs.userId,
+        value: prs.squat,
+        username: users.username,
+        displayName: users.displayName,
+      })
+      .from(prs)
+      .innerJoin(users, eq(prs.userId, users.id))
+      .where(sql`${prs.squat} > 0`)
+      .orderBy(sql`${prs.squat} DESC`)
+      .limit(3);
+
+    const deadliftTop = await db
+      .select({
+        userId: prs.userId,
+        value: prs.deadlift,
+        username: users.username,
+        displayName: users.displayName,
+      })
+      .from(prs)
+      .innerJoin(users, eq(prs.userId, users.id))
+      .where(sql`${prs.deadlift} > 0`)
+      .orderBy(sql`${prs.deadlift} DESC`)
+      .limit(3);
+
+    return {
+      bench: benchTop,
+      squat: squatTop,
+      deadlift: deadliftTop,
+    };
   }
 }
 
