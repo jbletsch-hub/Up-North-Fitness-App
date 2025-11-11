@@ -3,6 +3,11 @@
 ## Overview
 Iron Crew is a full-stack fitness tracking application that integrates workout logging with gamification. It allows users to track personal records (PRs), complete daily challenges, upload progress photos, and earn experience points (XP). The platform features a leveling system, streak tracking, collaborative crew goals, leaderboards, goal tracking, and a daily MVL (Most Valuable Lifter) badge system. Key capabilities include yearly goals, calorie tracking, dedicated PR leaderboards, and competitive daily XP tracking. The application aims to provide a comprehensive and engaging fitness journey.
 
+## Recent Updates
+- **App Icon & PWA:** Custom golden dumbbell icon for browser tabs and mobile shortcuts, with web app manifest (manifest.json) for proper Progressive Web App support across iOS, Android, and desktop platforms.
+- **Weekly Goals Limit:** Increased from 1 to 3 weekly goals per week, still resetting every Sunday at midnight Central Time.
+- **Challenge Randomization:** Implemented Fisher-Yates shuffle algorithm for truly random daily challenge selection, eliminating biased patterns.
+
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
