@@ -50,6 +50,11 @@ export const users = pgTable("users", {
   lastWeighinDate: varchar("last_weighin_date"),
   lastRerollDate: varchar("last_reroll_date"),
   lastCalorieLogDate: varchar("last_calorie_log_date"),
+  
+  // MVL (Most Valuable Lifter) tracking
+  mvlWins: integer("mvl_wins").default(0).notNull(),
+  dailyXp: integer("daily_xp").default(0).notNull(),
+  lastDailyXpReset: varchar("last_daily_xp_reset"),
 });
 
 export const insertUserSchema = createInsertSchema(users).omit({ 
@@ -65,6 +70,9 @@ export const insertUserSchema = createInsertSchema(users).omit({
   lastWeighinDate: true,
   lastRerollDate: true,
   lastCalorieLogDate: true,
+  mvlWins: true,
+  dailyXp: true,
+  lastDailyXpReset: true,
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
