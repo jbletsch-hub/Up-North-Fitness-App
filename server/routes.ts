@@ -990,6 +990,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Today's MVL (Most Valuable Lifter) Leaderboard endpoint
+  app.get("/api/leaderboards/mvl", async (req, res) => {
+    try {
+      const leaderboard = await storage.getTodayMVLLeaderboard(10);
+      res.json(leaderboard);
+    } catch (error) {
+      console.error("Error fetching MVL leaderboard:", error);
+      res.status(500).json({ message: "Failed to fetch MVL leaderboard" });
+    }
+  });
+
   // PR Leaderboards endpoint
   app.get("/api/leaderboards/prs", async (req, res) => {
     try {
