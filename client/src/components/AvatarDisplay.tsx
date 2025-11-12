@@ -706,67 +706,41 @@ export function AvatarDisplay({
         )}
         
         {/* === NEW CHEST DEFINITION SYSTEM === */}
-        {/* Stage 2-3: Small center line */}
+        {/* Stage 2+: Center vertical line that grows progressively longer */}
         {stage >= 2 && (
           <line
             x1="100"
             y1={110 - attrs.posture / 2}
             x2="100"
-            y2={stage >= 3 ? 125 - attrs.posture / 2 : 120 - attrs.posture / 2}
+            y2={118 - attrs.posture / 2 + stage * 1.2}
             stroke={outlineColor}
-            strokeWidth={stage >= 3 ? 1.6 : 1.2}
-            opacity={stage >= 3 ? 0.35 : 0.25}
+            strokeWidth={1.2 + stage * 0.05}
+            opacity={Math.min(0.25 + stage * 0.02, 0.45)}
           />
         )}
         
-        {/* Stage 3+: Small horizontal lines at bottom of pecs (define lower chest boundary) */}
+        {/* Stage 3+: Horizontal pec lines that grow progressively longer */}
         {stage >= 3 && (
           <>
-            {/* Left pec bottom line - horizontal */}
+            {/* Left pec bottom line - horizontal, grows outward with stage */}
             <line
-              x1={100 - 12}
+              x1={100 - (10 + stage * 0.8)}
               y1={125 - attrs.posture / 2}
               x2={100 - 3}
               y2={125 - attrs.posture / 2}
               stroke={outlineColor}
-              strokeWidth={stage >= 5 ? 1.4 : 1.1}
-              opacity={Math.min(0.25 + stage * 0.03, 0.5)}
+              strokeWidth={1.1 + stage * 0.04}
+              opacity={Math.min(0.25 + stage * 0.03, 0.55)}
             />
-            {/* Right pec bottom line - horizontal */}
+            {/* Right pec bottom line - horizontal, grows outward with stage */}
             <line
               x1={100 + 3}
               y1={125 - attrs.posture / 2}
-              x2={100 + 12}
+              x2={100 + (10 + stage * 0.8)}
               y2={125 - attrs.posture / 2}
               stroke={outlineColor}
-              strokeWidth={stage >= 5 ? 1.4 : 1.1}
-              opacity={Math.min(0.25 + stage * 0.03, 0.5)}
-            />
-          </>
-        )}
-        
-        {/* Stage 5+: Lines get longer and more defined */}
-        {stage >= 5 && (
-          <>
-            {/* Extended left pec line - horizontal */}
-            <line
-              x1={100 - 16}
-              y1={125 - attrs.posture / 2}
-              x2={100 - 12}
-              y2={125 - attrs.posture / 2}
-              stroke={outlineColor}
-              strokeWidth="1.4"
-              opacity={Math.min(0.3 + stage * 0.03, 0.55)}
-            />
-            {/* Extended right pec line - horizontal */}
-            <line
-              x1={100 + 12}
-              y1={125 - attrs.posture / 2}
-              x2={100 + 16}
-              y2={125 - attrs.posture / 2}
-              stroke={outlineColor}
-              strokeWidth="1.4"
-              opacity={Math.min(0.3 + stage * 0.03, 0.55)}
+              strokeWidth={1.1 + stage * 0.04}
+              opacity={Math.min(0.25 + stage * 0.03, 0.55)}
             />
           </>
         )}
