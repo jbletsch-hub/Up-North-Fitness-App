@@ -4,6 +4,10 @@
 Iron Crew is a full-stack fitness tracking application that integrates workout logging with gamification. It allows users to track personal records (PRs), complete daily challenges, upload progress photos, and earn experience points (XP). The platform features a leveling system, streak tracking, collaborative crew goals, leaderboards, goal tracking, and a daily MVL (Most Valuable Lifter) badge system. Key capabilities include yearly goals, calorie tracking, dedicated PR leaderboards, and competitive daily XP tracking. The application aims to provide a comprehensive and engaging fitness journey.
 
 ## Recent Updates
+- **XP System Overhaul:** Changed XP multiplier from 1.6 to 1.125 for gentler progression curve. Total XP to reach level 50 is now ~200,000 XP (down from several million). Provides achievable progression over ~2.5 years of active use.
+- **Avatar Redesign:** Completely rebuilt avatar with cleaner cartoon style matching classic muscle progression image. Smoother shapes, clearer visual progression from skinny to jacked across 10 stages.
+- **Title Update:** Changed "Rookie 3" to "Noobie" in title progression system.
+- **Default Colors:** Updated to orange-red tank (#FF5722) and teal shorts (#20B2AA) to match reference design.
 - **App Icon & PWA:** Custom golden dumbbell icon for browser tabs and mobile shortcuts, with web app manifest (manifest.json) for proper Progressive Web App support across iOS, Android, and desktop platforms.
 - **Weekly Goals Limit:** Increased from 1 to 3 weekly goals per week, still resetting every Sunday at midnight Central Time.
 - **Challenge Randomization:** Implemented Fisher-Yates shuffle algorithm for truly random daily challenge selection, eliminating biased patterns.
@@ -26,12 +30,13 @@ Preferred communication style: Simple, everyday language.
 - **Database Layer:** Drizzle ORM, Neon serverless PostgreSQL, schema-driven design, `drizzle-kit` for migrations.
 - **API Design:** RESTful endpoints under `/api`, authentication middleware for protected routes.
 - **XP & Gamification System:**
-    - Level calculation with an exponential XP curve (1.6 multiplier) and a 10-tier title progression (Rookie 1 to Immortal).
+    - Level calculation with gentle exponential XP curve (1.125 multiplier, ~200k XP for level 50) and a 11-tier title progression: Rookie 1 (Lv 1-5), Rookie 2 (Lv 6-10), Noobie (Lv 11-15), Amateur (Lv 16-20), Veteran (Lv 21-25), Meathead (Lv 26-30), Beast (Lv 31-35), Hulk (Lv 36-40), Olympian (Lv 41-45), Titan (Lv 46-49), Immortal (Lv 50).
     - XP awards for various actions with daily limits: Check-in (30 XP), Weigh-in (15 XP), PR update (30 XP), Progress photo (25 XP), Calorie log (15 XP), Daily challenge (25 XP each, 3 per day), All 3 challenges bonus (50 XP).
     - Goal completion rewards: Weekly goal (100 XP), Yearly goal (2,000 XP), Lifetime goal (5,000 XP).
     - Features include an animated XP popup, an activity feed, random daily challenges with a reroll option, and dual leaderboards (XP and PR rankings).
     - Daily MVL (Most Valuable Lifter) competition tracks and rewards the highest daily XP earner, with an associated leaderboard and badge.
     - Challenge selection uses Fisher-Yates shuffle algorithm for truly random distribution without patterns or bias.
+    - Admin recalculation endpoint (/api/admin/recalculate-levels) allows recalculating all user levels after XP system changes.
 - **Timezone Management:** All time-based operations (check-ins, weigh-ins, daily challenges, goal resets, streaks) are now anchored to Central Time (America/Chicago).
 - **Goal Management:** Supports weekly, yearly, and lifetime goals with specific reset logic and enforcement (e.g., one yearly goal per year, up to 3 weekly goals per week).
 - **Admin Controls:** Functionality for adding/removing XP, recalculating user levels, and editing user display names.
