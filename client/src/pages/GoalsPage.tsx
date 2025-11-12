@@ -16,7 +16,9 @@ import { Badge } from "@/components/ui/badge";
 export default function GoalsPage() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [newGoalDescription, setNewGoalDescription] = useState("");
+  const [newGoalTitle, setNewGoalTitle] = useState("");
+  const [newGoalTargetValue, setNewGoalTargetValue] = useState("");
+  const [newGoalUnit, setNewGoalUnit] = useState("times");
   const [newGoalType, setNewGoalType] = useState<"weekly" | "yearly" | "lifetime">("weekly");
 
   const { data: goalsData, isLoading } = useQuery({
@@ -26,14 +28,18 @@ export default function GoalsPage() {
   const createGoalMutation = useMutation({
     mutationFn: async () => {
       const res = await apiRequest("POST", "/api/goals", {
-        description: newGoalDescription,
+        title: newGoalTitle,
+        targetValue: parseFloat(newGoalTargetValue),
+        unit: newGoalUnit,
         type: newGoalType,
       });
       return await res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/goals"] });
-      setNewGoalDescription("");
+      setNewGoalTitle("");
+      setNewGoalTargetValue("");
+      setNewGoalUnit("times");
       toast({
         title: "Goal created!",
         description: "Your new goal has been added.",
@@ -121,7 +127,12 @@ export default function GoalsPage() {
                   data-testid={`goal-${goal.id}`}
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <p className="text-sm flex-1">{goal.description}</p>
+                    <div className="flex-1 space-y-1">
+                      <p className="text-sm font-medium">{goal.title}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {goal.currentValue} / {goal.targetValue} {goal.unit}
+                      </p>
+                    </div>
                     <div className="flex gap-1 flex-shrink-0">
                       <Button
                         size="icon"
@@ -143,6 +154,10 @@ export default function GoalsPage() {
                       </Button>
                     </div>
                   </div>
+                  <Progress 
+                    value={(goal.currentValue / goal.targetValue) * 100} 
+                    className="h-2"
+                  />
                 </div>
               ))}
               {completedGoals.length > 0 && (
@@ -155,7 +170,7 @@ export default function GoalsPage() {
                     >
                       <div className="flex items-center gap-2">
                         <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
-                        <p className="text-sm line-through flex-1">{goal.description}</p>
+                        <p className="text-sm line-through flex-1">{goal.title}</p>
                       </div>
                       {goal.completedAt && (
                         <p className="text-xs text-muted-foreground pl-6">
@@ -207,7 +222,7 @@ export default function GoalsPage() {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                if (newGoalDescription.trim()) {
+                if (newGoalTitle.trim() && newGoalTargetValue) {
                   createGoalMutation.mutate();
                 }
               }}
@@ -227,19 +242,52 @@ export default function GoalsPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="goal-description">Description</Label>
+                <Label htmlFor="goal-title">Goal Description</Label>
                 <Input
-                  id="goal-description"
-                  placeholder="e.g., Hit the gym 4 times this week"
-                  value={newGoalDescription}
-                  onChange={(e) => setNewGoalDescription(e.target.value)}
-                  data-testid="input-goal-description"
+                  id="goal-title"
+                  placeholder="e.g., Hit the gym this week"
+                  value={newGoalTitle}
+                  onChange={(e) => setNewGoalTitle(e.target.value)}
+                  data-testid="input-goal-title"
                 />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="goal-target">Target</Label>
+                  <Input
+                    id="goal-target"
+                    type="number"
+                    placeholder="e.g., 4"
+                    value={newGoalTargetValue}
+                    onChange={(e) => setNewGoalTargetValue(e.target.value)}
+                    data-testid="input-goal-target"
+                    min="0"
+                    step="any"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="goal-unit">Unit</Label>
+                  <Select value={newGoalUnit} onValueChange={setNewGoalUnit}>
+                    <SelectTrigger id="goal-unit" data-testid="select-goal-unit">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="times">times</SelectItem>
+                      <SelectItem value="workouts">workouts</SelectItem>
+                      <SelectItem value="lbs">lbs</SelectItem>
+                      <SelectItem value="kg">kg</SelectItem>
+                      <SelectItem value="minutes">minutes</SelectItem>
+                      <SelectItem value="hours">hours</SelectItem>
+                      <SelectItem value="miles">miles</SelectItem>
+                      <SelectItem value="km">km</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               <Button
                 type="submit"
                 className="w-full"
-                disabled={!newGoalDescription.trim() || createGoalMutation.isPending}
+                disabled={!newGoalTitle.trim() || !newGoalTargetValue || createGoalMutation.isPending}
                 data-testid="button-create-goal"
               >
                 {createGoalMutation.isPending ? "Creating..." : "Create Goal"}
