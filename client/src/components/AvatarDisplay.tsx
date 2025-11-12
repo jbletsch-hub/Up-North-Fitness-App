@@ -107,7 +107,7 @@ export function AvatarDisplay({
   const outlineColor = "#1A1A1A";
   const outlineWidth = 2.5;
   
-  // Render hair with cleaner style - positioned on TOP of head
+  // Render hair molded around the head shape
   const renderHair = () => {
     switch (hairStyle) {
       case "bald":
@@ -115,13 +115,10 @@ export function AvatarDisplay({
       
       case "buzzcut":
         return (
-          <ellipse 
-            cx="100" 
-            cy="35" 
-            rx="30" 
-            ry="4" 
-            fill={hairColor} 
-            stroke={outlineColor} 
+          <path
+            d="M 74 42 Q 78 34, 85 32 Q 92 30, 100 30 Q 108 30, 115 32 Q 122 34, 126 42"
+            fill={hairColor}
+            stroke={outlineColor}
             strokeWidth={1.5}
             opacity="0.9"
           />
@@ -130,7 +127,7 @@ export function AvatarDisplay({
       case "short":
         return (
           <path
-            d="M 72 38 Q 100 28, 128 38"
+            d="M 74 44 Q 77 36, 84 33 Q 92 30, 100 29 Q 108 30, 116 33 Q 123 36, 126 44 Q 100 38, 74 44"
             fill={hairColor}
             stroke={outlineColor}
             strokeWidth={2}
@@ -140,48 +137,80 @@ export function AvatarDisplay({
       case "medium":
         return (
           <g>
-            <ellipse cx="100" cy="35" rx="32" ry="10" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
-            <path d="M 70 42 Q 68 52, 66 60" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
-            <path d="M 130 42 Q 132 52, 134 60" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            {/* Top covering */}
+            <path
+              d="M 72 46 Q 75 37, 82 33 Q 91 29, 100 28 Q 109 29, 118 33 Q 125 37, 128 46 Q 100 40, 72 46"
+              fill={hairColor}
+              stroke={outlineColor}
+              strokeWidth={2}
+            />
+            {/* Left side flow */}
+            <path d="M 72 46 Q 70 54, 68 62" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            {/* Right side flow */}
+            <path d="M 128 46 Q 130 54, 132 62" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
           </g>
         );
       
       case "long":
         return (
           <g>
-            <ellipse cx="100" cy="35" rx="32" ry="12" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
-            <path d="M 68 44 Q 63 60, 60 78" fill={hairColor} stroke={outlineColor} strokeWidth={2.5} />
-            <path d="M 132 44 Q 137 60, 140 78" fill={hairColor} stroke={outlineColor} strokeWidth={2.5} />
+            {/* Top covering */}
+            <path
+              d="M 70 48 Q 73 38, 80 33 Q 90 28, 100 27 Q 110 28, 120 33 Q 127 38, 130 48 Q 100 42, 70 48"
+              fill={hairColor}
+              stroke={outlineColor}
+              strokeWidth={2}
+            />
+            {/* Left long flow */}
+            <path d="M 70 48 Q 66 62, 62 80" fill={hairColor} stroke={outlineColor} strokeWidth={2.5} />
+            {/* Right long flow */}
+            <path d="M 130 48 Q 134 62, 138 80" fill={hairColor} stroke={outlineColor} strokeWidth={2.5} />
           </g>
         );
       
       case "curly":
         return (
           <g>
-            <circle cx="78" cy="36" r="8" fill={hairColor} stroke={outlineColor} strokeWidth={1.8} />
-            <circle cx="92" cy="30" r="9" fill={hairColor} stroke={outlineColor} strokeWidth={1.8} />
-            <circle cx="108" cy="30" r="9" fill={hairColor} stroke={outlineColor} strokeWidth={1.8} />
-            <circle cx="122" cy="36" r="8" fill={hairColor} stroke={outlineColor} strokeWidth={1.8} />
-            <circle cx="70" cy="44" r="6" fill={hairColor} stroke={outlineColor} strokeWidth={1.8} />
-            <circle cx="130" cy="44" r="6" fill={hairColor} stroke={outlineColor} strokeWidth={1.8} />
+            {/* Base layer molded to head */}
+            <path
+              d="M 72 46 Q 75 37, 82 33 Q 91 29, 100 28 Q 109 29, 118 33 Q 125 37, 128 46"
+              fill={hairColor}
+              stroke={outlineColor}
+              strokeWidth={1.5}
+            />
+            {/* Curly puffs on top */}
+            <circle cx="80" cy="36" r="7" fill={hairColor} stroke={outlineColor} strokeWidth={1.8} />
+            <circle cx="93" cy="31" r="8" fill={hairColor} stroke={outlineColor} strokeWidth={1.8} />
+            <circle cx="107" cy="31" r="8" fill={hairColor} stroke={outlineColor} strokeWidth={1.8} />
+            <circle cx="120" cy="36" r="7" fill={hairColor} stroke={outlineColor} strokeWidth={1.8} />
+            <circle cx="72" cy="44" r="5" fill={hairColor} stroke={outlineColor} strokeWidth={1.8} />
+            <circle cx="128" cy="44" r="5" fill={hairColor} stroke={outlineColor} strokeWidth={1.8} />
           </g>
         );
       
       case "spiky":
         return (
           <g>
-            <path d="M 75 40 L 72 22 L 80 40" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
-            <path d="M 88 40 L 86 18 L 93 40" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
-            <path d="M 100 40 L 100 14 L 105 40" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
-            <path d="M 112 40 L 114 18 L 117 40" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
-            <path d="M 125 40 L 128 22 L 122 40" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            {/* Base layer molded to head */}
+            <path
+              d="M 74 44 Q 77 36, 84 33 Q 92 30, 100 29 Q 108 30, 116 33 Q 123 36, 126 44"
+              fill={hairColor}
+              stroke={outlineColor}
+              strokeWidth={1.5}
+            />
+            {/* Spikes shooting up from the curved base */}
+            <path d="M 77 38 L 74 20 L 81 38" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            <path d="M 90 34 L 88 16 L 95 34" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            <path d="M 100 32 L 100 12 L 105 32" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            <path d="M 110 34 L 112 16 L 115 34" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            <path d="M 123 38 L 126 20 L 119 38" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
           </g>
         );
       
       default:
         return (
           <path
-            d="M 72 38 Q 100 28, 128 38"
+            d="M 74 44 Q 77 36, 84 33 Q 92 30, 100 29 Q 108 30, 116 33 Q 123 36, 126 44 Q 100 38, 74 44"
             fill={hairColor}
             stroke={outlineColor}
             strokeWidth={2}
