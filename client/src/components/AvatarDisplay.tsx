@@ -32,6 +32,51 @@ export function AvatarDisplay({
   };
   
   const config = sizeConfig[size];
+
+  // Character type multipliers - different body aesthetics
+  const getCharacterMultipliers = () => {
+    switch (characterType) {
+      case "bulky":
+        return {
+          shoulder: 1.15,
+          chest: 1.2,
+          arm: 1.15,
+          torso: 1.1,
+          leg: 1.1,
+          neck: 1.2,
+        };
+      case "athletic":
+        return {
+          shoulder: 0.95,
+          chest: 0.9,
+          arm: 0.9,
+          torso: 0.85,
+          leg: 0.95,
+          neck: 0.9,
+        };
+      case "powerlifter":
+        return {
+          shoulder: 1.1,
+          chest: 1.15,
+          arm: 1.2,
+          torso: 1.25,
+          leg: 1.15,
+          neck: 1.3,
+        };
+      case "classic":
+      default:
+        return {
+          shoulder: 1.0,
+          chest: 1.0,
+          arm: 1.0,
+          torso: 1.0,
+          leg: 1.0,
+          neck: 1.0,
+        };
+    }
+  };
+
+  const multipliers = getCharacterMultipliers();
   
   // DRAMATIC muscle progression matching the reference image
   // Stage 0-1: Stick thin, Stage 2-4: Getting bigger, Stage 5-7: Muscular, Stage 8-9: JACKED
@@ -99,7 +144,23 @@ export function AvatarDisplay({
       },
     ];
     
-    return progressionStages[stage];
+    const baseAttrs = progressionStages[stage];
+    
+    // Apply character type multipliers
+    return {
+      shoulderWidth: Math.round(baseAttrs.shoulderWidth * multipliers.shoulder),
+      armWidth: Math.round(baseAttrs.armWidth * multipliers.arm),
+      legWidth: Math.round(baseAttrs.legWidth * multipliers.leg),
+      chestWidth: Math.round(baseAttrs.chestWidth * multipliers.chest),
+      chestHeight: Math.round(baseAttrs.chestHeight * multipliers.chest),
+      torsoWidth: Math.round(baseAttrs.torsoWidth * multipliers.torso),
+      torsoHeight: baseAttrs.torsoHeight, // Keep height consistent
+      neckWidth: Math.round(baseAttrs.neckWidth * multipliers.neck),
+      shoulderY: baseAttrs.shoulderY,
+      armY: baseAttrs.armY,
+      posture: baseAttrs.posture,
+      armAngle: baseAttrs.armAngle,
+    };
   };
   
   const attrs = getStageAttributes();
