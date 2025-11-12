@@ -171,6 +171,376 @@ export function AvatarDisplay({
     }
   };
   
+  // Render side view (profile)
+  const renderSideView = () => {
+    const eyebrowY = stage <= 2 ? 58 : stage <= 5 ? 57 : stage <= 7 ? 56 : 55;
+    const eyebrowAngle = stage <= 2 ? 0 : stage <= 5 ? 2 : stage <= 7 ? 4 : 6;
+    
+    return (
+      <g>
+        {/* Head profile */}
+        <ellipse
+          cx="100"
+          cy="60"
+          rx="24"
+          ry="28"
+          fill={skinTone}
+          stroke={outlineColor}
+          strokeWidth={outlineWidth}
+        />
+        
+        {/* Ear */}
+        <ellipse
+          cx="85"
+          cy="62"
+          rx="6"
+          ry="8"
+          fill={skinTone}
+          stroke={outlineColor}
+          strokeWidth={outlineWidth}
+        />
+        
+        {/* Eye (profile view - single eye visible) */}
+        <circle cx="106" cy="62" r="2.5" fill={outlineColor} />
+        
+        {/* Eyebrow */}
+        <path
+          d={`M 100 ${eyebrowY} Q 105 ${eyebrowY - eyebrowAngle}, 110 ${eyebrowY}`}
+          fill="none"
+          stroke={outlineColor}
+          strokeWidth={2}
+          strokeLinecap="round"
+        />
+        
+        {/* Nose */}
+        <path
+          d="M 115 58 L 118 65 L 115 66"
+          fill="none"
+          stroke={outlineColor}
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        
+        {/* Mouth (side profile) */}
+        {stage <= 2 ? (
+          <path d="M 112 70 Q 115 71, 117 70" fill="none" stroke={outlineColor} strokeWidth={1.5} />
+        ) : stage <= 5 ? (
+          <path d="M 112 70 Q 116 72, 118 70" fill="none" stroke={outlineColor} strokeWidth={2} />
+        ) : stage <= 7 ? (
+          <path d="M 110 70 Q 117 73, 120 70" fill="none" stroke={outlineColor} strokeWidth={2} />
+        ) : (
+          <path d="M 110 69 Q 118 74, 122 69" fill="none" stroke={outlineColor} strokeWidth={2.5} />
+        )}
+        
+        {/* Hair (side view) */}
+        {hairStyle !== "bald" && (
+          <path
+            d="M 78 45 Q 80 32, 92 28 Q 100 26, 108 30 Q 115 35, 116 48"
+            fill={hairColor}
+            stroke={outlineColor}
+            strokeWidth={2}
+          />
+        )}
+        
+        {/* Neck */}
+        <rect
+          x="95"
+          y="83"
+          width={attrs.neckWidth}
+          height="8"
+          fill={skinTone}
+          stroke="none"
+        />
+        
+        {/* Tank top (side view) */}
+        <path
+          d={`M 85 91 Q 90 88, 100 88 L 100 ${88 + attrs.chestHeight + 10} 
+              Q 95 ${88 + attrs.chestHeight + 15}, 85 ${88 + attrs.chestHeight + 12} Z`}
+          fill={shirtColor}
+          stroke={outlineColor}
+          strokeWidth={outlineWidth}
+        />
+        
+        {/* Arm (side - one visible) */}
+        <ellipse
+          cx="95"
+          cy="115"
+          rx={attrs.armWidth + 1}
+          ry="22"
+          fill={skinTone}
+          stroke={outlineColor}
+          strokeWidth={outlineWidth}
+        />
+        
+        {/* Torso/abs area */}
+        <rect
+          x="92"
+          y={88 + attrs.chestHeight + 12}
+          width={attrs.torsoWidth * 0.7}
+          height={attrs.torsoHeight - 8}
+          fill={skinTone}
+          stroke={outlineColor}
+          strokeWidth={outlineWidth}
+          rx="4"
+        />
+        
+        {/* Shorts (side view) */}
+        <path
+          d={`M 90 ${88 + attrs.chestHeight + attrs.torsoHeight + 4} 
+              L 90 ${88 + attrs.chestHeight + attrs.torsoHeight + 24}
+              Q 92 ${88 + attrs.chestHeight + attrs.torsoHeight + 26}, 
+                 95 ${88 + attrs.chestHeight + attrs.torsoHeight + 24}
+              L 95 ${88 + attrs.chestHeight + attrs.torsoHeight + 4} Z`}
+          fill={shortsColor}
+          stroke={outlineColor}
+          strokeWidth={outlineWidth}
+        />
+        
+        {/* Leg (side - one visible) */}
+        <ellipse
+          cx="93"
+          cy="198"
+          rx={attrs.legWidth}
+          ry="28"
+          fill={skinTone}
+          stroke={outlineColor}
+          strokeWidth={outlineWidth}
+        />
+        
+        <ellipse
+          cx="93"
+          cy="238"
+          rx={attrs.legWidth * 0.7}
+          ry="24"
+          fill={skinTone}
+          stroke={outlineColor}
+          strokeWidth={outlineWidth}
+        />
+        
+        {/* Shoe */}
+        <ellipse
+          cx="93"
+          cy="268"
+          rx="10"
+          ry="6"
+          fill="#333333"
+          stroke={outlineColor}
+          strokeWidth={outlineWidth}
+        />
+      </g>
+    );
+  };
+  
+  // Render back view
+  const renderBackView = () => {
+    return (
+      <g>
+        {/* Head (back of head) */}
+        <circle
+          cx="100"
+          cy="60"
+          r="27"
+          fill={skinTone}
+          stroke={outlineColor}
+          strokeWidth={outlineWidth}
+        />
+        
+        {/* Hair (back view) */}
+        {hairStyle !== "bald" && (
+          <path
+            d="M 74 44 Q 77 36, 84 33 Q 92 30, 100 29 Q 108 30, 116 33 Q 123 36, 126 44 Q 128 55, 126 65 Q 100 58, 74 65 Q 72 55, 74 44"
+            fill={hairColor}
+            stroke={outlineColor}
+            strokeWidth={2}
+          />
+        )}
+        
+        {/* Neck */}
+        <rect
+          x={100 - attrs.neckWidth / 2}
+          y="83"
+          width={attrs.neckWidth}
+          height="8"
+          fill={skinTone}
+          stroke="none"
+        />
+        
+        {/* Shoulders & upper back */}
+        <ellipse
+          cx="100"
+          cy="95"
+          rx={attrs.shoulderWidth}
+          ry="12"
+          fill={shirtColor}
+          stroke={outlineColor}
+          strokeWidth={outlineWidth}
+        />
+        
+        {/* Back muscles (trapezius indication) */}
+        {stage >= 3 && (
+          <path
+            d={`M ${100 - attrs.shoulderWidth * 0.5} 95 
+                Q 100 ${95 + 8}, ${100 + attrs.shoulderWidth * 0.5} 95`}
+            fill="none"
+            stroke={outlineColor}
+            strokeWidth={1.5}
+            opacity="0.6"
+          />
+        )}
+        
+        {/* Tank top back */}
+        <path
+          d={`M ${100 - attrs.chestWidth / 2} ${88 + 8} 
+              L ${100 - attrs.chestWidth / 2} ${88 + attrs.chestHeight} 
+              Q 100 ${88 + attrs.chestHeight + 2}, ${100 + attrs.chestWidth / 2} ${88 + attrs.chestHeight}
+              L ${100 + attrs.chestWidth / 2} ${88 + 8} 
+              Q 100 86, ${100 - attrs.chestWidth / 2} ${88 + 8} Z`}
+          fill={shirtColor}
+          stroke={outlineColor}
+          strokeWidth={outlineWidth}
+        />
+        
+        {/* Arms (both visible from back) */}
+        {/* Left arm */}
+        <ellipse
+          cx={100 - attrs.shoulderWidth - 5}
+          cy="118"
+          rx={attrs.armWidth + 1}
+          ry="21"
+          fill={skinTone}
+          stroke={outlineColor}
+          strokeWidth={outlineWidth}
+        />
+        
+        {/* Left forearm */}
+        <ellipse
+          cx={100 - attrs.shoulderWidth - 6}
+          cy="156"
+          rx={attrs.armWidth * 0.7}
+          ry="24"
+          fill={skinTone}
+          stroke={outlineColor}
+          strokeWidth={outlineWidth}
+        />
+        
+        {/* Right arm */}
+        <ellipse
+          cx={100 + attrs.shoulderWidth + 5}
+          cy="118"
+          rx={attrs.armWidth + 1}
+          ry="21"
+          fill={skinTone}
+          stroke={outlineColor}
+          strokeWidth={outlineWidth}
+        />
+        
+        {/* Right forearm */}
+        <ellipse
+          cx={100 + attrs.shoulderWidth + 6}
+          cy="156"
+          rx={attrs.armWidth * 0.7}
+          ry="24"
+          fill={skinTone}
+          stroke={outlineColor}
+          strokeWidth={outlineWidth}
+        />
+        
+        {/* Lower back/waist */}
+        <rect
+          x={100 - attrs.torsoWidth / 2}
+          y={88 + attrs.chestHeight}
+          width={attrs.torsoWidth}
+          height={attrs.torsoHeight - 8}
+          fill={skinTone}
+          stroke={outlineColor}
+          strokeWidth={outlineWidth}
+          rx="4"
+        />
+        
+        {/* Shorts (back view) */}
+        <path
+          d={`M ${100 - attrs.torsoWidth / 2} ${88 + attrs.chestHeight + attrs.torsoHeight - 8}
+              L ${100 - attrs.torsoWidth / 2} ${88 + attrs.chestHeight + attrs.torsoHeight + 16}
+              L ${100 - attrs.legWidth - 2} ${88 + attrs.chestHeight + attrs.torsoHeight + 16}
+              L ${100 - attrs.legWidth - 2} ${88 + attrs.chestHeight + attrs.torsoHeight - 8} Z
+              
+              M ${100 + attrs.torsoWidth / 2} ${88 + attrs.chestHeight + attrs.torsoHeight - 8}
+              L ${100 + attrs.torsoWidth / 2} ${88 + attrs.chestHeight + attrs.torsoHeight + 16}
+              L ${100 + attrs.legWidth + 2} ${88 + attrs.chestHeight + attrs.torsoHeight + 16}
+              L ${100 + attrs.legWidth + 2} ${88 + attrs.chestHeight + attrs.torsoHeight - 8} Z`}
+          fill={shortsColor}
+          stroke={outlineColor}
+          strokeWidth={outlineWidth}
+        />
+        
+        {/* Legs (both visible from back) */}
+        {/* Left leg */}
+        <ellipse
+          cx={85}
+          cy="198"
+          rx={attrs.legWidth}
+          ry="28"
+          fill={skinTone}
+          stroke={outlineColor}
+          strokeWidth={outlineWidth}
+        />
+        
+        <ellipse
+          cx={84}
+          cy="238"
+          rx={attrs.legWidth * 0.7}
+          ry="24"
+          fill={skinTone}
+          stroke={outlineColor}
+          strokeWidth={outlineWidth}
+        />
+        
+        {/* Right leg */}
+        <ellipse
+          cx={115}
+          cy="198"
+          rx={attrs.legWidth}
+          ry="28"
+          fill={skinTone}
+          stroke={outlineColor}
+          strokeWidth={outlineWidth}
+        />
+        
+        <ellipse
+          cx={116}
+          cy="238"
+          rx={attrs.legWidth * 0.7}
+          ry="24"
+          fill={skinTone}
+          stroke={outlineColor}
+          strokeWidth={outlineWidth}
+        />
+        
+        {/* Shoes */}
+        <ellipse
+          cx="84"
+          cy="268"
+          rx="10"
+          ry="6"
+          fill="#333333"
+          stroke={outlineColor}
+          strokeWidth={outlineWidth}
+        />
+        
+        <ellipse
+          cx="116"
+          cy="268"
+          rx="10"
+          ry="6"
+          fill="#333333"
+          stroke={outlineColor}
+          strokeWidth={outlineWidth}
+        />
+      </g>
+    );
+  };
+  
   // Render hair molded around the head shape
   const renderHair = () => {
     switch (hairStyle) {
@@ -283,14 +653,20 @@ export function AvatarDisplay({
     }
   };
 
-  return (
-    <div className="avatar-container relative inline-block">
-      <svg
-        width={config.width}
-        height={config.height}
-        viewBox={config.viewBox}
-        className="avatar-svg"
-      >
+  // Determine which view to render based on rotation angle
+  const renderView = () => {
+    if (rotationAngle === 90 || rotationAngle === 270) {
+      return renderSideView();
+    } else if (rotationAngle === 180) {
+      return renderBackView();
+    }
+    // Default: front view (rotationAngle === 0)
+    return renderFrontView();
+  };
+  
+  // Front view renderer (original avatar)
+  const renderFrontView = () => (
+    <>
         <defs>
           <radialGradient id={`shine-${size}`}>
             <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.5" />
@@ -1005,6 +1381,48 @@ export function AvatarDisplay({
             />
           )}
         </g>
+    </>
+  );
+  
+  return (
+    <div 
+      className="avatar-container relative inline-block"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+    >
+      {/* Rotation controls */}
+      {enableRotation && (
+        <>
+          <button
+            onClick={rotateLeft}
+            className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 hover-elevate active-elevate-2 rounded-full p-2 z-10"
+            data-testid="button-rotate-left"
+            aria-label="Rotate left"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <button
+            onClick={rotateRight}
+            className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 hover-elevate active-elevate-2 rounded-full p-2 z-10"
+            data-testid="button-rotate-right"
+            aria-label="Rotate right"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </>
+      )}
+      
+      <svg
+        width={config.width}
+        height={config.height}
+        viewBox={config.viewBox}
+        className="avatar-svg transition-all duration-300"
+      >
+        {renderView()}
       </svg>
       
       {/* Stage indicator */}
@@ -1021,7 +1439,17 @@ export function AvatarDisplay({
           {stage === 8 && "Jacked"}
           {stage === 9 && "Absolute Unit"}
         </div>
-        <div className="text-xs text-muted-foreground">Stage {stage + 1}/10</div>
+        <div className="text-xs text-muted-foreground">
+          Stage {stage + 1}/10
+          {enableRotation && (
+            <span className="ml-2 text-xs opacity-70">
+              {rotationAngle === 0 && "• Front"}
+              {rotationAngle === 90 && "• Side"}
+              {rotationAngle === 180 && "• Back"}
+              {rotationAngle === 270 && "• Side"}
+            </span>
+          )}
+        </div>
       </div>
       
       <style>{`
