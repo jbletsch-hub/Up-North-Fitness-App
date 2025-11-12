@@ -1035,14 +1035,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Stats endpoint - get user stats and analytics data
-  app.get("/api/stats", isAuthenticated, async (req: any, res) => {
+  // Supports viewing any user's stats by adding optional userId parameter
+  app.get("/api/stats/:userId?", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.id;
-      const user = await storage.getUser(userId);
-      const activities = await storage.getActivitiesByUser(userId, 100);
+      // If userId is provided in URL, use it; otherwise use current user's ID
+      const targetUserId = req.params.userId || req.user.id;
+      
+      const user = await storage.getUser(targetUserId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      const activities = await storage.getActivitiesByUser(targetUserId, 100);
       
       // Get all user goals and count completed ones
-      const allGoals = await storage.getUserGoals(userId);
+      const allGoals = await storage.getUserGoals(targetUserId);
       const completedGoalsCount = allGoals.filter((g: any) => g.completed).length;
       
       // Get PR history from activities
@@ -1061,6 +1068,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .map(([date, xp]) => ({ date, xp }));
 
       res.json({
+        userId: user.id,
+        username: user.username,
+        displayName: user.displayName,
         totalActivities: activities.length,
         xpTrend,
         prHistory: prActivities.slice(0, 10),
