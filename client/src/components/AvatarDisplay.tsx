@@ -302,6 +302,18 @@ export function AvatarDisplay({
             stroke={outlineColor}
             strokeWidth={outlineWidth}
           />
+          {/* Bicep definition line - visible at stage 3+ */}
+          {stage >= 2 && attrs.armWidth > 4 && (
+            <line
+              x1={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}
+              y1={125}
+              x2={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}
+              y2={145}
+              stroke={outlineColor}
+              strokeWidth="0.8"
+              opacity={Math.min(0.15 + stage * 0.03, 0.35)}
+            />
+          )}
           {wristbands && (
             <ellipse
               cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}
@@ -339,6 +351,18 @@ export function AvatarDisplay({
             stroke={outlineColor}
             strokeWidth={outlineWidth}
           />
+          {/* Bicep definition line - visible at stage 3+ */}
+          {stage >= 2 && attrs.armWidth > 4 && (
+            <line
+              x1={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}
+              y1={125}
+              x2={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}
+              y2={145}
+              stroke={outlineColor}
+              strokeWidth="0.8"
+              opacity={Math.min(0.15 + stage * 0.03, 0.35)}
+            />
+          )}
           {wristbands && (
             <ellipse
               cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}
@@ -397,6 +421,77 @@ export function AvatarDisplay({
             className="chest"
             style={{ opacity: 0.3, filter: 'brightness(0.9)' }}
           />
+        )}
+        
+        {/* === MUSCLE TONE LINES === */}
+        {/* Pec separation line - visible at stage 3+ */}
+        {stage >= 2 && (
+          <line
+            x1="100"
+            y1={100 - attrs.posture / 2}
+            x2="100"
+            y2={120 - attrs.posture / 2}
+            stroke={outlineColor}
+            strokeWidth={stage >= 5 ? 1.5 : 1}
+            opacity={Math.min(0.2 + stage * 0.05, 0.5)}
+          />
+        )}
+        
+        {/* Chest/Pec curved lines - visible at stage 4+ */}
+        {stage >= 3 && (
+          <>
+            <path
+              d={`M 88 ${105 - attrs.posture / 2} Q 95 ${110 - attrs.posture / 2}, 100 ${108 - attrs.posture / 2}`}
+              stroke={outlineColor}
+              strokeWidth="1"
+              fill="none"
+              opacity={Math.min(0.15 + stage * 0.04, 0.4)}
+            />
+            <path
+              d={`M 112 ${105 - attrs.posture / 2} Q 105 ${110 - attrs.posture / 2}, 100 ${108 - attrs.posture / 2}`}
+              stroke={outlineColor}
+              strokeWidth="1"
+              fill="none"
+              opacity={Math.min(0.15 + stage * 0.04, 0.4)}
+            />
+          </>
+        )}
+        
+        {/* Ab definition lines through shirt - visible at stage 5+ */}
+        {stage >= 4 && (
+          <>
+            <line
+              x1="95"
+              y1="130"
+              x2="105"
+              y2="130"
+              stroke={outlineColor}
+              strokeWidth="1"
+              opacity={Math.min(0.12 + stage * 0.03, 0.35)}
+            />
+            {stage >= 5 && (
+              <line
+                x1="94"
+                y1="140"
+                x2="106"
+                y2="140"
+                stroke={outlineColor}
+                strokeWidth="1"
+                opacity={Math.min(0.12 + stage * 0.03, 0.35)}
+              />
+            )}
+            {stage >= 6 && (
+              <line
+                x1="95"
+                y1="150"
+                x2="105"
+                y2="150"
+                stroke={outlineColor}
+                strokeWidth="1"
+                opacity={Math.min(0.12 + stage * 0.03, 0.35)}
+              />
+            )}
+          </>
         )}
         
         {/* Chest highlight */}
