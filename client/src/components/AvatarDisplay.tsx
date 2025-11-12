@@ -719,24 +719,24 @@ export function AvatarDisplay({
           />
         )}
         
-        {/* Stage 3+: Small vertical lines at bottom of pecs (define lower chest boundary) */}
+        {/* Stage 3+: Small horizontal lines at bottom of pecs (define lower chest boundary) */}
         {stage >= 3 && (
           <>
-            {/* Left pec bottom line */}
+            {/* Left pec bottom line - horizontal */}
             <line
-              x1={100 - 8}
-              y1={120 - attrs.posture / 2}
-              x2={100 - 8}
+              x1={100 - 12}
+              y1={125 - attrs.posture / 2}
+              x2={100 - 3}
               y2={125 - attrs.posture / 2}
               stroke={outlineColor}
               strokeWidth={stage >= 5 ? 1.4 : 1.1}
               opacity={Math.min(0.25 + stage * 0.03, 0.5)}
             />
-            {/* Right pec bottom line */}
+            {/* Right pec bottom line - horizontal */}
             <line
-              x1={100 + 8}
-              y1={120 - attrs.posture / 2}
-              x2={100 + 8}
+              x1={100 + 3}
+              y1={125 - attrs.posture / 2}
+              x2={100 + 12}
               y2={125 - attrs.posture / 2}
               stroke={outlineColor}
               strokeWidth={stage >= 5 ? 1.4 : 1.1}
@@ -748,22 +748,22 @@ export function AvatarDisplay({
         {/* Stage 5+: Lines get longer and more defined */}
         {stage >= 5 && (
           <>
-            {/* Extended left pec line */}
+            {/* Extended left pec line - horizontal */}
             <line
-              x1={100 - 8}
-              y1={115 - attrs.posture / 2}
-              x2={100 - 8}
-              y2={120 - attrs.posture / 2}
+              x1={100 - 16}
+              y1={125 - attrs.posture / 2}
+              x2={100 - 12}
+              y2={125 - attrs.posture / 2}
               stroke={outlineColor}
               strokeWidth="1.4"
               opacity={Math.min(0.3 + stage * 0.03, 0.55)}
             />
-            {/* Extended right pec line */}
+            {/* Extended right pec line - horizontal */}
             <line
-              x1={100 + 8}
-              y1={115 - attrs.posture / 2}
-              x2={100 + 8}
-              y2={120 - attrs.posture / 2}
+              x1={100 + 12}
+              y1={125 - attrs.posture / 2}
+              x2={100 + 16}
+              y2={125 - attrs.posture / 2}
               stroke={outlineColor}
               strokeWidth="1.4"
               opacity={Math.min(0.3 + stage * 0.03, 0.55)}
