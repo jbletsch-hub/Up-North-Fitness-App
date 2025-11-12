@@ -12,11 +12,10 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
 const CHARACTER_TYPES = [
-  { id: "classic", name: "Classic", description: "Balanced build" },
-  { id: "athletic", name: "Athletic", description: "Lean and agile" },
-  { id: "powerlifter", name: "Powerlifter", description: "Stocky and strong" },
-  { id: "runner", name: "Runner", description: "Slim and fast" },
-  { id: "boxer", name: "Boxer", description: "Compact fighter" },
+  { id: "classic", name: "Classic", description: "Balanced proportions" },
+  { id: "bulky", name: "Bulky", description: "Mass monster build" },
+  { id: "athletic", name: "Athletic", description: "Lean & defined" },
+  { id: "powerlifter", name: "Powerlifter", description: "Thick & strong" },
 ];
 
 const SHIRT_COLORS = [

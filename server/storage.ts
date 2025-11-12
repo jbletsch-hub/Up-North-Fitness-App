@@ -51,7 +51,7 @@ export interface IStorage {
   updateUserCalorieLogDate(id: string, lastCalorieLogDate: string, calories?: number): Promise<User>;
   updateUserProfile(id: string, firstName: string, lastName: string | undefined, profileImageUrl: string): Promise<User>;
   updateUserDisplayName(id: string, displayName: string): Promise<User>;
-  updateUserAvatar(id: string, avatar: { characterType?: string; shirtColor?: string; shortsColor?: string; headband?: boolean; wristbands?: boolean }): Promise<User>;
+  updateUserAvatar(id: string, avatar: { characterType?: string; shirtColor?: string; shortsColor?: string; headband?: boolean; wristbands?: boolean; hairStyle?: string; hairColor?: string }): Promise<User>;
   getTodayMVLLeaderboard(limit: number): Promise<User[]>;
   awardMVLWin(id: string): Promise<User>;
   resetAllDailyXP(date: string): Promise<void>;
@@ -253,7 +253,7 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
-  async updateUserAvatar(id: string, avatar: { characterType?: string; shirtColor?: string; shortsColor?: string; headband?: boolean; wristbands?: boolean }): Promise<User> {
+  async updateUserAvatar(id: string, avatar: { characterType?: string; shirtColor?: string; shortsColor?: string; headband?: boolean; wristbands?: boolean; hairStyle?: string; hairColor?: string }): Promise<User> {
     const [user] = await db
       .update(users)
       .set(avatar)
