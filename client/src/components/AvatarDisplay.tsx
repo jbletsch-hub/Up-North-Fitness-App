@@ -242,9 +242,9 @@ export function AvatarDisplay({
         <g className="leg-left">
           <ellipse
             cx={85}
-            cy={218}
+            cy={215}
             rx={attrs.legWidth}
-            ry="54"
+            ry="57"
             fill={skinTone}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
@@ -265,9 +265,9 @@ export function AvatarDisplay({
         <g className="leg-right">
           <ellipse
             cx={115}
-            cy={218}
+            cy={215}
             rx={attrs.legWidth}
-            ry="54"
+            ry="57"
             fill={skinTone}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
@@ -283,68 +283,70 @@ export function AvatarDisplay({
           />
         </g>
 
-        {/* === BODY === */}
-        {/* Lower torso/belly - overlaps with legs */}
+        {/* === SHORTS - Positioned first to go behind body === */}
         <ellipse
           cx="100"
-          cy="148"
-          rx={attrs.torsoWidth / 2}
-          ry={attrs.torsoHeight / 2}
-          fill={shirtColor}
-          stroke={outlineColor}
-          strokeWidth={outlineWidth}
-          className="torso"
-        />
-        
-        {/* Upper chest - overlaps with torso */}
-        <ellipse
-          cx="100"
-          cy={118 - attrs.posture / 2}
-          rx={attrs.chestWidth / 2}
-          ry={attrs.chestHeight / 2}
-          fill={shirtColor}
-          stroke={outlineColor}
-          strokeWidth={outlineWidth}
-          className="chest"
-        />
-        
-        {/* Shorts over the top of legs */}
-        <ellipse
-          cx="100"
-          cy="170"
-          rx={attrs.torsoWidth / 2 + 2}
-          ry="16"
+          cy="165"
+          rx={Math.max(attrs.torsoWidth / 2 + 4, 26)}
+          ry="20"
           fill={shortsColor}
           stroke={outlineColor}
           strokeWidth={outlineWidth}
         />
+
+        {/* === BODY/SHIRT === */}
+        {/* Single unified body shape that fits properly */}
+        <ellipse
+          cx="100"
+          cy="130"
+          rx={Math.max(attrs.chestWidth / 2, attrs.torsoWidth / 2) + 2}
+          ry="50"
+          fill={shirtColor}
+          stroke={outlineColor}
+          strokeWidth={outlineWidth}
+          className="body-shirt"
+        />
+        
+        {/* Chest definition on top */}
+        {attrs.chestWidth > 30 && (
+          <ellipse
+            cx="100"
+            cy={115 - attrs.posture / 2}
+            rx={attrs.chestWidth / 2 - 2}
+            ry={attrs.chestHeight / 2 - 2}
+            fill={shirtColor}
+            stroke="none"
+            className="chest"
+            style={{ opacity: 0.3, filter: 'brightness(0.9)' }}
+          />
+        )}
         
         {/* Chest highlight */}
         <ellipse
           cx="88"
-          cy={113 - attrs.posture / 2}
+          cy={115 - attrs.posture / 2}
           rx="12"
           ry="16"
           fill={`url(#shine-${size})`}
         />
 
         {/* === ARMS - Progressive thickness === */}
-        {/* Left Arm - starts from shoulder */}
+        {/* Left Arm - positioned to overlap with shoulder */}
         <g className="arm-left">
           <ellipse
-            cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2}
-            cy={attrs.armY + 33}
-            rx={attrs.armWidth}
-            ry="48"
+            cx={100 - attrs.shoulderWidth / 2 - 2}
+            cy={105}
+            rx={attrs.armWidth + 2}
+            ry="50"
             fill={skinTone}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
           />
           {wristbands && (
             <ellipse
-              cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2}
-              cy={attrs.armY + 72}
-              rx={attrs.armWidth + 1}
+              cx={100 - attrs.shoulderWidth / 2 - 2}
+              cy={145}
+              rx={attrs.armWidth + 3}
               ry="5"
               fill="#E74C3C"
               stroke={outlineColor}
@@ -353,10 +355,10 @@ export function AvatarDisplay({
           )}
           {/* Hand */}
           <ellipse
-            cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2}
-            cy={attrs.armY + 87}
-            rx={attrs.armWidth + 3}
-            ry={attrs.armWidth + 2}
+            cx={100 - attrs.shoulderWidth / 2 - 2}
+            cy={161}
+            rx={attrs.armWidth + 4}
+            ry={attrs.armWidth + 3}
             fill={skinTone}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
@@ -366,19 +368,19 @@ export function AvatarDisplay({
         {/* Right Arm */}
         <g className="arm-right">
           <ellipse
-            cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2}
-            cy={attrs.armY + 33}
-            rx={attrs.armWidth}
-            ry="48"
+            cx={100 + attrs.shoulderWidth / 2 + 2}
+            cy={105}
+            rx={attrs.armWidth + 2}
+            ry="50"
             fill={skinTone}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
           />
           {wristbands && (
             <ellipse
-              cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2}
-              cy={attrs.armY + 72}
-              rx={attrs.armWidth + 1}
+              cx={100 + attrs.shoulderWidth / 2 + 2}
+              cy={145}
+              rx={attrs.armWidth + 3}
               ry="5"
               fill="#E74C3C"
               stroke={outlineColor}
@@ -386,22 +388,22 @@ export function AvatarDisplay({
             />
           )}
           <ellipse
-            cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2}
-            cy={attrs.armY + 87}
-            rx={attrs.armWidth + 3}
-            ry={attrs.armWidth + 2}
+            cx={100 + attrs.shoulderWidth / 2 + 2}
+            cy={161}
+            rx={attrs.armWidth + 4}
+            ry={attrs.armWidth + 3}
             fill={skinTone}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
           />
         </g>
 
-        {/* === NECK - Connects head to body === */}
+        {/* === NECK - Extended down to blend with shirt === */}
         <ellipse
           cx="100"
-          cy="82"
-          rx={attrs.neckWidth}
-          ry="16"
+          cy="88"
+          rx={attrs.neckWidth + 2}
+          ry="22"
           fill={skinTone}
           stroke={outlineColor}
           strokeWidth={outlineWidth}
