@@ -242,21 +242,10 @@ export function AvatarDisplay({
         <g className="leg-left">
           <ellipse
             cx={85}
-            cy={220}
+            cy={218}
             rx={attrs.legWidth}
-            ry="52"
+            ry="54"
             fill={skinTone}
-            stroke={outlineColor}
-            strokeWidth={outlineWidth}
-          />
-          {/* Shorts */}
-          <rect
-            x={85 - attrs.legWidth - 2}
-            y="168"
-            width={attrs.legWidth * 2 + 4}
-            height="28"
-            rx="3"
-            fill={shortsColor}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
           />
@@ -276,20 +265,10 @@ export function AvatarDisplay({
         <g className="leg-right">
           <ellipse
             cx={115}
-            cy={220}
+            cy={218}
             rx={attrs.legWidth}
-            ry="52"
+            ry="54"
             fill={skinTone}
-            stroke={outlineColor}
-            strokeWidth={outlineWidth}
-          />
-          <rect
-            x={115 - attrs.legWidth - 2}
-            y="168"
-            width={attrs.legWidth * 2 + 4}
-            height="28"
-            rx="3"
-            fill={shortsColor}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
           />
@@ -305,10 +284,10 @@ export function AvatarDisplay({
         </g>
 
         {/* === BODY === */}
-        {/* Lower torso/belly */}
+        {/* Lower torso/belly - overlaps with legs */}
         <ellipse
           cx="100"
-          cy="150"
+          cy="148"
           rx={attrs.torsoWidth / 2}
           ry={attrs.torsoHeight / 2}
           fill={shirtColor}
@@ -317,10 +296,10 @@ export function AvatarDisplay({
           className="torso"
         />
         
-        {/* Upper chest - gets bigger and more defined */}
+        {/* Upper chest - overlaps with torso */}
         <ellipse
           cx="100"
-          cy={120 - attrs.posture / 2}
+          cy={118 - attrs.posture / 2}
           rx={attrs.chestWidth / 2}
           ry={attrs.chestHeight / 2}
           fill={shirtColor}
@@ -329,23 +308,34 @@ export function AvatarDisplay({
           className="chest"
         />
         
+        {/* Shorts over the top of legs */}
+        <ellipse
+          cx="100"
+          cy="170"
+          rx={attrs.torsoWidth / 2 + 2}
+          ry="16"
+          fill={shortsColor}
+          stroke={outlineColor}
+          strokeWidth={outlineWidth}
+        />
+        
         {/* Chest highlight */}
         <ellipse
           cx="88"
-          cy={115 - attrs.posture / 2}
+          cy={113 - attrs.posture / 2}
           rx="12"
           ry="16"
           fill={`url(#shine-${size})`}
         />
 
         {/* === ARMS - Progressive thickness === */}
-        {/* Left Arm */}
+        {/* Left Arm - starts from shoulder */}
         <g className="arm-left">
           <ellipse
             cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2}
-            cy={attrs.armY + 35}
+            cy={attrs.armY + 33}
             rx={attrs.armWidth}
-            ry="46"
+            ry="48"
             fill={skinTone}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
@@ -377,9 +367,9 @@ export function AvatarDisplay({
         <g className="arm-right">
           <ellipse
             cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2}
-            cy={attrs.armY + 35}
+            cy={attrs.armY + 33}
             rx={attrs.armWidth}
-            ry="46"
+            ry="48"
             fill={skinTone}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
@@ -406,12 +396,12 @@ export function AvatarDisplay({
           />
         </g>
 
-        {/* === NECK - Gets thicker with muscle === */}
+        {/* === NECK - Connects head to body === */}
         <ellipse
           cx="100"
-          cy="76"
+          cy="82"
           rx={attrs.neckWidth}
-          ry="12"
+          ry="16"
           fill={skinTone}
           stroke={outlineColor}
           strokeWidth={outlineWidth}
