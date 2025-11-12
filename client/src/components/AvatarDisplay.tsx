@@ -696,58 +696,68 @@ export function AvatarDisplay({
           />
         )}
         
-        {/* === MUSCLE TONE LINES === */}
-        {/* Pec separation line - visible at stage 2+ */}
+        {/* === NEW CHEST DEFINITION SYSTEM === */}
+        {/* Stage 2-3: Small center line */}
         {stage >= 2 && (
           <line
             x1="100"
-            y1={108 - attrs.posture / 2}
+            y1={110 - attrs.posture / 2}
             x2="100"
-            y2={128 - attrs.posture / 2}
+            y2={stage >= 3 ? 125 - attrs.posture / 2 : 120 - attrs.posture / 2}
             stroke={outlineColor}
-            strokeWidth={stage >= 5 ? 2 : 1.5}
-            opacity={Math.min(0.25 + stage * 0.06, 0.6)}
+            strokeWidth={stage >= 3 ? 1.6 : 1.2}
+            opacity={stage >= 3 ? 0.35 : 0.25}
           />
         )}
         
-        {/* Chest perimeter outline - defines the whole chest shape - FULLY DYNAMIC */}
+        {/* Stage 3+: Small vertical lines at bottom of pecs (define lower chest boundary) */}
         {stage >= 3 && (
           <>
-            {/* Left pec outline - all coordinates scale with shoulder/chest width */}
-            <path
-              d={`M ${100 - attrs.shoulderWidth / 2 - 4} ${113 - attrs.posture / 2} Q ${100 - attrs.shoulderWidth / 2 - 2} ${108 - attrs.posture / 2}, ${100 - attrs.shoulderWidth / 2 + 6} ${108 - attrs.posture / 2} Q ${100 - attrs.shoulderWidth / 4} ${110 - attrs.posture / 2}, ${100 - 2} ${116 - attrs.posture / 2} Q ${100 - attrs.shoulderWidth / 4} ${123 - attrs.posture / 2}, ${100 - attrs.shoulderWidth / 2 + 3} ${126 - attrs.posture / 2} Q ${100 - attrs.shoulderWidth / 2 - 4} ${123 - attrs.posture / 2}, ${100 - attrs.shoulderWidth / 2 - 4} ${113 - attrs.posture / 2}`}
+            {/* Left pec bottom line */}
+            <line
+              x1={100 - 8}
+              y1={120 - attrs.posture / 2}
+              x2={100 - 8}
+              y2={125 - attrs.posture / 2}
               stroke={outlineColor}
-              strokeWidth="1.4"
-              fill="none"
-              opacity={Math.min(0.22 + stage * 0.05, 0.55)}
+              strokeWidth={stage >= 5 ? 1.4 : 1.1}
+              opacity={Math.min(0.25 + stage * 0.03, 0.5)}
             />
-            {/* Right pec outline - all coordinates scale with shoulder/chest width */}
-            <path
-              d={`M ${100 + attrs.shoulderWidth / 2 + 4} ${113 - attrs.posture / 2} Q ${100 + attrs.shoulderWidth / 2 + 2} ${108 - attrs.posture / 2}, ${100 + attrs.shoulderWidth / 2 - 6} ${108 - attrs.posture / 2} Q ${100 + attrs.shoulderWidth / 4} ${110 - attrs.posture / 2}, ${100 + 2} ${116 - attrs.posture / 2} Q ${100 + attrs.shoulderWidth / 4} ${123 - attrs.posture / 2}, ${100 + attrs.shoulderWidth / 2 - 3} ${126 - attrs.posture / 2} Q ${100 + attrs.shoulderWidth / 2 + 4} ${123 - attrs.posture / 2}, ${100 + attrs.shoulderWidth / 2 + 4} ${113 - attrs.posture / 2}`}
+            {/* Right pec bottom line */}
+            <line
+              x1={100 + 8}
+              y1={120 - attrs.posture / 2}
+              x2={100 + 8}
+              y2={125 - attrs.posture / 2}
               stroke={outlineColor}
-              strokeWidth="1.4"
-              fill="none"
-              opacity={Math.min(0.22 + stage * 0.05, 0.55)}
+              strokeWidth={stage >= 5 ? 1.4 : 1.1}
+              opacity={Math.min(0.25 + stage * 0.03, 0.5)}
             />
           </>
         )}
         
-        {/* Inner chest curved lines - FULLY DYNAMIC - visible at stage 2+ */}
-        {stage >= 2 && (
+        {/* Stage 5+: Lines get longer and more defined */}
+        {stage >= 5 && (
           <>
-            <path
-              d={`M ${100 - attrs.shoulderWidth / 2 + 6} ${113 - attrs.posture / 2} Q ${100 - attrs.shoulderWidth / 4} ${118 - attrs.posture / 2}, 100 ${116 - attrs.posture / 2}`}
+            {/* Extended left pec line */}
+            <line
+              x1={100 - 8}
+              y1={115 - attrs.posture / 2}
+              x2={100 - 8}
+              y2={120 - attrs.posture / 2}
               stroke={outlineColor}
-              strokeWidth="1.3"
-              fill="none"
-              opacity={Math.min(0.2 + stage * 0.05, 0.5)}
+              strokeWidth="1.4"
+              opacity={Math.min(0.3 + stage * 0.03, 0.55)}
             />
-            <path
-              d={`M ${100 + attrs.shoulderWidth / 2 - 6} ${113 - attrs.posture / 2} Q ${100 + attrs.shoulderWidth / 4} ${118 - attrs.posture / 2}, 100 ${116 - attrs.posture / 2}`}
+            {/* Extended right pec line */}
+            <line
+              x1={100 + 8}
+              y1={115 - attrs.posture / 2}
+              x2={100 + 8}
+              y2={120 - attrs.posture / 2}
               stroke={outlineColor}
-              strokeWidth="1.3"
-              fill="none"
-              opacity={Math.min(0.2 + stage * 0.05, 0.5)}
+              strokeWidth="1.4"
+              opacity={Math.min(0.3 + stage * 0.03, 0.55)}
             />
           </>
         )}
