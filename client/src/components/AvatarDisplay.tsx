@@ -308,12 +308,12 @@ export function AvatarDisplay({
           strokeWidth={outlineWidth}
         />
 
-        {/* === ARMS - Positioned at shoulder joint === */}
+        {/* === ARMS - At armhole level of tank top === */}
         {/* Left Arm */}
         <g className="arm-left">
           <ellipse
             cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 4}
-            cy={108}
+            cy={128}
             rx={attrs.armWidth + 2}
             ry="48"
             fill={skinTone}
@@ -323,7 +323,7 @@ export function AvatarDisplay({
           {wristbands && (
             <ellipse
               cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 4}
-              cy={146}
+              cy={166}
               rx={attrs.armWidth + 3}
               ry="5"
               fill="#E74C3C"
@@ -334,7 +334,7 @@ export function AvatarDisplay({
           {/* Hand */}
           <ellipse
             cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 4}
-            cy={162}
+            cy={182}
             rx={attrs.armWidth + 4}
             ry={attrs.armWidth + 3}
             fill={skinTone}
@@ -347,7 +347,7 @@ export function AvatarDisplay({
         <g className="arm-right">
           <ellipse
             cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 4}
-            cy={108}
+            cy={128}
             rx={attrs.armWidth + 2}
             ry="48"
             fill={skinTone}
@@ -357,7 +357,7 @@ export function AvatarDisplay({
           {wristbands && (
             <ellipse
               cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 4}
-              cy={146}
+              cy={166}
               rx={attrs.armWidth + 3}
               ry="5"
               fill="#E74C3C"
@@ -367,7 +367,7 @@ export function AvatarDisplay({
           )}
           <ellipse
             cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 4}
-            cy={162}
+            cy={182}
             rx={attrs.armWidth + 4}
             ry={attrs.armWidth + 3}
             fill={skinTone}
