@@ -56,7 +56,7 @@ export default function GoalsPage() {
 
   const completeGoalMutation = useMutation({
     mutationFn: async (goalId: string) => {
-      const res = await apiRequest("PUT", `/api/goals/${goalId}/complete`);
+      const res = await apiRequest("PATCH", `/api/goals/${goalId}/complete`);
       return await res.json();
     },
     onSuccess: (data) => {

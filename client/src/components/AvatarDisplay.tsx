@@ -214,9 +214,9 @@ export function AvatarDisplay({
 
         {/* === ARMS === */}
         {/* Left Arm */}
-        <g className="arm-left">
+        <g className="arm-left" style={{ transformOrigin: '65px 105px' }}>
           <ellipse
-            cx={65 - poseOffset * 0.5}
+            cx="65"
             cy="125"
             rx={11 * attrs.muscleSize}
             ry="38"
@@ -226,29 +226,28 @@ export function AvatarDisplay({
           />
           {/* Bicep bulge */}
           <ellipse
-            cx={65 - poseOffset * 0.5}
+            cx="65"
             cy="115"
             rx={7 * attrs.muscleSize}
             ry={13 * attrs.muscleSize}
             fill="#E5B87E"
             opacity="0.6"
           />
-          {/* Wristband */}
+          {/* Wristband - moves with arm */}
           {wristbands && (
             <ellipse
-              cx={65 - poseOffset * 0.5}
+              cx="65"
               cy="155"
               rx="12"
               ry="4"
               fill="#E74C3C"
               stroke={outlineColor}
               strokeWidth={2}
-              className="wristband-left"
             />
           )}
           {/* Fist */}
           <circle
-            cx={65 - poseOffset * 0.5}
+            cx="65"
             cy="168"
             r="8"
             fill={skinTone}
@@ -258,9 +257,9 @@ export function AvatarDisplay({
         </g>
         
         {/* Right Arm */}
-        <g className="arm-right">
+        <g className="arm-right" style={{ transformOrigin: '135px 105px' }}>
           <ellipse
-            cx={135 + poseOffset * 0.5}
+            cx="135"
             cy="125"
             rx={11 * attrs.muscleSize}
             ry="38"
@@ -269,27 +268,27 @@ export function AvatarDisplay({
             strokeWidth={outlineWidth}
           />
           <ellipse
-            cx={135 + poseOffset * 0.5}
+            cx="135"
             cy="115"
             rx={7 * attrs.muscleSize}
             ry={13 * attrs.muscleSize}
             fill="#E5B87E"
             opacity="0.6"
           />
+          {/* Wristband - moves with arm */}
           {wristbands && (
             <ellipse
-              cx={135 + poseOffset * 0.5}
+              cx="135"
               cy="155"
               rx="12"
               ry="4"
               fill="#E74C3C"
               stroke={outlineColor}
               strokeWidth={2}
-              className="wristband-right"
             />
           )}
           <circle
-            cx={135 + poseOffset * 0.5}
+            cx="135"
             cy="168"
             r="8"
             fill={skinTone}
@@ -323,12 +322,20 @@ export function AvatarDisplay({
             strokeWidth={outlineWidth}
           />
           
+          {/* Hair/Top of head - render first so headband sits on top */}
+          <path
+            d={`M 72 ${headband ? 42 : 38} Q 100 ${headband ? 35 : 32}, 128 ${headband ? 42 : 38}`}
+            fill="#4A3728"
+            stroke={outlineColor}
+            strokeWidth={2.5}
+          />
+          
           {/* Headband */}
           {headband && (
             <g className="headband">
               <ellipse
                 cx="100"
-                cy="48"
+                cy="45"
                 rx={charProps.headSize + 2}
                 ry="5"
                 fill="#E74C3C"
@@ -336,17 +343,9 @@ export function AvatarDisplay({
                 strokeWidth={2}
               />
               {/* Headband knot */}
-              <circle cx="128" cy="48" r="4" fill="#C0392B" stroke={outlineColor} strokeWidth={2} />
+              <circle cx={charProps.headSize + 72} cy="45" r="4" fill="#C0392B" stroke={outlineColor} strokeWidth={2} />
             </g>
           )}
-          
-          {/* Hair/Top of head */}
-          <path
-            d={`M ${72} 50 Q 100 ${headband ? 38 : 35}, ${128} 50`}
-            fill="#4A3728"
-            stroke={outlineColor}
-            strokeWidth={2.5}
-          />
           
           {/* Eyes */}
           <g className="eyes">
@@ -464,15 +463,13 @@ export function AvatarDisplay({
           }
         }
         
-        /* Arms sway with delay */
+        /* Arms sway with delay - wristbands inside arms inherit this motion */
         .arm-left {
           animation: armSwayLeft 4s ease-in-out infinite;
-          transform-origin: 65px 105px;
         }
         
         .arm-right {
           animation: armSwayRight 4s ease-in-out infinite 0.5s;
-          transform-origin: 135px 105px;
         }
         
         @keyframes armSwayLeft {
@@ -491,17 +488,6 @@ export function AvatarDisplay({
           50% {
             transform: rotate(-2deg);
           }
-        }
-        
-        /* Wristbands move with arms */
-        .wristband-left {
-          animation: armSwayLeft 4s ease-in-out infinite;
-          transform-origin: 65px 105px;
-        }
-        
-        .wristband-right {
-          animation: armSwayRight 4s ease-in-out infinite 0.5s;
-          transform-origin: 135px 105px;
         }
         
         /* Headband moves with head */
