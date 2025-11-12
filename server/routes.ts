@@ -1026,6 +1026,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = await storage.getUser(userId);
       const activities = await storage.getActivitiesByUser(userId, 100);
       
+      // Get all user goals and count completed ones
+      const allGoals = await storage.getUserGoals(userId);
+      const completedGoalsCount = allGoals.filter((g: any) => g.completed).length;
+      
       // Get PR history from activities
       const prActivities = activities.filter((a: any) => a.type === "pr");
       
@@ -1050,6 +1054,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         currentLevel: user?.level || 1,
         currentWeight: user?.weight,
         calories: user?.calories,
+        mvlWins: user?.mvlWins || 0,
+        completedGoals: completedGoalsCount,
       });
     } catch (error) {
       console.error("Error fetching stats:", error);
