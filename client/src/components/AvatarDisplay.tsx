@@ -432,7 +432,7 @@ export function AvatarDisplay({
           {/* Bicep - wider, bulging upper arm */}
           <ellipse
             cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2}
-            cy={118}
+            cy={125}
             rx={attrs.armWidth + 2}
             ry="22"
             fill={skinTone}
@@ -444,7 +444,7 @@ export function AvatarDisplay({
           {stage >= 2 && attrs.armWidth > 5 && (
             <ellipse
               cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2 - (attrs.armWidth * 0.7)}
-              cy={120}
+              cy={127}
               rx={Math.min(attrs.armWidth * 0.5 + stage * 0.4, attrs.armWidth + 2)}
               ry="16"
               fill={skinTone}
@@ -478,9 +478,9 @@ export function AvatarDisplay({
           {stage >= 2 && attrs.armWidth > 5 && (
             <line
               x1={100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2}
-              y1={112}
+              y1={119}
               x2={100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2}
-              y2={132}
+              y2={139}
               stroke={outlineColor}
               strokeWidth="0.9"
               opacity={Math.min(0.18 + stage * 0.03, 0.4)}
@@ -491,9 +491,9 @@ export function AvatarDisplay({
           {stage >= 3 && attrs.armWidth > 6 && (
             <line
               x1={100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2 - (attrs.armWidth * 0.6)}
-              y1={115}
+              y1={122}
               x2={100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2 - (attrs.armWidth * 0.6)}
-              y2={135}
+              y2={142}
               stroke={outlineColor}
               strokeWidth="0.8"
               opacity={Math.min(0.15 + stage * 0.025, 0.35)}
@@ -523,7 +523,7 @@ export function AvatarDisplay({
           {/* Bicep vein - visible at stage 5+ */}
           {stage >= 5 && attrs.armWidth > 8 && (
             <path
-              d={`M ${100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2 - 3} 115 Q ${100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2 - 2} 123, ${100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2 - 2} 131`}
+              d={`M ${100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2 - 3} 122 Q ${100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2 - 2} 130, ${100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2 - 2} 138`}
               stroke={outlineColor}
               strokeWidth="0.7"
               fill="none"
@@ -562,7 +562,7 @@ export function AvatarDisplay({
           {/* Bicep - wider, bulging upper arm */}
           <ellipse
             cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2}
-            cy={118}
+            cy={125}
             rx={attrs.armWidth + 2}
             ry="22"
             fill={skinTone}
@@ -574,7 +574,7 @@ export function AvatarDisplay({
           {stage >= 2 && attrs.armWidth > 5 && (
             <ellipse
               cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2 + (attrs.armWidth * 0.7)}
-              cy={120}
+              cy={127}
               rx={Math.min(attrs.armWidth * 0.5 + stage * 0.4, attrs.armWidth + 2)}
               ry="16"
               fill={skinTone}
@@ -608,9 +608,9 @@ export function AvatarDisplay({
           {stage >= 2 && attrs.armWidth > 5 && (
             <line
               x1={100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2}
-              y1={112}
+              y1={119}
               x2={100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2}
-              y2={132}
+              y2={139}
               stroke={outlineColor}
               strokeWidth="0.9"
               opacity={Math.min(0.18 + stage * 0.03, 0.4)}
@@ -621,9 +621,9 @@ export function AvatarDisplay({
           {stage >= 3 && attrs.armWidth > 6 && (
             <line
               x1={100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2 + (attrs.armWidth * 0.6)}
-              y1={115}
+              y1={122}
               x2={100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2 + (attrs.armWidth * 0.6)}
-              y2={135}
+              y2={142}
               stroke={outlineColor}
               strokeWidth="0.8"
               opacity={Math.min(0.15 + stage * 0.025, 0.35)}
@@ -653,7 +653,7 @@ export function AvatarDisplay({
           {/* Bicep vein - visible at stage 5+ */}
           {stage >= 5 && attrs.armWidth > 8 && (
             <path
-              d={`M ${100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2 + 3} 115 Q ${100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2 + 2} 123, ${100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2 + 2} 131`}
+              d={`M ${100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2 + 3} 122 Q ${100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2 + 2} 130, ${100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2 + 2} 138`}
               stroke={outlineColor}
               strokeWidth="0.7"
               fill="none"
