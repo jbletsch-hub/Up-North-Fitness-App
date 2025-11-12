@@ -403,18 +403,18 @@ export function AvatarDisplay({
           <g className="big-beard">
             {/* Short hair-style beard - more volume at bottom of face, clear mouth opening */}
             <path
-              d="M 74 75 Q 76 82, 82 88 Q 90 94, 100 94 Q 110 94, 118 88 Q 124 82, 126 75 L 124 77 Q 100 87, 76 77 Z"
+              d="M 74 70 Q 76 78, 82 85 Q 90 95, 100 95 Q 110 95, 118 85 Q 124 78, 126 70 L 124 72 Q 100 82, 76 72 Z"
               fill={facialHairColor}
               stroke={outlineColor}
               strokeWidth={2}
             />
             {/* Natural flowing texture (like short hair) */}
-            <path d="M 88 80 Q 90 83, 92 88" stroke={darkerFacialHair} strokeWidth="1.2" fill="none" opacity="0.6" />
-            <path d="M 98 82 Q 100 86, 100 90" stroke={darkerFacialHair} strokeWidth="1.2" fill="none" opacity="0.6" />
-            <path d="M 108 80 Q 106 83, 104 88" stroke={darkerFacialHair} strokeWidth="1.2" fill="none" opacity="0.6" />
+            <path d="M 88 75 Q 90 80, 92 87" stroke={darkerFacialHair} strokeWidth="1.2" fill="none" opacity="0.6" />
+            <path d="M 98 78 Q 100 83, 100 90" stroke={darkerFacialHair} strokeWidth="1.2" fill="none" opacity="0.6" />
+            <path d="M 108 75 Q 106 80, 104 87" stroke={darkerFacialHair} strokeWidth="1.2" fill="none" opacity="0.6" />
             {/* Side texture */}
-            <path d="M 76 77 Q 78 81, 80 85" stroke={darkerFacialHair} strokeWidth="1" fill="none" opacity="0.5" />
-            <path d="M 124 77 Q 122 81, 120 85" stroke={darkerFacialHair} strokeWidth="1" fill="none" opacity="0.5" />
+            <path d="M 76 72 Q 78 77, 80 82" stroke={darkerFacialHair} strokeWidth="1" fill="none" opacity="0.5" />
+            <path d="M 124 72 Q 122 77, 120 82" stroke={darkerFacialHair} strokeWidth="1" fill="none" opacity="0.5" />
           </g>
         );
       
