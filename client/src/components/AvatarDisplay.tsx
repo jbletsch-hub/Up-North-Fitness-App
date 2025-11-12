@@ -308,12 +308,12 @@ export function AvatarDisplay({
           strokeWidth={outlineWidth}
         />
 
-        {/* === ARMS - At shoulder/armpit level (blue line position) === */}
+        {/* === ARMS - TOP starts at shoulder/armpit level (y=117) === */}
         {/* Left Arm */}
         <g className="arm-left">
           <ellipse
             cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 10}
-            cy={117}
+            cy={165}
             rx={attrs.armWidth + 2}
             ry="48"
             fill={skinTone}
@@ -323,7 +323,7 @@ export function AvatarDisplay({
           {wristbands && (
             <ellipse
               cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 10}
-              cy={155}
+              cy={203}
               rx={attrs.armWidth + 3}
               ry="5"
               fill="#E74C3C"
@@ -334,7 +334,7 @@ export function AvatarDisplay({
           {/* Hand */}
           <ellipse
             cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 10}
-            cy={171}
+            cy={219}
             rx={attrs.armWidth + 4}
             ry={attrs.armWidth + 3}
             fill={skinTone}
@@ -347,7 +347,7 @@ export function AvatarDisplay({
         <g className="arm-right">
           <ellipse
             cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 10}
-            cy={117}
+            cy={165}
             rx={attrs.armWidth + 2}
             ry="48"
             fill={skinTone}
@@ -357,7 +357,7 @@ export function AvatarDisplay({
           {wristbands && (
             <ellipse
               cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 10}
-              cy={155}
+              cy={203}
               rx={attrs.armWidth + 3}
               ry="5"
               fill="#E74C3C"
@@ -367,7 +367,7 @@ export function AvatarDisplay({
           )}
           <ellipse
             cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 10}
-            cy={171}
+            cy={219}
             rx={attrs.armWidth + 4}
             ry={attrs.armWidth + 3}
             fill={skinTone}
