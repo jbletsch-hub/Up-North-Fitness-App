@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
+import { useParams } from "wouter";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, Award, Target, Flame, Scale, Utensils, Trophy, CheckCircle } from "lucide-react";
@@ -7,15 +8,20 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 
 export default function StatsPage() {
   const { user } = useAuth();
+  const { userId } = useParams<{ userId?: string }>();
 
   const { data: stats, isLoading } = useQuery({
-    queryKey: ["/api/stats"],
+    queryKey: userId ? ["/api/stats", userId] : ["/api/stats"],
   });
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return `${date.getMonth() + 1}/${date.getDate()}`;
   };
+
+  // Determine if viewing own stats or someone else's
+  const isOwnStats = !userId || userId === user?.id;
+  const displayName = (stats as any)?.displayName || (stats as any)?.username || "User";
 
   return (
     <div className="min-h-screen bg-background">
@@ -32,10 +38,12 @@ export default function StatsPage() {
         <div className="text-center space-y-1 md:space-y-2">
           <div className="flex items-center justify-center gap-2">
             <TrendingUp className="h-6 w-6 md:h-8 md:w-8 text-primary" />
-            <h1 className="font-display text-3xl md:text-5xl font-bold">Your Stats</h1>
+            <h1 className="font-display text-3xl md:text-5xl font-bold">
+              {isOwnStats ? "Your Stats" : `${displayName}'s Stats`}
+            </h1>
           </div>
           <p className="text-sm md:text-base text-muted-foreground">
-            Track your progress and performance
+            {isOwnStats ? "Track your progress and performance" : `View ${displayName}'s fitness journey`}
           </p>
         </div>
 
