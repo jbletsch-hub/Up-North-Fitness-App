@@ -41,61 +41,61 @@ export function AvatarDisplay({
       { 
         shoulderWidth: 16, armWidth: 4, legWidth: 6, 
         chestWidth: 20, chestHeight: 20, torsoWidth: 22, torsoHeight: 32,
-        neckWidth: 6, shoulderY: 88, armY: 88, posture: 0
+        neckWidth: 6, shoulderY: 88, armY: 88, posture: 0, armAngle: 18
       },
       // Still skinny (Levels 6-10)
       { 
         shoulderWidth: 18, armWidth: 5, legWidth: 7, 
         chestWidth: 22, chestHeight: 22, torsoWidth: 24, torsoHeight: 32,
-        neckWidth: 7, shoulderY: 88, armY: 88, posture: 2
+        neckWidth: 7, shoulderY: 88, armY: 88, posture: 2, armAngle: 19
       },
       // Starting to fill out (Levels 11-15)
       { 
         shoulderWidth: 22, armWidth: 7, legWidth: 8, 
         chestWidth: 26, chestHeight: 26, torsoWidth: 28, torsoHeight: 34,
-        neckWidth: 8, shoulderY: 88, armY: 88, posture: 4
+        neckWidth: 8, shoulderY: 88, armY: 88, posture: 4, armAngle: 20
       },
       // Getting toned (Levels 16-20)
       { 
         shoulderWidth: 28, armWidth: 9, legWidth: 10, 
         chestWidth: 32, chestHeight: 30, torsoWidth: 32, torsoHeight: 34,
-        neckWidth: 10, shoulderY: 88, armY: 88, posture: 6
+        neckWidth: 10, shoulderY: 88, armY: 88, posture: 6, armAngle: 21
       },
       // Athletic build (Levels 21-25)
       { 
         shoulderWidth: 34, armWidth: 11, legWidth: 12, 
         chestWidth: 38, chestHeight: 34, torsoWidth: 36, torsoHeight: 36,
-        neckWidth: 12, shoulderY: 88, armY: 88, posture: 8
+        neckWidth: 12, shoulderY: 88, armY: 88, posture: 8, armAngle: 22
       },
       // Strong (Levels 26-30)
       { 
         shoulderWidth: 40, armWidth: 13, legWidth: 14, 
         chestWidth: 44, chestHeight: 38, torsoWidth: 40, torsoHeight: 36,
-        neckWidth: 14, shoulderY: 88, armY: 88, posture: 10
+        neckWidth: 14, shoulderY: 88, armY: 88, posture: 10, armAngle: 23
       },
       // Very muscular (Levels 31-35)
       { 
         shoulderWidth: 46, armWidth: 15, legWidth: 16, 
         chestWidth: 50, chestHeight: 42, torsoWidth: 44, torsoHeight: 38,
-        neckWidth: 16, shoulderY: 88, armY: 88, posture: 12
+        neckWidth: 15, shoulderY: 88, armY: 88, posture: 12, armAngle: 24
       },
-      // Beast mode (Levels 36-40)
+      // Beast mode (Levels 36-40) - BIGGER JUMPS START HERE
       { 
-        shoulderWidth: 52, armWidth: 17, legWidth: 18, 
-        chestWidth: 56, chestHeight: 46, torsoWidth: 48, torsoHeight: 38,
-        neckWidth: 18, shoulderY: 88, armY: 88, posture: 14
+        shoulderWidth: 56, armWidth: 18, legWidth: 18, 
+        chestWidth: 60, chestHeight: 48, torsoWidth: 50, torsoHeight: 38,
+        neckWidth: 16, shoulderY: 88, armY: 88, posture: 14, armAngle: 26
       },
-      // JACKED (Levels 41-45)
+      // JACKED (Levels 41-45) - MUCH BIGGER
       { 
-        shoulderWidth: 58, armWidth: 19, legWidth: 19, 
-        chestWidth: 62, chestHeight: 50, torsoWidth: 52, torsoHeight: 40,
-        neckWidth: 20, shoulderY: 88, armY: 88, posture: 16
+        shoulderWidth: 68, armWidth: 22, legWidth: 19, 
+        chestWidth: 74, chestHeight: 56, torsoWidth: 58, torsoHeight: 40,
+        neckWidth: 16, shoulderY: 88, armY: 88, posture: 16, armAngle: 28
       },
-      // ABSOLUTE UNIT (Levels 46-50)
+      // ABSOLUTE UNIT (Levels 46-50) - MASSIVE
       { 
-        shoulderWidth: 64, armWidth: 21, legWidth: 20, 
-        chestWidth: 68, chestHeight: 54, torsoWidth: 56, torsoHeight: 40,
-        neckWidth: 22, shoulderY: 88, armY: 88, posture: 18
+        shoulderWidth: 82, armWidth: 26, legWidth: 20, 
+        chestWidth: 90, chestHeight: 64, torsoWidth: 66, torsoHeight: 40,
+        neckWidth: 17, shoulderY: 88, armY: 88, posture: 18, armAngle: 30
       },
     ];
     
