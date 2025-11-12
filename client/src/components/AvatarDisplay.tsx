@@ -7,6 +7,7 @@ interface AvatarDisplayProps {
   wristbands?: boolean;
   hairStyle?: string;
   hairColor?: string;
+  facialHair?: string;
   size?: "sm" | "md" | "lg";
 }
 
@@ -19,6 +20,7 @@ export function AvatarDisplay({
   wristbands = false,
   hairStyle = "short",
   hairColor = "#8B4513",
+  facialHair = "none",
   size = "md",
 }: AvatarDisplayProps) {
   // Map level (1-50) to evolution stage (0-9)
@@ -336,6 +338,133 @@ export function AvatarDisplay({
             strokeWidth={2}
           />
         );
+    }
+  };
+
+  // Render facial hair with realistic detail
+  const renderFacialHair = () => {
+    // Use a darker shade for facial hair (typically darker than head hair)
+    const facialHairColor = `${hairColor}CC`;
+    const darkerFacialHair = `${hairColor}99`;
+    
+    switch (facialHair) {
+      case "none":
+        return null;
+      
+      case "stubble":
+        return (
+          <g className="stubble">
+            {/* Light stubble pattern - small dots creating shadow effect */}
+            {/* Lower face around jawline and chin */}
+            <circle cx="88" cy="72" r="0.6" fill={facialHairColor} opacity="0.4" />
+            <circle cx="92" cy="73" r="0.6" fill={facialHairColor} opacity="0.4" />
+            <circle cx="96" cy="74" r="0.6" fill={facialHairColor} opacity="0.4" />
+            <circle cx="100" cy="74" r="0.6" fill={facialHairColor} opacity="0.4" />
+            <circle cx="104" cy="74" r="0.6" fill={facialHairColor} opacity="0.4" />
+            <circle cx="108" cy="73" r="0.6" fill={facialHairColor} opacity="0.4" />
+            <circle cx="112" cy="72" r="0.6" fill={facialHairColor} opacity="0.4" />
+            {/* Upper lip area */}
+            <circle cx="94" cy="69" r="0.5" fill={facialHairColor} opacity="0.35" />
+            <circle cx="98" cy="69" r="0.5" fill={facialHairColor} opacity="0.35" />
+            <circle cx="102" cy="69" r="0.5" fill={facialHairColor} opacity="0.35" />
+            <circle cx="106" cy="69" r="0.5" fill={facialHairColor} opacity="0.35" />
+            {/* Additional scattered stubble for texture */}
+            <circle cx="90" cy="71" r="0.5" fill={facialHairColor} opacity="0.3" />
+            <circle cx="110" cy="71" r="0.5" fill={facialHairColor} opacity="0.3" />
+          </g>
+        );
+      
+      case "smallbeard":
+        return (
+          <g className="small-beard">
+            {/* Mustache */}
+            <path
+              d="M 92 69 Q 96 70, 100 70 Q 104 70, 108 69"
+              fill={facialHairColor}
+              stroke={darkerFacialHair}
+              strokeWidth="0.8"
+            />
+            {/* Small goatee/chin beard */}
+            <ellipse
+              cx="100"
+              cy="74"
+              rx="4"
+              ry="5"
+              fill={facialHairColor}
+              stroke={darkerFacialHair}
+              strokeWidth="0.8"
+            />
+            {/* Jawline stubble on sides */}
+            <path
+              d="M 88 72 Q 90 73, 92 73"
+              stroke={facialHairColor}
+              strokeWidth="1.5"
+              fill="none"
+              opacity="0.6"
+            />
+            <path
+              d="M 108 73 Q 110 73, 112 72"
+              stroke={facialHairColor}
+              strokeWidth="1.5"
+              fill="none"
+              opacity="0.6"
+            />
+            {/* Detail lines */}
+            <line x1="98" y1="69" x2="98" y2="71" stroke={darkerFacialHair} strokeWidth="0.5" opacity="0.5" />
+            <line x1="102" y1="69" x2="102" y2="71" stroke={darkerFacialHair} strokeWidth="0.5" opacity="0.5" />
+          </g>
+        );
+      
+      case "bigbeard":
+        return (
+          <g className="big-beard">
+            {/* Full mustache */}
+            <path
+              d="M 88 68 Q 94 70, 100 70 Q 106 70, 112 68"
+              fill={facialHairColor}
+              stroke={darkerFacialHair}
+              strokeWidth="1"
+            />
+            <ellipse
+              cx="100"
+              cy="69"
+              rx="10"
+              ry="2"
+              fill={facialHairColor}
+              stroke={darkerFacialHair}
+              strokeWidth="0.8"
+            />
+            {/* Full beard covering chin and jawline */}
+            <path
+              d="M 86 70 Q 88 76, 92 79 Q 96 80, 100 80 Q 104 80, 108 79 Q 112 76, 114 70 L 112 72 Q 110 75, 108 77 Q 104 78, 100 78 Q 96 78, 92 77 Q 90 75, 88 72 Z"
+              fill={facialHairColor}
+              stroke={darkerFacialHair}
+              strokeWidth="1.2"
+            />
+            {/* Side burns connecting to beard */}
+            <path
+              d="M 86 70 Q 84 66, 84 63"
+              stroke={facialHairColor}
+              strokeWidth="3"
+              fill="none"
+              strokeLinecap="round"
+            />
+            <path
+              d="M 114 70 Q 116 66, 116 63"
+              stroke={facialHairColor}
+              strokeWidth="3"
+              fill="none"
+              strokeLinecap="round"
+            />
+            {/* Texture detail lines */}
+            <line x1="96" y1="74" x2="96" y2="78" stroke={darkerFacialHair} strokeWidth="0.6" opacity="0.4" />
+            <line x1="100" y1="74" x2="100" y2="79" stroke={darkerFacialHair} strokeWidth="0.6" opacity="0.4" />
+            <line x1="104" y1="74" x2="104" y2="78" stroke={darkerFacialHair} strokeWidth="0.6" opacity="0.4" />
+          </g>
+        );
+      
+      default:
+        return null;
     }
   };
 
@@ -1008,6 +1137,9 @@ export function AvatarDisplay({
           
           {/* Hair */}
           {renderHair()}
+          
+          {/* Facial Hair */}
+          {renderFacialHair()}
           
           {/* Headband */}
           {headband && (
