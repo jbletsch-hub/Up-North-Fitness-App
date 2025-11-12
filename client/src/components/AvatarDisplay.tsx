@@ -291,11 +291,11 @@ export function AvatarDisplay({
         {/* Left Arm - angled toward center */}
         <g 
           className="arm-left"
-          transform={`rotate(20, ${100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}, 98)`}
+          transform={`rotate(20, ${100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}, 95)`}
         >
           <ellipse
             cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}
-            cy={140}
+            cy={137}
             rx={attrs.armWidth + 2}
             ry="42"
             fill={skinTone}
@@ -305,7 +305,7 @@ export function AvatarDisplay({
           {wristbands && (
             <ellipse
               cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}
-              cy={174}
+              cy={171}
               rx={attrs.armWidth + 3}
               ry="5"
               fill="#E74C3C"
@@ -316,7 +316,7 @@ export function AvatarDisplay({
           {/* Hand */}
           <ellipse
             cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}
-            cy={188}
+            cy={185}
             rx={attrs.armWidth + 4}
             ry={attrs.armWidth + 3}
             fill={skinTone}
@@ -328,11 +328,11 @@ export function AvatarDisplay({
         {/* Right Arm - angled toward center */}
         <g 
           className="arm-right"
-          transform={`rotate(-20, ${100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}, 98)`}
+          transform={`rotate(-20, ${100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}, 95)`}
         >
           <ellipse
             cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}
-            cy={140}
+            cy={137}
             rx={attrs.armWidth + 2}
             ry="42"
             fill={skinTone}
@@ -342,7 +342,7 @@ export function AvatarDisplay({
           {wristbands && (
             <ellipse
               cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}
-              cy={174}
+              cy={171}
               rx={attrs.armWidth + 3}
               ry="5"
               fill="#E74C3C"
@@ -352,7 +352,7 @@ export function AvatarDisplay({
           )}
           <ellipse
             cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}
-            cy={188}
+            cy={185}
             rx={attrs.armWidth + 4}
             ry={attrs.armWidth + 3}
             fill={skinTone}
