@@ -719,23 +719,23 @@ export function AvatarDisplay({
           />
         )}
         
-        {/* Stage 3+: DRAMATIC curved pec lines - follow muscle contour with BIG curve */}
+        {/* Stage 3+: Progressive pec lines - barely visible at stage 3, HUGE at stage 9 */}
         {stage >= 3 && (
           <>
-            {/* Left pec bottom line - MUCH LONGER with dramatic curve */}
+            {/* Left pec bottom line - grows dramatically from small to covering whole chest */}
             <path
-              d={`M ${100 - (18 + stage * 2)} ${123 - attrs.posture / 2} Q ${100 - (12 + stage * 1.2)} ${125 - attrs.posture / 2 + stage * 0.35}, ${100 - 3} ${123 - attrs.posture / 2}`}
+              d={`M ${100 - (3 + stage * 5)} ${123 - attrs.posture / 2} Q ${100 - (2 + stage * 3)} ${123 - attrs.posture / 2 + stage * 0.5}, ${100 - 3} ${123 - attrs.posture / 2}`}
               stroke={outlineColor}
-              strokeWidth={1.4 + stage * 0.08}
-              opacity={Math.min(0.3 + stage * 0.04, 0.65)}
+              strokeWidth={1.2 + stage * 0.1}
+              opacity={Math.min(0.25 + stage * 0.045, 0.7)}
               fill="none"
             />
-            {/* Right pec bottom line - MUCH LONGER with dramatic curve */}
+            {/* Right pec bottom line - grows dramatically from small to covering whole chest */}
             <path
-              d={`M ${100 + 3} ${123 - attrs.posture / 2} Q ${100 + (12 + stage * 1.2)} ${125 - attrs.posture / 2 + stage * 0.35}, ${100 + (18 + stage * 2)} ${123 - attrs.posture / 2}`}
+              d={`M ${100 + 3} ${123 - attrs.posture / 2} Q ${100 + (2 + stage * 3)} ${123 - attrs.posture / 2 + stage * 0.5}, ${100 + (3 + stage * 5)} ${123 - attrs.posture / 2}`}
               stroke={outlineColor}
-              strokeWidth={1.4 + stage * 0.08}
-              opacity={Math.min(0.3 + stage * 0.04, 0.65)}
+              strokeWidth={1.2 + stage * 0.1}
+              opacity={Math.min(0.25 + stage * 0.045, 0.7)}
               fill="none"
             />
           </>
