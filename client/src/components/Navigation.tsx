@@ -46,6 +46,15 @@ export function Navigation({ isLoggedIn, username, isAdmin, userLevel, userXP, u
                   <Button variant="ghost" size="sm" asChild data-testid="link-dashboard">
                     <Link href="/dashboard">Dashboard</Link>
                   </Button>
+                  <Button variant="ghost" size="sm" asChild data-testid="link-activity">
+                    <Link href="/activity">Feed</Link>
+                  </Button>
+                  <Button variant="ghost" size="sm" asChild data-testid="link-goals">
+                    <Link href="/goals">Goals</Link>
+                  </Button>
+                  <Button variant="ghost" size="sm" asChild data-testid="link-stats">
+                    <Link href="/stats">Stats</Link>
+                  </Button>
                   <Button variant="ghost" size="sm" asChild data-testid="link-leaderboards">
                     <Link href="/leaderboards">Leaderboards</Link>
                   </Button>

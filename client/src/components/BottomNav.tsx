@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Home, Trophy, User, Shield } from "lucide-react";
+import { Home, Activity, Target, TrendingUp, Shield } from "lucide-react";
 
 interface BottomNavProps {
   isAdmin?: boolean;
@@ -11,8 +11,9 @@ export function BottomNav({ isAdmin, username }: BottomNavProps) {
 
   const navItems = [
     { path: "/dashboard", icon: Home, label: "Home" },
-    { path: "/leaderboards", icon: Trophy, label: "Leaderboards" },
-    { path: `/profile/${username}`, icon: User, label: "Profile" },
+    { path: "/activity", icon: Activity, label: "Feed" },
+    { path: "/goals", icon: Target, label: "Goals" },
+    { path: "/stats", icon: TrendingUp, label: "Stats" },
   ];
 
   if (isAdmin) {

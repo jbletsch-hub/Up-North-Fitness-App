@@ -1007,6 +1007,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Activity Feed endpoint - get recent activities from all users
+  app.get("/api/activity-feed", async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 50;
+      const activities = await storage.getRecentActivities(limit);
+      res.json(activities);
+    } catch (error) {
+      console.error("Error fetching activity feed:", error);
+      res.status(500).json({ message: "Failed to fetch activity feed" });
+    }
+  });
+
+  // Stats endpoint - get user stats and analytics data
+  app.get("/api/stats", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+      const activities = await storage.getActivitiesByUser(userId, 100);
+      
+      // Get PR history from activities
+      const prActivities = activities.filter((a: any) => a.type === "pr");
+      
+      // Aggregate XP by date
+      const xpByDate: Record<string, number> = {};
+      activities.forEach((activity: any) => {
+        const date = new Date(activity.createdAt).toISOString().split('T')[0];
+        xpByDate[date] = (xpByDate[date] || 0) + (activity.xpAwarded || 0);
+      });
+      
+      const xpTrend = Object.entries(xpByDate)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .slice(-30)
+        .map(([date, xp]) => ({ date, xp }));
+
+      res.json({
+        totalActivities: activities.length,
+        xpTrend,
+        prHistory: prActivities.slice(0, 10),
+        currentStreak: user?.streakCount || 0,
+        totalXP: user?.xp || 0,
+        currentLevel: user?.level || 1,
+        currentWeight: user?.weight,
+        calories: user?.calories,
+      });
+    } catch (error) {
+      console.error("Error fetching stats:", error);
+      res.status(500).json({ message: "Failed to fetch stats" });
+    }
+  });
+
   // Today's MVL (Most Valuable Lifter) Leaderboard endpoint
   app.get("/api/leaderboards/mvl", async (req, res) => {
     try {
