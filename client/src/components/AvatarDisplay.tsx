@@ -253,20 +253,19 @@ export function AvatarDisplay({
             stroke={outlineColor}
             strokeWidth={outlineWidth}
           />
-          {/* Knee area - narrower */}
+          {/* Knee transition - blends thigh to calf */}
           <ellipse
             cx={85}
-            cy={228}
-            rx={Math.max(attrs.legWidth * 0.7, 7)}
-            ry="8"
+            cy={224}
+            rx={Math.max(attrs.legWidth * 0.75, 7.5)}
+            ry="12"
             fill={skinTone}
-            stroke={outlineColor}
-            strokeWidth={outlineWidth}
+            stroke="none"
           />
           {/* Calf muscle - defined bulge */}
           <ellipse
             cx={85}
-            cy={245}
+            cy={242}
             rx={Math.max(attrs.legWidth * 0.75, 7.5)}
             ry="18"
             fill={skinTone}
@@ -334,20 +333,19 @@ export function AvatarDisplay({
             stroke={outlineColor}
             strokeWidth={outlineWidth}
           />
-          {/* Knee area - narrower */}
+          {/* Knee transition - blends thigh to calf */}
           <ellipse
             cx={115}
-            cy={228}
-            rx={Math.max(attrs.legWidth * 0.7, 7)}
-            ry="8"
+            cy={224}
+            rx={Math.max(attrs.legWidth * 0.75, 7.5)}
+            ry="12"
             fill={skinTone}
-            stroke={outlineColor}
-            strokeWidth={outlineWidth}
+            stroke="none"
           />
           {/* Calf muscle - defined bulge */}
           <ellipse
             cx={115}
-            cy={245}
+            cy={242}
             rx={Math.max(attrs.legWidth * 0.75, 7.5)}
             ry="18"
             fill={skinTone}
