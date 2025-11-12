@@ -41,61 +41,61 @@ export function AvatarDisplay({
       { 
         shoulderWidth: 16, armWidth: 4, legWidth: 6, 
         chestWidth: 20, chestHeight: 20, torsoWidth: 22, torsoHeight: 32,
-        neckWidth: 6, shoulderY: 94, armY: 94, posture: 0
+        neckWidth: 6, shoulderY: 88, armY: 88, posture: 0
       },
       // Still skinny (Levels 6-10)
       { 
         shoulderWidth: 18, armWidth: 5, legWidth: 7, 
         chestWidth: 22, chestHeight: 22, torsoWidth: 24, torsoHeight: 32,
-        neckWidth: 7, shoulderY: 92, armY: 92, posture: 2
+        neckWidth: 7, shoulderY: 88, armY: 88, posture: 2
       },
       // Starting to fill out (Levels 11-15)
       { 
-        shoulderWidth: 22, armWidth: 7, legWidth: 8, 
+        shoulderWidth: 22, armWidth: 6, legWidth: 8, 
         chestWidth: 26, chestHeight: 26, torsoWidth: 28, torsoHeight: 34,
-        neckWidth: 8, shoulderY: 90, armY: 90, posture: 4
+        neckWidth: 8, shoulderY: 88, armY: 88, posture: 4
       },
       // Getting toned (Levels 16-20)
       { 
-        shoulderWidth: 28, armWidth: 10, legWidth: 10, 
+        shoulderWidth: 28, armWidth: 7, legWidth: 10, 
         chestWidth: 32, chestHeight: 30, torsoWidth: 32, torsoHeight: 34,
         neckWidth: 10, shoulderY: 88, armY: 88, posture: 6
       },
       // Athletic build (Levels 21-25)
       { 
-        shoulderWidth: 34, armWidth: 13, legWidth: 12, 
+        shoulderWidth: 34, armWidth: 8, legWidth: 12, 
         chestWidth: 38, chestHeight: 34, torsoWidth: 36, torsoHeight: 36,
-        neckWidth: 12, shoulderY: 86, armY: 86, posture: 8
+        neckWidth: 12, shoulderY: 88, armY: 88, posture: 8
       },
       // Strong (Levels 26-30)
       { 
-        shoulderWidth: 40, armWidth: 16, legWidth: 14, 
+        shoulderWidth: 40, armWidth: 9, legWidth: 14, 
         chestWidth: 44, chestHeight: 38, torsoWidth: 40, torsoHeight: 36,
-        neckWidth: 14, shoulderY: 84, armY: 84, posture: 10
+        neckWidth: 14, shoulderY: 88, armY: 88, posture: 10
       },
       // Very muscular (Levels 31-35)
       { 
-        shoulderWidth: 46, armWidth: 19, legWidth: 16, 
+        shoulderWidth: 46, armWidth: 10, legWidth: 16, 
         chestWidth: 50, chestHeight: 42, torsoWidth: 44, torsoHeight: 38,
-        neckWidth: 16, shoulderY: 82, armY: 82, posture: 12
+        neckWidth: 16, shoulderY: 88, armY: 88, posture: 12
       },
       // Beast mode (Levels 36-40)
       { 
-        shoulderWidth: 52, armWidth: 22, legWidth: 18, 
+        shoulderWidth: 52, armWidth: 11, legWidth: 18, 
         chestWidth: 56, chestHeight: 46, torsoWidth: 48, torsoHeight: 38,
-        neckWidth: 18, shoulderY: 80, armY: 80, posture: 14
+        neckWidth: 18, shoulderY: 88, armY: 88, posture: 14
       },
       // JACKED (Levels 41-45)
       { 
-        shoulderWidth: 58, armWidth: 25, legWidth: 19, 
+        shoulderWidth: 58, armWidth: 12, legWidth: 19, 
         chestWidth: 62, chestHeight: 50, torsoWidth: 52, torsoHeight: 40,
-        neckWidth: 20, shoulderY: 78, armY: 78, posture: 16
+        neckWidth: 20, shoulderY: 88, armY: 88, posture: 16
       },
       // ABSOLUTE UNIT (Levels 46-50)
       { 
-        shoulderWidth: 64, armWidth: 28, legWidth: 20, 
+        shoulderWidth: 64, armWidth: 13, legWidth: 20, 
         chestWidth: 68, chestHeight: 54, torsoWidth: 56, torsoHeight: 40,
-        neckWidth: 22, shoulderY: 76, armY: 76, posture: 18
+        neckWidth: 22, shoulderY: 88, armY: 88, posture: 18
       },
     ];
     
@@ -423,50 +423,35 @@ export function AvatarDisplay({
           />
         </g>
 
-        {/* === ARMS - Render BEHIND tank top, angled inward, with muscle bulges === */}
+        {/* === ARMS - Render BEHIND tank top, angled inward, slim with definition === */}
         {/* Left Arm - angled toward center */}
         <g 
           className="arm-left"
           transform={`rotate(20, ${100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}, 95)`}
         >
-          {/* Upper arm / Bicep area - wider bulge */}
+          {/* Main arm shape - slim and consistent */}
           <ellipse
             cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}
-            cy={125}
-            rx={attrs.armWidth + 2}
-            ry="20"
+            cy={137}
+            rx={attrs.armWidth + 1}
+            ry="42"
             fill={skinTone}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
           />
-          {/* Mid arm - bicep peak, even wider for muscular stages */}
-          <ellipse
-            cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}
-            cy={138}
-            rx={stage >= 2 ? attrs.armWidth + 3 : attrs.armWidth + 2}
-            ry="16"
-            fill={skinTone}
-            stroke="none"
-          />
-          {/* Elbow transition - narrower */}
-          <ellipse
-            cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}
-            cy={152}
-            rx={Math.max(attrs.armWidth * 0.7, 4)}
-            ry="10"
-            fill={skinTone}
-            stroke="none"
-          />
-          {/* Forearm - slightly wider than elbow */}
-          <ellipse
-            cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}
-            cy={165}
-            rx={Math.max(attrs.armWidth * 0.85, 4.5)}
-            ry="14"
-            fill={skinTone}
-            stroke={outlineColor}
-            strokeWidth={outlineWidth}
-          />
+          
+          {/* Bicep bulge on TOP side - creates outward curve */}
+          {stage >= 2 && attrs.armWidth > 4 && (
+            <ellipse
+              cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2 - (attrs.armWidth * 0.6)}
+              cy={130}
+              rx={Math.min(attrs.armWidth * 0.4 + stage * 0.3, attrs.armWidth * 0.9)}
+              ry="12"
+              fill={skinTone}
+              stroke="none"
+              opacity="0.9"
+            />
+          )}
           
           {/* Bicep definition line - visible at stage 2+ */}
           {stage >= 2 && attrs.armWidth > 4 && (
@@ -480,6 +465,7 @@ export function AvatarDisplay({
               opacity={Math.min(0.15 + stage * 0.03, 0.35)}
             />
           )}
+          
           {/* Tricep/outer arm definition - visible at stage 3+ */}
           {stage >= 3 && attrs.armWidth > 5 && (
             <line
@@ -492,35 +478,55 @@ export function AvatarDisplay({
               opacity={Math.min(0.12 + stage * 0.025, 0.3)}
             />
           )}
-          {/* Forearm definition - visible at stage 4+ */}
+          
+          {/* Forearm vein - visible at stage 4+ */}
           {stage >= 4 && attrs.armWidth > 5 && (
-            <line
-              x1={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}
-              y1={155}
-              x2={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}
-              y2={172}
+            <>
+              <path
+                d={`M ${100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2 - 2} 155 Q ${100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2} 162, ${100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2 - 1} 170`}
+                stroke={outlineColor}
+                strokeWidth="0.6"
+                fill="none"
+                opacity={Math.min(0.1 + stage * 0.025, 0.3)}
+              />
+              <path
+                d={`M ${100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2 + 1} 157 Q ${100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2 + 2} 164, ${100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2 + 2} 169`}
+                stroke={outlineColor}
+                strokeWidth="0.5"
+                fill="none"
+                opacity={Math.min(0.08 + stage * 0.02, 0.25)}
+              />
+            </>
+          )}
+          
+          {/* Bicep vein - visible at stage 5+ */}
+          {stage >= 5 && attrs.armWidth > 6 && (
+            <path
+              d={`M ${100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2 - 3} 128 Q ${100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2 - 2} 135, ${100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2 - 2} 142`}
               stroke={outlineColor}
-              strokeWidth="0.7"
-              opacity={Math.min(0.1 + stage * 0.02, 0.25)}
+              strokeWidth="0.6"
+              fill="none"
+              opacity={Math.min(0.1 + stage * 0.025, 0.32)}
             />
           )}
+          
           {wristbands && (
             <ellipse
               cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}
               cy={171}
-              rx={attrs.armWidth + 3}
+              rx={attrs.armWidth + 2}
               ry="5"
               fill="#E74C3C"
               stroke={outlineColor}
               strokeWidth={2}
             />
           )}
-          {/* Hand */}
+          {/* Hand - much smaller */}
           <ellipse
             cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}
             cy={185}
-            rx={attrs.armWidth + 4}
-            ry={attrs.armWidth + 3}
+            rx={Math.max(attrs.armWidth * 0.9, 5)}
+            ry={Math.max(attrs.armWidth * 0.8, 4.5)}
             fill={skinTone}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
@@ -532,44 +538,29 @@ export function AvatarDisplay({
           className="arm-right"
           transform={`rotate(-20, ${100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}, 95)`}
         >
-          {/* Upper arm / Bicep area - wider bulge */}
+          {/* Main arm shape - slim and consistent */}
           <ellipse
             cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}
-            cy={125}
-            rx={attrs.armWidth + 2}
-            ry="20"
+            cy={137}
+            rx={attrs.armWidth + 1}
+            ry="42"
             fill={skinTone}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
           />
-          {/* Mid arm - bicep peak, even wider for muscular stages */}
-          <ellipse
-            cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}
-            cy={138}
-            rx={stage >= 2 ? attrs.armWidth + 3 : attrs.armWidth + 2}
-            ry="16"
-            fill={skinTone}
-            stroke="none"
-          />
-          {/* Elbow transition - narrower */}
-          <ellipse
-            cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}
-            cy={152}
-            rx={Math.max(attrs.armWidth * 0.7, 4)}
-            ry="10"
-            fill={skinTone}
-            stroke="none"
-          />
-          {/* Forearm - slightly wider than elbow */}
-          <ellipse
-            cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}
-            cy={165}
-            rx={Math.max(attrs.armWidth * 0.85, 4.5)}
-            ry="14"
-            fill={skinTone}
-            stroke={outlineColor}
-            strokeWidth={outlineWidth}
-          />
+          
+          {/* Bicep bulge on TOP side - creates outward curve */}
+          {stage >= 2 && attrs.armWidth > 4 && (
+            <ellipse
+              cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2 + (attrs.armWidth * 0.6)}
+              cy={130}
+              rx={Math.min(attrs.armWidth * 0.4 + stage * 0.3, attrs.armWidth * 0.9)}
+              ry="12"
+              fill={skinTone}
+              stroke="none"
+              opacity="0.9"
+            />
+          )}
           
           {/* Bicep definition line - visible at stage 2+ */}
           {stage >= 2 && attrs.armWidth > 4 && (
@@ -583,6 +574,7 @@ export function AvatarDisplay({
               opacity={Math.min(0.15 + stage * 0.03, 0.35)}
             />
           )}
+          
           {/* Tricep/outer arm definition - visible at stage 3+ */}
           {stage >= 3 && attrs.armWidth > 5 && (
             <line
@@ -595,34 +587,55 @@ export function AvatarDisplay({
               opacity={Math.min(0.12 + stage * 0.025, 0.3)}
             />
           )}
-          {/* Forearm definition - visible at stage 4+ */}
+          
+          {/* Forearm vein - visible at stage 4+ */}
           {stage >= 4 && attrs.armWidth > 5 && (
-            <line
-              x1={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}
-              y1={155}
-              x2={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}
-              y2={172}
+            <>
+              <path
+                d={`M ${100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2 + 2} 155 Q ${100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2} 162, ${100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2 + 1} 170`}
+                stroke={outlineColor}
+                strokeWidth="0.6"
+                fill="none"
+                opacity={Math.min(0.1 + stage * 0.025, 0.3)}
+              />
+              <path
+                d={`M ${100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2 - 1} 157 Q ${100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2 - 2} 164, ${100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2 - 2} 169`}
+                stroke={outlineColor}
+                strokeWidth="0.5"
+                fill="none"
+                opacity={Math.min(0.08 + stage * 0.02, 0.25)}
+              />
+            </>
+          )}
+          
+          {/* Bicep vein - visible at stage 5+ */}
+          {stage >= 5 && attrs.armWidth > 6 && (
+            <path
+              d={`M ${100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2 + 3} 128 Q ${100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2 + 2} 135, ${100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2 + 2} 142`}
               stroke={outlineColor}
-              strokeWidth="0.7"
-              opacity={Math.min(0.1 + stage * 0.02, 0.25)}
+              strokeWidth="0.6"
+              fill="none"
+              opacity={Math.min(0.1 + stage * 0.025, 0.32)}
             />
           )}
+          
           {wristbands && (
             <ellipse
               cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}
               cy={171}
-              rx={attrs.armWidth + 3}
+              rx={attrs.armWidth + 2}
               ry="5"
               fill="#E74C3C"
               stroke={outlineColor}
               strokeWidth={2}
             />
           )}
+          {/* Hand - much smaller */}
           <ellipse
             cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}
             cy={185}
-            rx={attrs.armWidth + 4}
-            ry={attrs.armWidth + 3}
+            rx={Math.max(attrs.armWidth * 0.9, 5)}
+            ry={Math.max(attrs.armWidth * 0.8, 4.5)}
             fill={skinTone}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
