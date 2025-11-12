@@ -256,13 +256,12 @@ export default function GoalsPage() {
                   <Label htmlFor="goal-target">Target</Label>
                   <Input
                     id="goal-target"
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
                     placeholder="e.g., 4"
                     value={newGoalTargetValue}
                     onChange={(e) => setNewGoalTargetValue(e.target.value)}
                     data-testid="input-goal-target"
-                    min="0"
-                    step="any"
                   />
                 </div>
                 <div className="space-y-2">

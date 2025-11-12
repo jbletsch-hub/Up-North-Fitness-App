@@ -38,12 +38,12 @@ export function CalorieTrackerCard({ hasLoggedToday, onLogCalories, isPending }:
           </p>
           {!hasLoggedToday && (
             <Input
-              type="number"
+              type="text"
+              inputMode="numeric"
               placeholder="Enter calories (e.g., 2000)"
               value={calories}
               onChange={(e) => setCalories(e.target.value)}
               disabled={isPending}
-              min="1"
               data-testid="input-calories"
             />
           )}
