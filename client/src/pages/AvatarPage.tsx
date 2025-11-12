@@ -162,7 +162,6 @@ export default function AvatarPage() {
                 hairStyle={hairStyle}
                 hairColor={hairColor}
                 size="lg"
-                enableRotation={true}
               />
               <div className="text-center space-y-1">
                 <p className="text-sm font-semibold">Muscle Stage {muscleInfo.stage}/10</p>
