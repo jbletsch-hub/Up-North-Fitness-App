@@ -713,17 +713,17 @@ export function AvatarDisplay({
         {/* Chest perimeter outline - defines the whole chest shape */}
         {stage >= 3 && (
           <>
-            {/* Left pec outline */}
+            {/* Left pec outline - adapts to shoulder/chest width */}
             <path
-              d={`M 78 ${105 - attrs.posture / 2} Q 80 ${100 - attrs.posture / 2}, 88 ${100 - attrs.posture / 2} Q 95 ${102 - attrs.posture / 2}, 98 ${108 - attrs.posture / 2} Q 95 ${115 - attrs.posture / 2}, 85 ${118 - attrs.posture / 2} Q 78 ${115 - attrs.posture / 2}, 78 ${105 - attrs.posture / 2}`}
+              d={`M ${100 - attrs.shoulderWidth / 2 - 4} ${105 - attrs.posture / 2} Q ${100 - attrs.shoulderWidth / 2 - 2} ${100 - attrs.posture / 2}, ${100 - attrs.shoulderWidth / 2 + 6} ${100 - attrs.posture / 2} Q ${100 - 5} ${102 - attrs.posture / 2}, ${100 - 2} ${108 - attrs.posture / 2} Q ${100 - 5} ${115 - attrs.posture / 2}, ${100 - attrs.shoulderWidth / 2 + 3} ${118 - attrs.posture / 2} Q ${100 - attrs.shoulderWidth / 2 - 4} ${115 - attrs.posture / 2}, ${100 - attrs.shoulderWidth / 2 - 4} ${105 - attrs.posture / 2}`}
               stroke={outlineColor}
               strokeWidth="1.4"
               fill="none"
               opacity={Math.min(0.22 + stage * 0.05, 0.55)}
             />
-            {/* Right pec outline */}
+            {/* Right pec outline - adapts to shoulder/chest width */}
             <path
-              d={`M 122 ${105 - attrs.posture / 2} Q 120 ${100 - attrs.posture / 2}, 112 ${100 - attrs.posture / 2} Q 105 ${102 - attrs.posture / 2}, 102 ${108 - attrs.posture / 2} Q 105 ${115 - attrs.posture / 2}, 115 ${118 - attrs.posture / 2} Q 122 ${115 - attrs.posture / 2}, 122 ${105 - attrs.posture / 2}`}
+              d={`M ${100 + attrs.shoulderWidth / 2 + 4} ${105 - attrs.posture / 2} Q ${100 + attrs.shoulderWidth / 2 + 2} ${100 - attrs.posture / 2}, ${100 + attrs.shoulderWidth / 2 - 6} ${100 - attrs.posture / 2} Q ${100 + 5} ${102 - attrs.posture / 2}, ${100 + 2} ${108 - attrs.posture / 2} Q ${100 + 5} ${115 - attrs.posture / 2}, ${100 + attrs.shoulderWidth / 2 - 3} ${118 - attrs.posture / 2} Q ${100 + attrs.shoulderWidth / 2 + 4} ${115 - attrs.posture / 2}, ${100 + attrs.shoulderWidth / 2 + 4} ${105 - attrs.posture / 2}`}
               stroke={outlineColor}
               strokeWidth="1.4"
               fill="none"
