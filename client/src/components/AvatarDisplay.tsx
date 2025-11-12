@@ -236,7 +236,7 @@ export function AvatarDisplay({
             <feDropShadow dx="0" dy="1" stdDeviation="1" floodOpacity="0.15"/>
           </filter>
           <clipPath id="head-clip">
-            <circle cx="100" cy="60" r="27" />
+            <circle cx="100" cy="60" r="28.5" />
           </clipPath>
         </defs>
 
