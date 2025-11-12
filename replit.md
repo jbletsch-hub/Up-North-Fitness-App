@@ -21,6 +21,7 @@ Iron Crew is a full-stack fitness tracking application that integrates workout l
 - **Neck Outline Fix (Nov 12, 2025):** Removed stroke from neck ellipse to eliminate brown outline showing above tank top collar for cleaner appearance.
 - **Progressive Chest Lines (Nov 12, 2025):** Center vertical line now extends progressively (stage * 1.2 pixels). Horizontal pec lines converted to curved paths (quadratic bezier) that grow longer (12 + stage * 1.2 pixels) and curve slightly downward (stage * 0.15) to follow natural pec muscle contour.
 - **Eye Clipping Fix (Nov 12, 2025):** Increased head clip path radius from 27 to 28.5 to prevent eyes from being clipped at head boundary.
+- **Progressive Facial Expressions (Nov 12, 2025):** Added dynamic facial expressions that evolve across stages. Eyebrows: Stage 0-2 (light/uncertain), Stage 3-5 (confident/defined), Stage 6-7 (strong/angled), Stage 8-9 (intense/determined). Mouth: Stage 0-2 (small smile), Stage 3-5 (bigger grin), Stage 6-7 (wide powerful grin), Stage 8-9 (intense determined expression). Creates more personality and reflects the fitness journey visually.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
