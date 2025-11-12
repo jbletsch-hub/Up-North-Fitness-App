@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, Award, Target, Flame, Scale, Utensils } from "lucide-react";
+import { TrendingUp, Award, Target, Flame, Scale, Utensils, Trophy, CheckCircle } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 export default function StatsPage() {
@@ -46,7 +46,7 @@ export default function StatsPage() {
         ) : (
           <>
             {/* Key Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
               <Card>
                 <CardContent className="pt-6 text-center">
                   <Award className="h-8 w-8 mx-auto mb-2 text-primary" />
@@ -74,6 +74,26 @@ export default function StatsPage() {
                     {(stats as any)?.currentStreak || 0}
                   </div>
                   <p className="text-xs text-muted-foreground">Day Streak</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="pt-6 text-center">
+                  <Trophy className="h-8 w-8 mx-auto mb-2 text-yellow-500" />
+                  <div className="font-display text-2xl md:text-3xl mb-1">
+                    {(stats as any)?.mvlWins || 0}
+                  </div>
+                  <p className="text-xs text-muted-foreground">MVL Wins</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="pt-6 text-center">
+                  <CheckCircle className="h-8 w-8 mx-auto mb-2 text-green-500" />
+                  <div className="font-display text-2xl md:text-3xl mb-1">
+                    {(stats as any)?.completedGoals || 0}
+                  </div>
+                  <p className="text-xs text-muted-foreground">Goals Done</p>
                 </CardContent>
               </Card>
 
