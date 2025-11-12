@@ -722,20 +722,20 @@ export function AvatarDisplay({
         {/* Stage 3+: Progressive pec lines - barely visible at stage 3, HUGE at stage 9 */}
         {stage >= 3 && (
           <>
-            {/* Left pec bottom line - grows dramatically with BIGGER downward curves */}
+            {/* Left pec bottom line - grows dramatically from small to covering whole chest */}
             <path
-              d={`M ${100 - (5 + stage * 6)} ${120 - attrs.posture / 2} Q ${100 - (3 + stage * 3.5)} ${120 - attrs.posture / 2 + (stage - 2) * 2.5}, ${100 - 3} ${120 - attrs.posture / 2}`}
+              d={`M ${100 - (3 + stage * 5)} ${123 - attrs.posture / 2} Q ${100 - (2 + stage * 3)} ${123 - attrs.posture / 2 + stage * 0.5}, ${100 - 3} ${123 - attrs.posture / 2}`}
               stroke={outlineColor}
-              strokeWidth={1 + stage * 0.12}
-              opacity={Math.min(0.2 + stage * 0.05, 0.7)}
+              strokeWidth={1.2 + stage * 0.1}
+              opacity={Math.min(0.25 + stage * 0.045, 0.7)}
               fill="none"
             />
-            {/* Right pec bottom line - grows dramatically with BIGGER downward curves */}
+            {/* Right pec bottom line - grows dramatically from small to covering whole chest */}
             <path
-              d={`M ${100 + 3} ${120 - attrs.posture / 2} Q ${100 + (3 + stage * 3.5)} ${120 - attrs.posture / 2 + (stage - 2) * 2.5}, ${100 + (5 + stage * 6)} ${120 - attrs.posture / 2}`}
+              d={`M ${100 + 3} ${123 - attrs.posture / 2} Q ${100 + (2 + stage * 3)} ${123 - attrs.posture / 2 + stage * 0.5}, ${100 + (3 + stage * 5)} ${123 - attrs.posture / 2}`}
               stroke={outlineColor}
-              strokeWidth={1 + stage * 0.12}
-              opacity={Math.min(0.2 + stage * 0.05, 0.7)}
+              strokeWidth={1.2 + stage * 0.1}
+              opacity={Math.min(0.25 + stage * 0.045, 0.7)}
               fill="none"
             />
           </>
