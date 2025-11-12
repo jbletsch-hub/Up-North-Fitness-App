@@ -3,6 +3,7 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { storage } from "./storage";
 import { hashPassword } from "./auth";
+import { startScheduledJobs } from "./jobs";
 
 const app = express();
 app.use(express.json());
@@ -46,6 +47,9 @@ app.use((req, res, next) => {
 
   // Seed admin user on startup
   await storage.seedAdminUser(hashPassword);
+
+  // Start scheduled jobs (MVL award at midnight)
+  startScheduledJobs();
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
