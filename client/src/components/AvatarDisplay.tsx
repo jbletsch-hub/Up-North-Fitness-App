@@ -5,6 +5,8 @@ interface AvatarDisplayProps {
   shortsColor?: string;
   headband?: boolean;
   wristbands?: boolean;
+  hairStyle?: string;
+  hairColor?: string;
   size?: "sm" | "md" | "lg";
 }
 
@@ -15,6 +17,8 @@ export function AvatarDisplay({
   shortsColor = "#1E3A8A",
   headband = false,
   wristbands = false,
+  hairStyle = "short",
+  hairColor = "#4A3728",
   size = "md",
 }: AvatarDisplayProps) {
   // Map level (1-50) to evolution stage (0-9)
@@ -69,6 +73,147 @@ export function AvatarDisplay({
   
   const charProps = getCharacterProps();
   const poseOffset = attrs.pose * 3; // Dynamic pose shift
+
+  // Hair style rendering functions
+  const renderHair = () => {
+    const baseY = headband ? 42 : 38;
+    const controlY = headband ? 35 : 32;
+    
+    switch (hairStyle) {
+      case "bald":
+        return null;
+      
+      case "short":
+        return (
+          <path
+            d={`M 72 ${baseY} Q 100 ${controlY}, 128 ${baseY}`}
+            fill={hairColor}
+            stroke={outlineColor}
+            strokeWidth={2.5}
+          />
+        );
+      
+      case "medium":
+        return (
+          <g>
+            <path
+              d={`M 70 ${baseY} Q 100 ${controlY - 3}, 130 ${baseY}`}
+              fill={hairColor}
+              stroke={outlineColor}
+              strokeWidth={2.5}
+            />
+            <path
+              d={`M 72 ${baseY + 2} Q 75 ${baseY + 10}, 70 ${baseY + 18}`}
+              fill={hairColor}
+              stroke={outlineColor}
+              strokeWidth={2}
+            />
+            <path
+              d={`M 128 ${baseY + 2} Q 125 ${baseY + 10}, 130 ${baseY + 18}`}
+              fill={hairColor}
+              stroke={outlineColor}
+              strokeWidth={2}
+            />
+          </g>
+        );
+      
+      case "long":
+        return (
+          <g>
+            <path
+              d={`M 68 ${baseY} Q 100 ${controlY - 5}, 132 ${baseY}`}
+              fill={hairColor}
+              stroke={outlineColor}
+              strokeWidth={2.5}
+            />
+            <path
+              d={`M 70 ${baseY + 3} Q 68 ${baseY + 20}, 65 ${baseY + 35}`}
+              fill={hairColor}
+              stroke={outlineColor}
+              strokeWidth={2.5}
+            />
+            <path
+              d={`M 130 ${baseY + 3} Q 132 ${baseY + 20}, 135 ${baseY + 35}`}
+              fill={hairColor}
+              stroke={outlineColor}
+              strokeWidth={2.5}
+            />
+          </g>
+        );
+      
+      case "curly":
+        return (
+          <g>
+            <circle cx="80" cy={baseY} r="8" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            <circle cx="95" cy={baseY - 5} r="9" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            <circle cx="105" cy={baseY - 5} r="9" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            <circle cx="120" cy={baseY} r="8" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            <circle cx="73" cy={baseY + 8} r="6" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            <circle cx="127" cy={baseY + 8} r="6" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+          </g>
+        );
+      
+      case "spiky":
+        return (
+          <g>
+            <path
+              d={`M 75 ${baseY} L 78 ${controlY - 8} L 81 ${baseY}`}
+              fill={hairColor}
+              stroke={outlineColor}
+              strokeWidth={2}
+            />
+            <path
+              d={`M 85 ${baseY} L 88 ${controlY - 12} L 91 ${baseY}`}
+              fill={hairColor}
+              stroke={outlineColor}
+              strokeWidth={2}
+            />
+            <path
+              d={`M 95 ${baseY} L 100 ${controlY - 15} L 105 ${baseY}`}
+              fill={hairColor}
+              stroke={outlineColor}
+              strokeWidth={2}
+            />
+            <path
+              d={`M 109 ${baseY} L 112 ${controlY - 12} L 115 ${baseY}`}
+              fill={hairColor}
+              stroke={outlineColor}
+              strokeWidth={2}
+            />
+            <path
+              d={`M 119 ${baseY} L 122 ${controlY - 8} L 125 ${baseY}`}
+              fill={hairColor}
+              stroke={outlineColor}
+              strokeWidth={2}
+            />
+          </g>
+        );
+      
+      case "buzzcut":
+        return (
+          <ellipse
+            cx="100"
+            cy={baseY + 3}
+            rx={charProps.headSize - 2}
+            ry="6"
+            fill={hairColor}
+            stroke={outlineColor}
+            strokeWidth={2}
+            opacity="0.8"
+          />
+        );
+      
+      default:
+        return (
+          <path
+            d={`M 72 ${baseY} Q 100 ${controlY}, 128 ${baseY}`}
+            fill={hairColor}
+            stroke={outlineColor}
+            strokeWidth={2.5}
+          />
+        );
+    }
+  };
 
   return (
     <div className="avatar-container relative inline-block">
@@ -212,6 +357,27 @@ export function AvatarDisplay({
           </g>
         )}
 
+        {/* === SHOULDERS === */}
+        {/* Left Shoulder */}
+        <circle
+          cx={65 + (35 * attrs.muscleSize * charProps.shoulderWidth * 0.5)}
+          cy="105"
+          r={14 * attrs.muscleSize * charProps.shoulderWidth}
+          fill={skinTone}
+          stroke={outlineColor}
+          strokeWidth={outlineWidth}
+        />
+        
+        {/* Right Shoulder */}
+        <circle
+          cx={135 - (35 * attrs.muscleSize * charProps.shoulderWidth * 0.5)}
+          cy="105"
+          r={14 * attrs.muscleSize * charProps.shoulderWidth}
+          fill={skinTone}
+          stroke={outlineColor}
+          strokeWidth={outlineWidth}
+        />
+
         {/* === ARMS === */}
         {/* Left Arm */}
         <g className="arm-left" style={{ transformOrigin: '65px 105px' }}>
@@ -323,12 +489,7 @@ export function AvatarDisplay({
           />
           
           {/* Hair/Top of head - render first so headband sits on top */}
-          <path
-            d={`M 72 ${headband ? 42 : 38} Q 100 ${headband ? 35 : 32}, 128 ${headband ? 42 : 38}`}
-            fill="#4A3728"
-            stroke={outlineColor}
-            strokeWidth={2.5}
-          />
+          {renderHair()}
           
           {/* Headband */}
           {headband && (

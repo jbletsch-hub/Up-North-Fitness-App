@@ -37,6 +37,25 @@ const SHORTS_COLORS = [
   { name: "Green", value: "#16A34A" },
 ];
 
+const HAIR_STYLES = [
+  { id: "bald", name: "Bald", description: "No hair" },
+  { id: "buzzcut", name: "Buzzcut", description: "Very short" },
+  { id: "short", name: "Short", description: "Classic short cut" },
+  { id: "medium", name: "Medium", description: "Medium length" },
+  { id: "long", name: "Long", description: "Long flowing hair" },
+  { id: "curly", name: "Curly", description: "Curly afro style" },
+  { id: "spiky", name: "Spiky", description: "Spiky anime style" },
+];
+
+const HAIR_COLORS = [
+  { name: "Brown", value: "#4A3728" },
+  { name: "Black", value: "#1A1A1A" },
+  { name: "Blonde", value: "#F4E4C1" },
+  { name: "Red", value: "#B85C4E" },
+  { name: "Gray", value: "#9CA3AF" },
+  { name: "White", value: "#E5E7EB" },
+];
+
 export default function AvatarPage() {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -46,6 +65,8 @@ export default function AvatarPage() {
   const [shortsColor, setShortsColor] = useState(user?.shortsColor || "#1E3A8A");
   const [headband, setHeadband] = useState(user?.headband || false);
   const [wristbands, setWristbands] = useState(user?.wristbands || false);
+  const [hairStyle, setHairStyle] = useState(user?.hairStyle || "short");
+  const [hairColor, setHairColor] = useState(user?.hairColor || "#4A3728");
 
   const saveAvatarMutation = useMutation({
     mutationFn: async () => {
@@ -55,6 +76,8 @@ export default function AvatarPage() {
         shortsColor,
         headband,
         wristbands,
+        hairStyle,
+        hairColor,
       });
       return await res.json();
     },
