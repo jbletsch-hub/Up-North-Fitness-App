@@ -329,6 +329,40 @@ export default function AvatarPage() {
           </div>
         </div>
 
+        {/* Visual Progression Preview */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Progression Preview</CardTitle>
+            <CardDescription>See how your avatar transforms from Level 1 to Level 50</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              {[1, 6, 11, 16, 21, 26, 31, 36, 41, 46].map((level, idx) => {
+                const stageInfo = getMuscleStageInfo(level);
+                return (
+                  <div key={level} className="flex flex-col items-center space-y-2">
+                    <AvatarDisplay
+                      level={level}
+                      characterType={characterType}
+                      shirtColor={shirtColor}
+                      shortsColor={shortsColor}
+                      headband={headband}
+                      wristbands={wristbands}
+                      hairStyle={hairStyle}
+                      hairColor={hairColor}
+                      size="sm"
+                    />
+                    <div className="text-center">
+                      <div className="text-xs font-semibold">Stage {idx + 1}</div>
+                      <div className="text-xs text-muted-foreground">Lv {level}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Muscle Progression Info */}
         <Card>
           <CardHeader>
