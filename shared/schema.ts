@@ -58,7 +58,7 @@ export const users = pgTable("users", {
   lastDailyXpReset: varchar("last_daily_xp_reset"),
   
   // Avatar customization
-  characterType: varchar("character_type").default("classic"),
+  characterType: varchar("character_type").default("classic").notNull(),
   shirtColor: varchar("shirt_color").default("#FF5722"),
   shortsColor: varchar("shorts_color").default("#20B2AA"),
   headband: boolean("headband").default(false),
