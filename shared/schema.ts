@@ -65,6 +65,7 @@ export const users = pgTable("users", {
   wristbands: boolean("wristbands").default(false),
   hairStyle: varchar("hair_style").default("short"),
   hairColor: varchar("hair_color").default("#4A3728"),
+  facialHair: varchar("facial_hair").default("none"),
 });
 
 export const insertUserSchema = createInsertSchema(users).omit({ 

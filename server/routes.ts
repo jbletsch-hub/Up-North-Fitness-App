@@ -1111,6 +1111,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         hairColor: user?.hairColor,
         headband: user?.headband,
         wristbands: user?.wristbands,
+        facialHair: user?.facialHair,
       });
     } catch (error) {
       console.error("Error fetching stats:", error);
@@ -1139,6 +1140,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         hairColor: u.hairColor,
         headband: u.headband,
         wristbands: u.wristbands,
+        facialHair: u.facialHair,
       }));
       
       res.json(publicUsers);
@@ -1209,7 +1211,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/avatar", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.id;
-      const { characterType, shirtColor, shortsColor, headband, wristbands, hairStyle, hairColor } = req.body;
+      const { characterType, shirtColor, shortsColor, headband, wristbands, hairStyle, hairColor, facialHair } = req.body;
       
       await storage.updateUserAvatar(userId, {
         characterType,
@@ -1219,6 +1221,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         wristbands,
         hairStyle,
         hairColor,
+        facialHair,
       });
       
       const updatedUser = await storage.getUser(userId);
