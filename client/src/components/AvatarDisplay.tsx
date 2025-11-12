@@ -429,7 +429,7 @@ export function AvatarDisplay({
           className="arm-left"
           transform={`rotate(20, ${100 - attrs.shoulderWidth / 2}, ${attrs.shoulderY})`}
         >
-          {/* Bicep - wider, bulging upper arm */}
+          {/* Upper arm */}
           <ellipse
             cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2}
             cy={125}
@@ -439,19 +439,6 @@ export function AvatarDisplay({
             stroke={outlineColor}
             strokeWidth={outlineWidth}
           />
-          
-          {/* Bicep bulge on OUTER side - creates muscle shape */}
-          {stage >= 2 && attrs.armWidth > 5 && (
-            <ellipse
-              cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2 - (attrs.armWidth * 0.7)}
-              cy={127}
-              rx={Math.min(attrs.armWidth * 0.5 + stage * 0.4, attrs.armWidth + 2)}
-              ry="16"
-              fill={skinTone}
-              stroke="none"
-              opacity="0.85"
-            />
-          )}
           
           {/* Elbow area - narrower transition */}
           <ellipse
@@ -463,7 +450,7 @@ export function AvatarDisplay({
             stroke="none"
           />
           
-          {/* Forearm - slimmer than bicep */}
+          {/* Forearm - slimmer than upper arm */}
           <ellipse
             cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2}
             cy={161}
@@ -559,7 +546,7 @@ export function AvatarDisplay({
           className="arm-right"
           transform={`rotate(-20, ${100 + attrs.shoulderWidth / 2}, ${attrs.shoulderY})`}
         >
-          {/* Bicep - wider, bulging upper arm */}
+          {/* Upper arm */}
           <ellipse
             cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2}
             cy={125}
@@ -569,19 +556,6 @@ export function AvatarDisplay({
             stroke={outlineColor}
             strokeWidth={outlineWidth}
           />
-          
-          {/* Bicep bulge on OUTER side - creates muscle shape */}
-          {stage >= 2 && attrs.armWidth > 5 && (
-            <ellipse
-              cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2 + (attrs.armWidth * 0.7)}
-              cy={127}
-              rx={Math.min(attrs.armWidth * 0.5 + stage * 0.4, attrs.armWidth + 2)}
-              ry="16"
-              fill={skinTone}
-              stroke="none"
-              opacity="0.85"
-            />
-          )}
           
           {/* Elbow area - narrower transition */}
           <ellipse
@@ -593,7 +567,7 @@ export function AvatarDisplay({
             stroke="none"
           />
           
-          {/* Forearm - slimmer than bicep */}
+          {/* Forearm - slimmer than upper arm */}
           <ellipse
             cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2}
             cy={161}
