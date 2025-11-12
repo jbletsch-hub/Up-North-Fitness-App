@@ -18,6 +18,9 @@ Iron Crew is a full-stack fitness tracking application that integrates workout l
 - **V-Taper Physique (Nov 12, 2025):** Torso width now caps at 34 max (down from 66) to create classic bodybuilder V-shape with massive chest (90 max) and slim waist. Replaced rounded ellipse torso with custom path for sharp taper from wide chest to slim waist.
 - **Chest Definition Rebuild (Nov 12, 2025):** Completely rebuilt chest muscle system with progressive definition: Stage 2 (small center line), Stage 3 (bigger center line + 2 small horizontal lines defining bottom of pecs), Stage 5+ (extended and more defined horizontal lines). Removed complex curved/perimeter outlines in favor of simple, clean lines.
 - **Arm Proportions (Nov 12, 2025):** Reduced forearm width from 0.85x to 0.7x armWidth for slimmer forearms. Increased forearm length from ry=21 to ry=24 and repositioned lower (cy: 154→156). Reduced hand sizes from 0.9x/0.8x to 0.7x/0.6x armWidth multipliers for better proportions across all stages.
+- **Shoulder Caps Fix (Nov 12, 2025):** Added shoulder cap ellipses to eliminate brown skin bumps between neck and tank top collar. Caps positioned at tank top shoulder edges (cx: chestWidth/2 + 3, cy: 90) for seamless coverage.
+- **Progressive Chest Lines (Nov 12, 2025):** Center vertical line now extends progressively (stage * 1.2 pixels). Horizontal pec lines converted to curved paths (quadratic bezier) that grow longer (12 + stage * 1.2 pixels) and curve slightly downward (stage * 0.15) to follow natural pec muscle contour.
+- **Eye Clipping Fix (Nov 12, 2025):** Increased head clip path radius from 27 to 28.5 to prevent eyes from being clipped at head boundary.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
