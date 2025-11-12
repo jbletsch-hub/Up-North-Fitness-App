@@ -427,7 +427,7 @@ export function AvatarDisplay({
         {/* Left Arm - angled toward center */}
         <g 
           className="arm-left"
-          transform={`rotate(20, ${100 - attrs.shoulderWidth / 2}, ${attrs.shoulderY})`}
+          transform={`rotate(${attrs.armAngle}, ${100 - attrs.shoulderWidth / 2}, ${attrs.shoulderY})`}
         >
           {/* Upper arm */}
           <ellipse
@@ -544,7 +544,7 @@ export function AvatarDisplay({
         {/* Right Arm - angled toward center */}
         <g 
           className="arm-right"
-          transform={`rotate(-20, ${100 + attrs.shoulderWidth / 2}, ${attrs.shoulderY})`}
+          transform={`rotate(-${attrs.armAngle}, ${100 + attrs.shoulderWidth / 2}, ${attrs.shoulderY})`}
         >
           {/* Upper arm */}
           <ellipse
@@ -710,20 +710,20 @@ export function AvatarDisplay({
           />
         )}
         
-        {/* Chest perimeter outline - defines the whole chest shape */}
+        {/* Chest perimeter outline - defines the whole chest shape - FULLY DYNAMIC */}
         {stage >= 3 && (
           <>
-            {/* Left pec outline - adapts to shoulder/chest width */}
+            {/* Left pec outline - all coordinates scale with shoulder/chest width */}
             <path
-              d={`M ${100 - attrs.shoulderWidth / 2 - 4} ${105 - attrs.posture / 2} Q ${100 - attrs.shoulderWidth / 2 - 2} ${100 - attrs.posture / 2}, ${100 - attrs.shoulderWidth / 2 + 6} ${100 - attrs.posture / 2} Q ${100 - 5} ${102 - attrs.posture / 2}, ${100 - 2} ${108 - attrs.posture / 2} Q ${100 - 5} ${115 - attrs.posture / 2}, ${100 - attrs.shoulderWidth / 2 + 3} ${118 - attrs.posture / 2} Q ${100 - attrs.shoulderWidth / 2 - 4} ${115 - attrs.posture / 2}, ${100 - attrs.shoulderWidth / 2 - 4} ${105 - attrs.posture / 2}`}
+              d={`M ${100 - attrs.shoulderWidth / 2 - 4} ${105 - attrs.posture / 2} Q ${100 - attrs.shoulderWidth / 2 - 2} ${100 - attrs.posture / 2}, ${100 - attrs.shoulderWidth / 2 + 6} ${100 - attrs.posture / 2} Q ${100 - attrs.shoulderWidth / 4} ${102 - attrs.posture / 2}, ${100 - 2} ${108 - attrs.posture / 2} Q ${100 - attrs.shoulderWidth / 4} ${115 - attrs.posture / 2}, ${100 - attrs.shoulderWidth / 2 + 3} ${118 - attrs.posture / 2} Q ${100 - attrs.shoulderWidth / 2 - 4} ${115 - attrs.posture / 2}, ${100 - attrs.shoulderWidth / 2 - 4} ${105 - attrs.posture / 2}`}
               stroke={outlineColor}
               strokeWidth="1.4"
               fill="none"
               opacity={Math.min(0.22 + stage * 0.05, 0.55)}
             />
-            {/* Right pec outline - adapts to shoulder/chest width */}
+            {/* Right pec outline - all coordinates scale with shoulder/chest width */}
             <path
-              d={`M ${100 + attrs.shoulderWidth / 2 + 4} ${105 - attrs.posture / 2} Q ${100 + attrs.shoulderWidth / 2 + 2} ${100 - attrs.posture / 2}, ${100 + attrs.shoulderWidth / 2 - 6} ${100 - attrs.posture / 2} Q ${100 + 5} ${102 - attrs.posture / 2}, ${100 + 2} ${108 - attrs.posture / 2} Q ${100 + 5} ${115 - attrs.posture / 2}, ${100 + attrs.shoulderWidth / 2 - 3} ${118 - attrs.posture / 2} Q ${100 + attrs.shoulderWidth / 2 + 4} ${115 - attrs.posture / 2}, ${100 + attrs.shoulderWidth / 2 + 4} ${105 - attrs.posture / 2}`}
+              d={`M ${100 + attrs.shoulderWidth / 2 + 4} ${105 - attrs.posture / 2} Q ${100 + attrs.shoulderWidth / 2 + 2} ${100 - attrs.posture / 2}, ${100 + attrs.shoulderWidth / 2 - 6} ${100 - attrs.posture / 2} Q ${100 + attrs.shoulderWidth / 4} ${102 - attrs.posture / 2}, ${100 + 2} ${108 - attrs.posture / 2} Q ${100 + attrs.shoulderWidth / 4} ${115 - attrs.posture / 2}, ${100 + attrs.shoulderWidth / 2 - 3} ${118 - attrs.posture / 2} Q ${100 + attrs.shoulderWidth / 2 + 4} ${115 - attrs.posture / 2}, ${100 + attrs.shoulderWidth / 2 + 4} ${105 - attrs.posture / 2}`}
               stroke={outlineColor}
               strokeWidth="1.4"
               fill="none"
@@ -732,18 +732,18 @@ export function AvatarDisplay({
           </>
         )}
         
-        {/* Inner chest curved lines - visible at stage 2+ */}
+        {/* Inner chest curved lines - FULLY DYNAMIC - visible at stage 2+ */}
         {stage >= 2 && (
           <>
             <path
-              d={`M 88 ${105 - attrs.posture / 2} Q 95 ${110 - attrs.posture / 2}, 100 ${108 - attrs.posture / 2}`}
+              d={`M ${100 - attrs.shoulderWidth / 2 + 6} ${105 - attrs.posture / 2} Q ${100 - attrs.shoulderWidth / 4} ${110 - attrs.posture / 2}, 100 ${108 - attrs.posture / 2}`}
               stroke={outlineColor}
               strokeWidth="1.3"
               fill="none"
               opacity={Math.min(0.2 + stage * 0.05, 0.5)}
             />
             <path
-              d={`M 112 ${105 - attrs.posture / 2} Q 105 ${110 - attrs.posture / 2}, 100 ${108 - attrs.posture / 2}`}
+              d={`M ${100 + attrs.shoulderWidth / 2 - 6} ${105 - attrs.posture / 2} Q ${100 + attrs.shoulderWidth / 4} ${110 - attrs.posture / 2}, 100 ${108 - attrs.posture / 2}`}
               stroke={outlineColor}
               strokeWidth="1.3"
               fill="none"
