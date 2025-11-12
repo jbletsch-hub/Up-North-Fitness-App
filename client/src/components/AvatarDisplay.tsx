@@ -723,7 +723,7 @@ export function AvatarDisplay({
         )}
         
         {/* === MUSCLE TONE LINES === */}
-        {/* Pec separation line - visible at stage 3+ */}
+        {/* Pec separation line - visible at stage 2+ */}
         {stage >= 2 && (
           <line
             x1="100"
@@ -731,33 +731,33 @@ export function AvatarDisplay({
             x2="100"
             y2={120 - attrs.posture / 2}
             stroke={outlineColor}
-            strokeWidth={stage >= 5 ? 1.5 : 1}
-            opacity={Math.min(0.2 + stage * 0.05, 0.5)}
+            strokeWidth={stage >= 5 ? 2 : 1.5}
+            opacity={Math.min(0.25 + stage * 0.06, 0.6)}
           />
         )}
         
-        {/* Chest/Pec curved lines - visible at stage 4+ */}
-        {stage >= 3 && (
+        {/* Chest/Pec curved lines - visible at stage 3+ */}
+        {stage >= 2 && (
           <>
             <path
               d={`M 88 ${105 - attrs.posture / 2} Q 95 ${110 - attrs.posture / 2}, 100 ${108 - attrs.posture / 2}`}
               stroke={outlineColor}
-              strokeWidth="1"
+              strokeWidth="1.3"
               fill="none"
-              opacity={Math.min(0.15 + stage * 0.04, 0.4)}
+              opacity={Math.min(0.2 + stage * 0.05, 0.5)}
             />
             <path
               d={`M 112 ${105 - attrs.posture / 2} Q 105 ${110 - attrs.posture / 2}, 100 ${108 - attrs.posture / 2}`}
               stroke={outlineColor}
-              strokeWidth="1"
+              strokeWidth="1.3"
               fill="none"
-              opacity={Math.min(0.15 + stage * 0.04, 0.4)}
+              opacity={Math.min(0.2 + stage * 0.05, 0.5)}
             />
           </>
         )}
         
-        {/* Ab definition lines through shirt - visible at stage 5+ */}
-        {stage >= 4 && (
+        {/* Ab definition lines through shirt - visible at stage 4+ */}
+        {stage >= 3 && (
           <>
             <line
               x1="95"
@@ -765,29 +765,41 @@ export function AvatarDisplay({
               x2="105"
               y2="130"
               stroke={outlineColor}
-              strokeWidth="1"
-              opacity={Math.min(0.12 + stage * 0.03, 0.35)}
+              strokeWidth="1.3"
+              opacity={Math.min(0.18 + stage * 0.04, 0.45)}
             />
-            {stage >= 5 && (
+            {stage >= 4 && (
               <line
                 x1="94"
                 y1="140"
                 x2="106"
                 y2="140"
                 stroke={outlineColor}
-                strokeWidth="1"
-                opacity={Math.min(0.12 + stage * 0.03, 0.35)}
+                strokeWidth="1.3"
+                opacity={Math.min(0.18 + stage * 0.04, 0.45)}
               />
             )}
-            {stage >= 6 && (
+            {stage >= 5 && (
               <line
                 x1="95"
                 y1="150"
                 x2="105"
                 y2="150"
                 stroke={outlineColor}
-                strokeWidth="1"
-                opacity={Math.min(0.12 + stage * 0.03, 0.35)}
+                strokeWidth="1.3"
+                opacity={Math.min(0.18 + stage * 0.04, 0.45)}
+              />
+            )}
+            {/* Vertical center ab line for six-pack definition */}
+            {stage >= 4 && (
+              <line
+                x1="100"
+                y1="125"
+                x2="100"
+                y2="155"
+                stroke={outlineColor}
+                strokeWidth="1.2"
+                opacity={Math.min(0.15 + stage * 0.035, 0.4)}
               />
             )}
           </>
