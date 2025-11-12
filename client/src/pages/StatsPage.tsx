@@ -1,10 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
-import { useParams } from "wouter";
+import { useParams, Link } from "wouter";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, Award, Target, Flame, Scale, Utensils, Trophy, CheckCircle } from "lucide-react";
+import { TrendingUp, Award, Target, Flame, Scale, Utensils, Trophy, CheckCircle, Users } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { AvatarDisplay } from "@/components/AvatarDisplay";
+import { MVLBadge } from "@/components/MVLBadge";
 
 export default function StatsPage() {
   const { user } = useAuth();
@@ -16,6 +18,11 @@ export default function StatsPage() {
   const { data: stats, isLoading } = useQuery({
     queryKey: ["/api/stats", targetUserId],
     enabled: !!targetUserId,
+  });
+
+  // Fetch all users for browsing
+  const { data: allUsers } = useQuery({
+    queryKey: ["/api/users"],
   });
 
   const formatDate = (dateString: string) => {
@@ -245,6 +252,56 @@ export default function StatsPage() {
                 ) : (
                   <p className="text-center text-muted-foreground py-8">
                     No PR updates yet. Update your lifts to see them here!
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Browse Users */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-5 w-5 text-primary" />
+                  Browse Users
+                </CardTitle>
+                <CardDescription>Click on any user to view their stats</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {allUsers && (allUsers as any[]).length > 0 ? (
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                    {(allUsers as any[]).map((u: any) => (
+                      <Link key={u.id} href={`/stats/${u.id}`}>
+                        <div
+                          className="p-3 rounded-lg border border-border hover-elevate active-elevate-2 cursor-pointer"
+                          data-testid={`user-card-${u.username}`}
+                        >
+                          <div className="flex flex-col items-center gap-2">
+                            <AvatarDisplay
+                              level={u.level}
+                              size="sm"
+                              tankColor="#FF5722"
+                              shortsColor="#20B2AA"
+                            />
+                            <div className="text-center w-full">
+                              <div className="flex items-center justify-center gap-1">
+                                <p className="font-semibold text-sm truncate">
+                                  {u.displayName || u.username}
+                                </p>
+                                {u.mvlWins > 0 && <MVLBadge mvlWins={u.mvlWins} size="sm" />}
+                              </div>
+                              <p className="text-xs text-muted-foreground">{u.title}</p>
+                              <p className="text-xs text-primary font-medium mt-1">
+                                Lv {u.level} • {u.xp.toLocaleString()} XP
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-center text-muted-foreground py-8">
+                    No users to display
                   </p>
                 )}
               </CardContent>
