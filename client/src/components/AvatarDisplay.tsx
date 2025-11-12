@@ -894,14 +894,14 @@ export function AvatarDisplay({
             <g className="headband">
               <ellipse
                 cx="100"
-                cy="58"
+                cy="50"
                 rx="30"
                 ry="4"
                 fill="#E74C3C"
                 stroke={outlineColor}
                 strokeWidth={2}
               />
-              <circle cx="127" cy="58" r="3" fill="#C0392B" stroke={outlineColor} strokeWidth={1.5} />
+              <circle cx="127" cy="50" r="3" fill="#C0392B" stroke={outlineColor} strokeWidth={1.5} />
             </g>
           )}
           

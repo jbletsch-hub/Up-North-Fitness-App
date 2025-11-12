@@ -10,8 +10,12 @@ export default function StatsPage() {
   const { user } = useAuth();
   const { userId } = useParams<{ userId?: string }>();
 
+  // Use the userId from params, or the logged-in user's id
+  const targetUserId = userId || user?.id;
+
   const { data: stats, isLoading } = useQuery({
-    queryKey: userId ? ["/api/stats", userId] : ["/api/stats"],
+    queryKey: ["/api/stats", targetUserId],
+    enabled: !!targetUserId,
   });
 
   const formatDate = (dateString: string) => {
