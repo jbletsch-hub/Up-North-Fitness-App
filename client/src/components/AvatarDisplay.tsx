@@ -51,49 +51,49 @@ export function AvatarDisplay({
       },
       // Starting to fill out (Levels 11-15)
       { 
-        shoulderWidth: 22, armWidth: 7, legWidth: 9, 
+        shoulderWidth: 22, armWidth: 7, legWidth: 8, 
         chestWidth: 26, chestHeight: 26, torsoWidth: 28, torsoHeight: 34,
         neckWidth: 8, shoulderY: 90, armY: 90, posture: 4
       },
       // Getting toned (Levels 16-20)
       { 
-        shoulderWidth: 28, armWidth: 10, legWidth: 12, 
+        shoulderWidth: 28, armWidth: 10, legWidth: 10, 
         chestWidth: 32, chestHeight: 30, torsoWidth: 32, torsoHeight: 34,
         neckWidth: 10, shoulderY: 88, armY: 88, posture: 6
       },
       // Athletic build (Levels 21-25)
       { 
-        shoulderWidth: 34, armWidth: 13, legWidth: 15, 
+        shoulderWidth: 34, armWidth: 13, legWidth: 12, 
         chestWidth: 38, chestHeight: 34, torsoWidth: 36, torsoHeight: 36,
         neckWidth: 12, shoulderY: 86, armY: 86, posture: 8
       },
       // Strong (Levels 26-30)
       { 
-        shoulderWidth: 40, armWidth: 16, legWidth: 18, 
+        shoulderWidth: 40, armWidth: 16, legWidth: 14, 
         chestWidth: 44, chestHeight: 38, torsoWidth: 40, torsoHeight: 36,
         neckWidth: 14, shoulderY: 84, armY: 84, posture: 10
       },
       // Very muscular (Levels 31-35)
       { 
-        shoulderWidth: 46, armWidth: 19, legWidth: 21, 
+        shoulderWidth: 46, armWidth: 19, legWidth: 16, 
         chestWidth: 50, chestHeight: 42, torsoWidth: 44, torsoHeight: 38,
         neckWidth: 16, shoulderY: 82, armY: 82, posture: 12
       },
       // Beast mode (Levels 36-40)
       { 
-        shoulderWidth: 52, armWidth: 22, legWidth: 24, 
+        shoulderWidth: 52, armWidth: 22, legWidth: 18, 
         chestWidth: 56, chestHeight: 46, torsoWidth: 48, torsoHeight: 38,
         neckWidth: 18, shoulderY: 80, armY: 80, posture: 14
       },
       // JACKED (Levels 41-45)
       { 
-        shoulderWidth: 58, armWidth: 25, legWidth: 27, 
+        shoulderWidth: 58, armWidth: 25, legWidth: 19, 
         chestWidth: 62, chestHeight: 50, torsoWidth: 52, torsoHeight: 40,
         neckWidth: 20, shoulderY: 78, armY: 78, posture: 16
       },
       // ABSOLUTE UNIT (Levels 46-50)
       { 
-        shoulderWidth: 64, armWidth: 28, legWidth: 30, 
+        shoulderWidth: 64, armWidth: 28, legWidth: 20, 
         chestWidth: 68, chestHeight: 54, torsoWidth: 56, torsoHeight: 40,
         neckWidth: 22, shoulderY: 76, armY: 76, posture: 18
       },
