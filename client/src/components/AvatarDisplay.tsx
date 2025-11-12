@@ -382,39 +382,62 @@ export function AvatarDisplay({
       case "smallbeard":
         return (
           <g className="small-beard">
-            {/* Buzzcut-style beard - close to face covering bottom */}
+            {/* Left side of beard */}
             <path
-              d="M 76 70 Q 78 78, 83 83 Q 91 87, 100 87 Q 109 87, 117 83 Q 122 78, 124 70"
+              d="M 78 65 Q 76 72, 78 78 Q 82 82, 88 84"
+              fill={facialHairColor}
+              stroke={outlineColor}
+              strokeWidth={1.5}
+            />
+            {/* Right side of beard */}
+            <path
+              d="M 122 65 Q 124 72, 122 78 Q 118 82, 112 84"
+              fill={facialHairColor}
+              stroke={outlineColor}
+              strokeWidth={1.5}
+            />
+            {/* Bottom chin area */}
+            <path
+              d="M 88 84 Q 94 86, 100 86 Q 106 86, 112 84"
               fill={facialHairColor}
               stroke={outlineColor}
               strokeWidth={1.5}
             />
             {/* Subtle texture lines (like buzzcut) */}
-            <path d="M 80 76 Q 82 80, 84 82" stroke={darkerFacialHair} strokeWidth="0.8" fill="none" opacity="0.5" />
-            <path d="M 90 80 Q 92 83, 94 85" stroke={darkerFacialHair} strokeWidth="0.8" fill="none" opacity="0.5" />
-            <path d="M 100 82 Q 100 85, 100 87" stroke={darkerFacialHair} strokeWidth="0.8" fill="none" opacity="0.5" />
-            <path d="M 110 80 Q 108 83, 106 85" stroke={darkerFacialHair} strokeWidth="0.8" fill="none" opacity="0.5" />
-            <path d="M 120 76 Q 118 80, 116 82" stroke={darkerFacialHair} strokeWidth="0.8" fill="none" opacity="0.5" />
+            <path d="M 80 72 Q 82 76, 84 80" stroke={darkerFacialHair} strokeWidth="0.8" fill="none" opacity="0.5" />
+            <path d="M 92 82 Q 96 84, 100 84" stroke={darkerFacialHair} strokeWidth="0.8" fill="none" opacity="0.5" />
+            <path d="M 120 72 Q 118 76, 116 80" stroke={darkerFacialHair} strokeWidth="0.8" fill="none" opacity="0.5" />
           </g>
         );
       
       case "bigbeard":
         return (
           <g className="big-beard">
-            {/* Short hair-style beard - more volume at bottom of face, clear mouth opening */}
+            {/* Left side of beard - more volume */}
             <path
-              d="M 74 72 Q 76 80, 82 86 Q 90 91, 100 91 Q 110 91, 118 86 Q 124 80, 126 72 L 124 74 Q 100 84, 76 74 Z"
+              d="M 76 65 Q 74 72, 76 79 Q 80 84, 87 87"
+              fill={facialHairColor}
+              stroke={outlineColor}
+              strokeWidth={2}
+            />
+            {/* Right side of beard - more volume */}
+            <path
+              d="M 124 65 Q 126 72, 124 79 Q 120 84, 113 87"
+              fill={facialHairColor}
+              stroke={outlineColor}
+              strokeWidth={2}
+            />
+            {/* Bottom chin area - longer */}
+            <path
+              d="M 87 87 Q 93 90, 100 90 Q 107 90, 113 87"
               fill={facialHairColor}
               stroke={outlineColor}
               strokeWidth={2}
             />
             {/* Natural flowing texture (like short hair) */}
-            <path d="M 88 78 Q 90 80, 92 85" stroke={darkerFacialHair} strokeWidth="1.2" fill="none" opacity="0.6" />
-            <path d="M 98 80 Q 100 83, 100 87" stroke={darkerFacialHair} strokeWidth="1.2" fill="none" opacity="0.6" />
-            <path d="M 108 78 Q 106 80, 104 85" stroke={darkerFacialHair} strokeWidth="1.2" fill="none" opacity="0.6" />
-            {/* Side texture */}
-            <path d="M 76 74 Q 78 78, 80 82" stroke={darkerFacialHair} strokeWidth="1" fill="none" opacity="0.5" />
-            <path d="M 124 74 Q 122 78, 120 82" stroke={darkerFacialHair} strokeWidth="1" fill="none" opacity="0.5" />
+            <path d="M 78 72 Q 80 76, 82 82" stroke={darkerFacialHair} strokeWidth="1.2" fill="none" opacity="0.6" />
+            <path d="M 92 84 Q 96 87, 100 87" stroke={darkerFacialHair} strokeWidth="1.2" fill="none" opacity="0.6" />
+            <path d="M 122 72 Q 120 76, 118 82" stroke={darkerFacialHair} strokeWidth="1.2" fill="none" opacity="0.6" />
           </g>
         );
       
