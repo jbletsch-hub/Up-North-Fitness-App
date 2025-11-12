@@ -662,7 +662,7 @@ export function AvatarDisplay({
         {/* Tank top with V-taper shape (wide chest, narrow waist) */}
         <path
           d={`
-            M ${100 - (attrs.chestWidth / 2 + 6)} 88
+            M ${100 - (attrs.chestWidth / 2 + 6)} 83
             L ${100 - (attrs.chestWidth / 2 + 6)} 115
             Q ${100 - (attrs.chestWidth / 2 + 6)} 135, ${100 - attrs.torsoWidth / 2} 155
             L ${100 - attrs.torsoWidth / 2} 165
@@ -670,8 +670,8 @@ export function AvatarDisplay({
             Q ${100 + attrs.torsoWidth / 2} 170, ${100 + attrs.torsoWidth / 2} 165
             L ${100 + attrs.torsoWidth / 2} 155
             Q ${100 + (attrs.chestWidth / 2 + 6)} 135, ${100 + (attrs.chestWidth / 2 + 6)} 115
-            L ${100 + (attrs.chestWidth / 2 + 6)} 88
-            Q ${100} 85, ${100 - (attrs.chestWidth / 2 + 6)} 88
+            L ${100 + (attrs.chestWidth / 2 + 6)} 83
+            Q ${100} 80, ${100 - (attrs.chestWidth / 2 + 6)} 83
             Z
           `}
           fill={shirtColor}
@@ -856,14 +856,14 @@ export function AvatarDisplay({
           {/* Eyes - simple and clean */}
           <g className="eyes" clipPath="url(#head-clip)">
             {/* Left eye */}
-            <ellipse cx="89" cy="62" rx="5" ry="6" fill="#FFFFFF" stroke={outlineColor} strokeWidth={2} />
-            <circle cx="90" cy="63" r="3" fill={outlineColor} className="pupil-left" />
-            <circle cx="91" cy="61" r="1.2" fill="#FFFFFF" className="eye-shine" />
+            <ellipse cx="89" cy="64" rx="5" ry="6" fill="#FFFFFF" stroke={outlineColor} strokeWidth={2} />
+            <circle cx="90" cy="65" r="3" fill={outlineColor} className="pupil-left" />
+            <circle cx="91" cy="63" r="1.2" fill="#FFFFFF" className="eye-shine" />
             
             {/* Right eye */}
-            <ellipse cx="111" cy="62" rx="5" ry="6" fill="#FFFFFF" stroke={outlineColor} strokeWidth={2} />
-            <circle cx="112" cy="63" r="3" fill={outlineColor} className="pupil-right" />
-            <circle cx="113" cy="61" r="1.2" fill="#FFFFFF" className="eye-shine" />
+            <ellipse cx="111" cy="64" rx="5" ry="6" fill="#FFFFFF" stroke={outlineColor} strokeWidth={2} />
+            <circle cx="112" cy="65" r="3" fill={outlineColor} className="pupil-right" />
+            <circle cx="113" cy="63" r="1.2" fill="#FFFFFF" className="eye-shine" />
           </g>
           
           {/* Nose */}
