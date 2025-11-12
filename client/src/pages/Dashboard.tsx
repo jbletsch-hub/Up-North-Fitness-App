@@ -241,8 +241,8 @@ export default function Dashboard() {
   });
 
   const calorieMutation = useMutation({
-    mutationFn: async (position?: { x: number; y: number }) => {
-      const res = await apiRequest("POST", "/api/calories");
+    mutationFn: async ({ calories, position }: { calories: number; position?: { x: number; y: number } }) => {
+      const res = await apiRequest("POST", "/api/calories", { calories });
       return { data: await res.json(), position };
     },
     onSuccess: (response: any) => {
@@ -391,7 +391,7 @@ export default function Dashboard() {
         userTitle={user?.title}
       />
 
-      <main className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6">
+      <main className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6 pb-20 md:pb-6 space-y-4 md:space-y-6">
         <div className="space-y-2 md:space-y-3">
           <div className="flex items-center justify-between flex-wrap gap-2 md:gap-3">
             <h1 className="font-display text-2xl md:text-4xl tracking-wider">
@@ -476,13 +476,8 @@ export default function Dashboard() {
             <CalorieTrackerCard
               hasLoggedToday={hasLoggedCaloriesToday}
               isPending={calorieMutation.isPending}
-              onLogCalories={(event) => {
-                const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
-                const position = {
-                  x: rect.left + rect.width / 2,
-                  y: rect.top,
-                };
-                calorieMutation.mutate(position);
+              onLogCalories={(calories) => {
+                calorieMutation.mutate({ calories });
               }}
             />
             <ObjectUploader

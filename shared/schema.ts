@@ -50,6 +50,7 @@ export const users = pgTable("users", {
   lastWeighinDate: varchar("last_weighin_date"),
   lastRerollDate: varchar("last_reroll_date"),
   lastCalorieLogDate: varchar("last_calorie_log_date"),
+  calories: integer("calories"),
   
   // MVL (Most Valuable Lifter) tracking
   mvlWins: integer("mvl_wins").default(0).notNull(),
@@ -70,6 +71,7 @@ export const insertUserSchema = createInsertSchema(users).omit({
   lastWeighinDate: true,
   lastRerollDate: true,
   lastCalorieLogDate: true,
+  calories: true,
   mvlWins: true,
   dailyXp: true,
   lastDailyXpReset: true,

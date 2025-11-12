@@ -48,7 +48,7 @@ export interface IStorage {
   updateUserWeight(id: string, weight: number, lastWeighinDate: string): Promise<User>;
   updateUserPRDate(id: string, lastPrUpdateDate: string): Promise<User>;
   updateUserRerollDate(id: string, lastRerollDate: string): Promise<User>;
-  updateUserCalorieLogDate(id: string, lastCalorieLogDate: string): Promise<User>;
+  updateUserCalorieLogDate(id: string, lastCalorieLogDate: string, calories?: number): Promise<User>;
   updateUserProfile(id: string, firstName: string, lastName: string | undefined, profileImageUrl: string): Promise<User>;
   updateUserDisplayName(id: string, displayName: string): Promise<User>;
   getTodayMVLLeaderboard(limit: number): Promise<User[]>;
@@ -221,10 +221,14 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
-  async updateUserCalorieLogDate(id: string, lastCalorieLogDate: string): Promise<User> {
+  async updateUserCalorieLogDate(id: string, lastCalorieLogDate: string, calories?: number): Promise<User> {
+    const updateData: any = { lastCalorieLogDate };
+    if (calories !== undefined) {
+      updateData.calories = calories;
+    }
     const [user] = await db
       .update(users)
-      .set({ lastCalorieLogDate })
+      .set(updateData)
       .where(eq(users.id, id))
       .returning();
     return user;

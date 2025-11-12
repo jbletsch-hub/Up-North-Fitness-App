@@ -1,17 +1,25 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Utensils } from "lucide-react";
+import { useState } from "react";
 
 interface CalorieTrackerCardProps {
   hasLoggedToday?: boolean;
-  onLogCalories?: (event: React.FormEvent) => void;
+  onLogCalories?: (calories: number) => void;
   isPending?: boolean;
 }
 
 export function CalorieTrackerCard({ hasLoggedToday, onLogCalories, isPending }: CalorieTrackerCardProps) {
-  const handleClick = (e: React.FormEvent) => {
+  const [calories, setCalories] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onLogCalories?.(e);
+    const calorieValue = parseInt(calories);
+    if (calorieValue > 0) {
+      onLogCalories?.(calorieValue);
+      setCalories("");
+    }
   };
 
   return (
@@ -24,14 +32,25 @@ export function CalorieTrackerCard({ hasLoggedToday, onLogCalories, isPending }:
         <p className="text-sm text-muted-foreground">+15 XP once per day</p>
       </CardHeader>
       <CardContent>
-        <div className="space-y-3">
+        <form onSubmit={handleSubmit} className="space-y-3">
           <p className="text-sm text-muted-foreground">
             Track your daily calorie intake to stay accountable to your fitness goals.
           </p>
+          {!hasLoggedToday && (
+            <Input
+              type="number"
+              placeholder="Enter calories (e.g., 2000)"
+              value={calories}
+              onChange={(e) => setCalories(e.target.value)}
+              disabled={isPending}
+              min="1"
+              data-testid="input-calories"
+            />
+          )}
           <Button
-            onClick={handleClick}
+            type="submit"
             className="w-full"
-            disabled={hasLoggedToday || isPending}
+            disabled={hasLoggedToday || isPending || !calories || parseInt(calories) <= 0}
             data-testid="button-log-calories"
           >
             {isPending
@@ -45,7 +64,7 @@ export function CalorieTrackerCard({ hasLoggedToday, onLogCalories, isPending }:
               You've already logged your calories today!
             </p>
           )}
-        </div>
+        </form>
       </CardContent>
     </Card>
   );

@@ -971,6 +971,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/calories", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.id;
+      const { calories } = req.body;
+      
+      if (!calories || calories <= 0) {
+        return res.status(400).json({ message: "Please provide a valid calorie amount" });
+      }
+      
       const user = await storage.getUser(userId);
       
       if (!user) {
@@ -984,14 +990,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "You can only log calories once per day" });
       }
 
-      // Update user's last calorie log date
-      await storage.updateUserCalorieLogDate(userId, today);
+      // Update user's last calorie log date and calories amount
+      await storage.updateUserCalorieLogDate(userId, today, calories);
 
       // Award 15 XP for logging calories
       const result = await awardXP(userId, 15, "logged daily calories");
 
       res.json({ 
         success: true, 
+        calories,
         ...result 
       });
     } catch (error) {

@@ -255,7 +255,7 @@ export default function AdminPage() {
         userTitle={user?.title}
       />
 
-      <main className="max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-6">
+      <main className="max-w-7xl mx-auto px-4 md:px-6 py-6 pb-20 md:pb-6 space-y-6">
         <div className="flex items-center gap-3">
           <Trophy className="h-8 w-8 text-primary" />
           <h1 className="text-4xl font-display tracking-wider">ADMIN PANEL</h1>

@@ -97,7 +97,7 @@ export default function LeaderboardsPage() {
         userTitle={user?.title}
       />
 
-      <main className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6">
+      <main className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6 pb-20 md:pb-6 space-y-4 md:space-y-6">
         <div className="text-center space-y-1 md:space-y-2">
           <h1 className="font-display text-3xl md:text-5xl font-bold">Leaderboards</h1>
           <p className="text-sm md:text-base text-muted-foreground">See who's leading the pack</p>

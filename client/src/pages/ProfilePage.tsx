@@ -50,7 +50,7 @@ export default function ProfilePage() {
           userLevel={user?.level}
           userXP={user?.xp}
         />
-        <main className="max-w-7xl mx-auto px-4 md:px-6 py-6">
+        <main className="max-w-7xl mx-auto px-4 md:px-6 py-6 pb-20 md:pb-6">
           <Card className="border-card-border">
             <CardContent className="py-12 text-center">
               <p className="text-xl font-display mb-2">User Not Found</p>
@@ -81,7 +81,7 @@ export default function ProfilePage() {
         userTitle={user?.title}
       />
 
-      <main className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6">
+      <main className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6 pb-20 md:pb-6 space-y-4 md:space-y-6">
         {/* Profile Header */}
         <div className="space-y-2">
           <div className="flex items-center gap-2 md:gap-3 flex-wrap">
