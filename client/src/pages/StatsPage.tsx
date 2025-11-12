@@ -275,19 +275,21 @@ export default function StatsPage() {
                           className="p-3 rounded-lg border border-border hover-elevate active-elevate-2 cursor-pointer"
                           data-testid={`user-card-${u.username}`}
                         >
-                          <div className="flex flex-col items-center gap-2">
+                          <div className="flex flex-col items-center gap-2 relative">
+                            {u.mvlWins > 0 && (
+                              <div className="absolute -top-1 left-1/2 -translate-x-1/2 z-10">
+                                <MVLBadge mvlWins={u.mvlWins} size="sm" />
+                              </div>
+                            )}
                             <AvatarDisplay
                               level={u.level}
                               size="sm"
                               characterType={u.characterType || "classic"}
                             />
                             <div className="text-center w-full">
-                              <div className="flex items-center justify-center gap-1">
-                                <p className="font-semibold text-sm truncate">
-                                  {u.displayName || u.username}
-                                </p>
-                                {u.mvlWins > 0 && <MVLBadge mvlWins={u.mvlWins} size="sm" />}
-                              </div>
+                              <p className="font-semibold text-sm truncate">
+                                {u.displayName || u.username}
+                              </p>
                               <p className="text-xs text-muted-foreground">{u.title}</p>
                               <p className="text-xs text-primary font-medium mt-1">
                                 Lv {u.level} • {u.xp.toLocaleString()} XP
