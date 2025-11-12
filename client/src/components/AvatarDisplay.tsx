@@ -1,3 +1,6 @@
+import { useState, useRef } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
 interface AvatarDisplayProps {
   level: number;
   characterType?: string;
@@ -8,6 +11,7 @@ interface AvatarDisplayProps {
   hairStyle?: string;
   hairColor?: string;
   size?: "sm" | "md" | "lg";
+  enableRotation?: boolean;
 }
 
 export function AvatarDisplay({
@@ -20,7 +24,12 @@ export function AvatarDisplay({
   hairStyle = "short",
   hairColor = "#8B4513",
   size = "md",
+  enableRotation = false,
 }: AvatarDisplayProps) {
+  // Rotation state: 0 = front, 90 = side, 180 = back, 270 = other side
+  const [rotationAngle, setRotationAngle] = useState(0);
+  const touchStartX = useRef(0);
+  const touchCurrentX = useRef(0);
   // Map level (1-50) to evolution stage (0-9)
   const stage = Math.min(Math.floor((level - 1) / 5), 9);
   
@@ -106,6 +115,61 @@ export function AvatarDisplay({
   const skinTone = "#FFCC99";
   const outlineColor = "#1A1A1A";
   const outlineWidth = 2.5;
+  
+  // Rotation controls
+  const rotateLeft = () => {
+    setRotationAngle((prev) => (prev - 90 + 360) % 360);
+  };
+  
+  const rotateRight = () => {
+    setRotationAngle((prev) => (prev + 90) % 360);
+  };
+  
+  // Touch/drag handlers for rotation
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!enableRotation) return;
+    touchStartX.current = e.touches[0].clientX;
+  };
+  
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!enableRotation) return;
+    touchCurrentX.current = e.touches[0].clientX;
+  };
+  
+  const handleTouchEnd = () => {
+    if (!enableRotation) return;
+    const diff = touchCurrentX.current - touchStartX.current;
+    if (Math.abs(diff) > 50) { // Swipe threshold
+      if (diff > 0) {
+        rotateLeft(); // Swipe right = rotate left
+      } else {
+        rotateRight(); // Swipe left = rotate right
+      }
+    }
+  };
+  
+  // Mouse drag handlers
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!enableRotation) return;
+    touchStartX.current = e.clientX;
+  };
+  
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!enableRotation || e.buttons !== 1) return;
+    touchCurrentX.current = e.clientX;
+  };
+  
+  const handleMouseUp = () => {
+    if (!enableRotation) return;
+    const diff = touchCurrentX.current - touchStartX.current;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) {
+        rotateLeft();
+      } else {
+        rotateRight();
+      }
+    }
+  };
   
   // Render hair molded around the head shape
   const renderHair = () => {
