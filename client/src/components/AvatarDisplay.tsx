@@ -284,14 +284,14 @@ export function AvatarDisplay({
           />
         </g>
 
-        {/* === ARMS - Render BEHIND tank top, angled inward at ~45° === */}
+        {/* === ARMS - Render BEHIND tank top, angled inward at ~45°, touching armhole === */}
         {/* Left Arm - angled toward center */}
         <g 
           className="arm-left"
-          transform={`rotate(20, ${100 - attrs.shoulderWidth / 2 - attrs.armWidth - 10}, 110)`}
+          transform={`rotate(20, ${100 - attrs.shoulderWidth / 2 - attrs.armWidth - 4}, 110)`}
         >
           <ellipse
-            cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 10}
+            cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 4}
             cy={158}
             rx={attrs.armWidth + 2}
             ry="48"
@@ -301,7 +301,7 @@ export function AvatarDisplay({
           />
           {wristbands && (
             <ellipse
-              cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 10}
+              cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 4}
               cy={196}
               rx={attrs.armWidth + 3}
               ry="5"
@@ -312,7 +312,7 @@ export function AvatarDisplay({
           )}
           {/* Hand */}
           <ellipse
-            cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 10}
+            cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 4}
             cy={212}
             rx={attrs.armWidth + 4}
             ry={attrs.armWidth + 3}
@@ -325,10 +325,10 @@ export function AvatarDisplay({
         {/* Right Arm - angled toward center */}
         <g 
           className="arm-right"
-          transform={`rotate(-20, ${100 + attrs.shoulderWidth / 2 + attrs.armWidth + 10}, 110)`}
+          transform={`rotate(-20, ${100 + attrs.shoulderWidth / 2 + attrs.armWidth + 4}, 110)`}
         >
           <ellipse
-            cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 10}
+            cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 4}
             cy={158}
             rx={attrs.armWidth + 2}
             ry="48"
@@ -338,7 +338,7 @@ export function AvatarDisplay({
           />
           {wristbands && (
             <ellipse
-              cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 10}
+              cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 4}
               cy={196}
               rx={attrs.armWidth + 3}
               ry="5"
@@ -348,7 +348,7 @@ export function AvatarDisplay({
             />
           )}
           <ellipse
-            cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 10}
+            cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 4}
             cy={212}
             rx={attrs.armWidth + 4}
             ry={attrs.armWidth + 3}
@@ -376,7 +376,7 @@ export function AvatarDisplay({
           cx="100"
           cy="170"
           rx={Math.max(attrs.torsoWidth / 2 + 2, 24)}
-          ry="18"
+          ry="15"
           fill={shortsColor}
           stroke={outlineColor}
           strokeWidth={outlineWidth}
