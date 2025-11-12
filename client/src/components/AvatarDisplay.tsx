@@ -241,17 +241,75 @@ export function AvatarDisplay({
         </defs>
 
         {/* === LEGS === */}
-        {/* Left Leg */}
+        {/* Left Leg - with muscle definition */}
         <g className="leg-left">
+          {/* Thigh (quad area) */}
           <ellipse
             cx={85}
-            cy={215}
-            rx={attrs.legWidth}
-            ry="57"
+            cy={198}
+            rx={Math.max(attrs.legWidth * 0.85, 8)}
+            ry="28"
             fill={skinTone}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
           />
+          {/* Knee area - narrower */}
+          <ellipse
+            cx={85}
+            cy={228}
+            rx={Math.max(attrs.legWidth * 0.7, 7)}
+            ry="8"
+            fill={skinTone}
+            stroke={outlineColor}
+            strokeWidth={outlineWidth}
+          />
+          {/* Calf muscle - defined bulge */}
+          <ellipse
+            cx={85}
+            cy={245}
+            rx={Math.max(attrs.legWidth * 0.75, 7.5)}
+            ry="18"
+            fill={skinTone}
+            stroke={outlineColor}
+            strokeWidth={outlineWidth}
+          />
+          {/* Ankle - slimmer */}
+          <ellipse
+            cx={85}
+            cy={263}
+            rx={Math.max(attrs.legWidth * 0.6, 6)}
+            ry="6"
+            fill={skinTone}
+            stroke={outlineColor}
+            strokeWidth={outlineWidth}
+          />
+          
+          {/* Quad muscle definition - visible at stage 3+ */}
+          {stage >= 2 && attrs.legWidth > 8 && (
+            <line
+              x1="85"
+              y1="185"
+              x2="85"
+              y2="210"
+              stroke={outlineColor}
+              strokeWidth="0.8"
+              opacity={Math.min(0.15 + stage * 0.03, 0.35)}
+            />
+          )}
+          
+          {/* Calf definition line - visible at stage 4+ */}
+          {stage >= 3 && attrs.legWidth > 8 && (
+            <line
+              x1="85"
+              y1="238"
+              x2="85"
+              y2="252"
+              stroke={outlineColor}
+              strokeWidth="0.8"
+              opacity={Math.min(0.12 + stage * 0.03, 0.3)}
+            />
+          )}
+          
           {/* Shoe at bottom of foot */}
           <ellipse
             cx="85"
@@ -264,17 +322,75 @@ export function AvatarDisplay({
           />
         </g>
         
-        {/* Right Leg */}
+        {/* Right Leg - with muscle definition */}
         <g className="leg-right">
+          {/* Thigh (quad area) */}
           <ellipse
             cx={115}
-            cy={215}
-            rx={attrs.legWidth}
-            ry="57"
+            cy={198}
+            rx={Math.max(attrs.legWidth * 0.85, 8)}
+            ry="28"
             fill={skinTone}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
           />
+          {/* Knee area - narrower */}
+          <ellipse
+            cx={115}
+            cy={228}
+            rx={Math.max(attrs.legWidth * 0.7, 7)}
+            ry="8"
+            fill={skinTone}
+            stroke={outlineColor}
+            strokeWidth={outlineWidth}
+          />
+          {/* Calf muscle - defined bulge */}
+          <ellipse
+            cx={115}
+            cy={245}
+            rx={Math.max(attrs.legWidth * 0.75, 7.5)}
+            ry="18"
+            fill={skinTone}
+            stroke={outlineColor}
+            strokeWidth={outlineWidth}
+          />
+          {/* Ankle - slimmer */}
+          <ellipse
+            cx={115}
+            cy={263}
+            rx={Math.max(attrs.legWidth * 0.6, 6)}
+            ry="6"
+            fill={skinTone}
+            stroke={outlineColor}
+            strokeWidth={outlineWidth}
+          />
+          
+          {/* Quad muscle definition - visible at stage 3+ */}
+          {stage >= 2 && attrs.legWidth > 8 && (
+            <line
+              x1="115"
+              y1="185"
+              x2="115"
+              y2="210"
+              stroke={outlineColor}
+              strokeWidth="0.8"
+              opacity={Math.min(0.15 + stage * 0.03, 0.35)}
+            />
+          )}
+          
+          {/* Calf definition line - visible at stage 4+ */}
+          {stage >= 3 && attrs.legWidth > 8 && (
+            <line
+              x1="115"
+              y1="238"
+              x2="115"
+              y2="252"
+              stroke={outlineColor}
+              strokeWidth="0.8"
+              opacity={Math.min(0.12 + stage * 0.03, 0.3)}
+            />
+          )}
+          
           {/* Shoe at bottom of foot */}
           <ellipse
             cx="115"
