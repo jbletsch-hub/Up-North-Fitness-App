@@ -1120,6 +1120,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Avatar customization endpoint
+  app.put("/api/avatar", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const { characterType, shirtColor, shortsColor, headband, wristbands } = req.body;
+      
+      await storage.updateUserAvatar(userId, {
+        characterType,
+        shirtColor,
+        shortsColor,
+        headband,
+        wristbands,
+      });
+      
+      const updatedUser = await storage.getUser(userId);
+      res.json({ success: true, user: updatedUser });
+    } catch (error) {
+      console.error("Error updating avatar:", error);
+      res.status(500).json({ message: "Failed to update avatar" });
+    }
+  });
+
   // PR Leaderboards endpoint
   app.get("/api/leaderboards/prs", async (req, res) => {
     try {
