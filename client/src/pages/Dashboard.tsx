@@ -406,6 +406,8 @@ export default function Dashboard() {
                 shortsColor={dashboardUser.shortsColor || "#1E3A8A"}
                 headband={dashboardUser.headband || false}
                 wristbands={dashboardUser.wristbands || false}
+                hairStyle={dashboardUser.hairStyle || "short"}
+                hairColor={dashboardUser.hairColor || "#4A3728"}
                 size="md"
               />
             </CardContent>

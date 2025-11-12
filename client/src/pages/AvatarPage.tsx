@@ -159,6 +159,8 @@ export default function AvatarPage() {
                 shortsColor={shortsColor}
                 headband={headband}
                 wristbands={wristbands}
+                hairStyle={hairStyle}
+                hairColor={hairColor}
                 size="lg"
               />
               <div className="text-center space-y-1">
@@ -236,6 +238,50 @@ export default function AvatarPage() {
                         onClick={() => setShortsColor(color.value)}
                         title={color.name}
                         data-testid={`button-shorts-${color.name.toLowerCase()}`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Hair Customization */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Hair Style</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Style</Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {HAIR_STYLES.map((style) => (
+                      <Button
+                        key={style.id}
+                        variant={hairStyle === style.id ? "default" : "outline"}
+                        className="h-auto flex-col gap-1 py-2"
+                        onClick={() => setHairStyle(style.id)}
+                        data-testid={`button-hair-${style.id}`}
+                      >
+                        <span className="font-semibold text-xs">{style.name}</span>
+                        <span className="text-xs opacity-70">{style.description}</span>
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Hair Color</Label>
+                  <div className="grid grid-cols-6 gap-2">
+                    {HAIR_COLORS.map((color) => (
+                      <button
+                        key={color.value}
+                        className={`h-10 w-10 rounded-md border-2 transition-all hover-elevate ${
+                          hairColor === color.value ? "border-primary ring-2 ring-primary" : "border-border"
+                        }`}
+                        style={{ backgroundColor: color.value }}
+                        onClick={() => setHairColor(color.value)}
+                        title={color.name}
+                        data-testid={`button-hair-color-${color.name.toLowerCase()}`}
                       />
                     ))}
                   </div>
