@@ -178,6 +178,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update character type endpoint
+  app.post("/api/profile/character-type", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const { characterType } = req.body;
+
+      const validTypes = ["classic", "bulky", "athletic", "powerlifter"];
+      if (!characterType || !validTypes.includes(characterType)) {
+        return res.status(400).json({ message: "Invalid character type" });
+      }
+
+      await db.update(users)
+        .set({ characterType })
+        .where(eq(users.id, userId));
+
+      const user = await storage.getUser(userId);
+      res.json({ success: true, user });
+    } catch (error) {
+      console.error("Error updating character type:", error);
+      res.status(500).json({ message: "Failed to update character type" });
+    }
+  });
+
   // Home page data
   app.get("/api/home", async (req, res) => {
     try {
