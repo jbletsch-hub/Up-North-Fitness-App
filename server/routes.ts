@@ -1104,6 +1104,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         calories: user?.calories,
         mvlWins: user?.mvlWins || 0,
         completedGoals: completedGoalsCount,
+        characterType: user?.characterType || "classic",
+        shirtColor: user?.shirtColor,
+        shortsColor: user?.shortsColor,
+        hairStyle: user?.hairStyle,
+        hairColor: user?.hairColor,
+        headband: user?.headband,
+        wristbands: user?.wristbands,
       });
     } catch (error) {
       console.error("Error fetching stats:", error);
@@ -1126,6 +1133,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         title: u.title,
         mvlWins: u.mvlWins || 0,
         characterType: u.characterType || "classic",
+        shirtColor: u.shirtColor,
+        shortsColor: u.shortsColor,
+        hairStyle: u.hairStyle,
+        hairColor: u.hairColor,
+        headband: u.headband,
+        wristbands: u.wristbands,
       }));
       
       res.json(publicUsers);

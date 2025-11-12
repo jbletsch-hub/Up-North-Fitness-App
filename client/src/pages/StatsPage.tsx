@@ -285,6 +285,12 @@ export default function StatsPage() {
                               level={u.level}
                               size="sm"
                               characterType={u.characterType || "classic"}
+                              shirtColor={u.shirtColor}
+                              shortsColor={u.shortsColor}
+                              hairStyle={u.hairStyle}
+                              hairColor={u.hairColor}
+                              headband={u.headband}
+                              wristbands={u.wristbands}
                             />
                             <div className="text-center w-full">
                               <p className="font-semibold text-sm truncate">
