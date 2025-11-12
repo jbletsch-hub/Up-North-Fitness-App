@@ -14,6 +14,7 @@ import LeaderboardsPage from "@/pages/LeaderboardsPage";
 import ActivityFeedPage from "@/pages/ActivityFeedPage";
 import GoalsPage from "@/pages/GoalsPage";
 import StatsPage from "@/pages/StatsPage";
+import AvatarPage from "@/pages/AvatarPage";
 import AuthPage from "@/pages/AuthPage";
 import ProfileSetup from "@/pages/ProfileSetup";
 import NotFound from "@/pages/not-found";
@@ -27,6 +28,7 @@ function Router() {
       <ProtectedRoute path="/activity" component={ActivityFeedPage} />
       <ProtectedRoute path="/goals" component={GoalsPage} />
       <ProtectedRoute path="/stats" component={StatsPage} />
+      <ProtectedRoute path="/avatar" component={AvatarPage} />
       <ProtectedRoute path="/profile/:username" component={ProfilePage} />
       <ProtectedRoute path="/admin" component={AdminPage} />
       <ProtectedRoute path="/profile-setup" component={ProfileSetup} skipProfileCheck={true} />
