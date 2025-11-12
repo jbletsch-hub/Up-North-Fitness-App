@@ -297,25 +297,25 @@ export function AvatarDisplay({
           className="body-shirt"
         />
 
-        {/* === SHORTS - Blend with torso === */}
+        {/* === SHORTS - Smaller === */}
         <ellipse
           cx="100"
-          cy="172"
-          rx={Math.max(attrs.torsoWidth / 2 + 4, 26)}
-          ry="22"
+          cy="170"
+          rx={Math.max(attrs.torsoWidth / 2 + 2, 24)}
+          ry="18"
           fill={shortsColor}
           stroke={outlineColor}
           strokeWidth={outlineWidth}
         />
 
-        {/* === ARMS - Attached at actual shoulder level === */}
-        {/* Left Arm - positioned at shoulder, not head */}
+        {/* === ARMS - Positioned at shoulder joint === */}
+        {/* Left Arm */}
         <g className="arm-left">
           <ellipse
             cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 4}
-            cy={135}
+            cy={108}
             rx={attrs.armWidth + 2}
-            ry="50"
+            ry="48"
             fill={skinTone}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
@@ -323,7 +323,7 @@ export function AvatarDisplay({
           {wristbands && (
             <ellipse
               cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 4}
-              cy={175}
+              cy={146}
               rx={attrs.armWidth + 3}
               ry="5"
               fill="#E74C3C"
@@ -334,7 +334,7 @@ export function AvatarDisplay({
           {/* Hand */}
           <ellipse
             cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 4}
-            cy={191}
+            cy={162}
             rx={attrs.armWidth + 4}
             ry={attrs.armWidth + 3}
             fill={skinTone}
@@ -343,13 +343,13 @@ export function AvatarDisplay({
           />
         </g>
         
-        {/* Right Arm - positioned at shoulder, not head */}
+        {/* Right Arm */}
         <g className="arm-right">
           <ellipse
             cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 4}
-            cy={135}
+            cy={108}
             rx={attrs.armWidth + 2}
-            ry="50"
+            ry="48"
             fill={skinTone}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
@@ -357,7 +357,7 @@ export function AvatarDisplay({
           {wristbands && (
             <ellipse
               cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 4}
-              cy={175}
+              cy={146}
               rx={attrs.armWidth + 3}
               ry="5"
               fill="#E74C3C"
@@ -367,7 +367,7 @@ export function AvatarDisplay({
           )}
           <ellipse
             cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 4}
-            cy={191}
+            cy={162}
             rx={attrs.armWidth + 4}
             ry={attrs.armWidth + 3}
             fill={skinTone}
