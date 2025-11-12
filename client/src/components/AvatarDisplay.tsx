@@ -13,12 +13,12 @@ interface AvatarDisplayProps {
 export function AvatarDisplay({
   level,
   characterType = "classic",
-  shirtColor = "#FF6B35",
-  shortsColor = "#1E3A8A",
+  shirtColor = "#FF5722",
+  shortsColor = "#20B2AA",
   headband = false,
   wristbands = false,
   hairStyle = "short",
-  hairColor = "#4A3728",
+  hairColor = "#8B4513",
   size = "md",
 }: AvatarDisplayProps) {
   // Map level (1-50) to evolution stage (0-9)
@@ -26,103 +26,124 @@ export function AvatarDisplay({
   
   // Size configurations
   const sizeConfig = {
-    sm: { width: 140, height: 180, viewBox: "0 0 200 260" },
-    md: { width: 200, height: 260, viewBox: "0 0 200 260" },
-    lg: { width: 280, height: 364, viewBox: "0 0 200 260" },
+    sm: { width: 140, height: 200, viewBox: "0 0 200 280" },
+    md: { width: 180, height: 256, viewBox: "0 0 200 280" },
+    lg: { width: 240, height: 336, viewBox: "0 0 200 280" },
   };
   
   const config = sizeConfig[size];
   
-  // Stage-specific cartoon attributes
+  // Progressive muscle development (matching the reference image)
   const getStageAttributes = () => {
-    const stages = [
-      { fitness: 0.6, confidence: 0.3, chestPuff: 0, armThickness: 0.7, shoulderWidth: 0.8 },
-      { fitness: 0.7, confidence: 0.4, chestPuff: 0.1, armThickness: 0.8, shoulderWidth: 0.85 },
-      { fitness: 0.8, confidence: 0.5, chestPuff: 0.2, armThickness: 0.9, shoulderWidth: 0.9 },
-      { fitness: 0.9, confidence: 0.6, chestPuff: 0.3, armThickness: 1.0, shoulderWidth: 0.95 },
-      { fitness: 1.0, confidence: 0.7, chestPuff: 0.4, armThickness: 1.1, shoulderWidth: 1.0 },
-      { fitness: 1.1, confidence: 0.8, chestPuff: 0.5, armThickness: 1.2, shoulderWidth: 1.05 },
-      { fitness: 1.2, confidence: 0.9, chestPuff: 0.6, armThickness: 1.3, shoulderWidth: 1.1 },
-      { fitness: 1.3, confidence: 1.0, chestPuff: 0.7, armThickness: 1.4, shoulderWidth: 1.15 },
-      { fitness: 1.4, confidence: 1.0, chestPuff: 0.8, armThickness: 1.5, shoulderWidth: 1.2 },
-      { fitness: 1.5, confidence: 1.0, chestPuff: 1.0, armThickness: 1.6, shoulderWidth: 1.25 },
+    // Stages map to the 4 body types in the reference image
+    // 0-2: Skinny, 3-5: Getting toned, 6-7: Muscular, 8-9: Jacked
+    const progressionStages = [
+      // Skinny stages (1-10)
+      { shoulderWidth: 20, armWidth: 6, legWidth: 8, chestDepth: 0, shoulderY: 110, bodyWidth: 32, neckWidth: 8 },
+      { shoulderWidth: 22, armWidth: 7, legWidth: 9, chestDepth: 1, shoulderY: 108, bodyWidth: 34, neckWidth: 9 },
+      
+      // Getting toned (11-20)
+      { shoulderWidth: 26, armWidth: 9, legWidth: 11, chestDepth: 3, shoulderY: 106, bodyWidth: 36, neckWidth: 10 },
+      { shoulderWidth: 30, armWidth: 11, legWidth: 13, chestDepth: 5, shoulderY: 104, bodyWidth: 38, neckWidth: 11 },
+      
+      // Building muscle (21-30)
+      { shoulderWidth: 34, armWidth: 13, legWidth: 15, chestDepth: 8, shoulderY: 102, bodyWidth: 40, neckWidth: 12 },
+      { shoulderWidth: 38, armWidth: 15, legWidth: 17, chestDepth: 11, shoulderY: 100, bodyWidth: 42, neckWidth: 13 },
+      
+      // Muscular (31-40)
+      { shoulderWidth: 42, armWidth: 17, legWidth: 19, chestDepth: 14, shoulderY: 98, bodyWidth: 44, neckWidth: 14 },
+      { shoulderWidth: 46, armWidth: 19, legWidth: 21, chestDepth: 17, shoulderY: 96, bodyWidth: 46, neckWidth: 15 },
+      
+      // Jacked (41-50)
+      { shoulderWidth: 50, armWidth: 21, legWidth: 23, chestDepth: 20, shoulderY: 94, bodyWidth: 48, neckWidth: 16 },
+      { shoulderWidth: 54, armWidth: 23, legWidth: 25, chestDepth: 24, shoulderY: 92, bodyWidth: 50, neckWidth: 17 },
     ];
-    return stages[stage];
+    
+    return progressionStages[stage];
   };
   
   const attrs = getStageAttributes();
   const skinTone = "#FFCC99";
   const outlineColor = "#000000";
-  const outlineWidth = 3;
+  const outlineWidth = 2.5;
   
-  // Render cartoon hair
-  const renderCartoonHair = () => {
+  // Render hair
+  const renderHair = () => {
     switch (hairStyle) {
       case "bald":
         return null;
       
+      case "buzzcut":
+        return (
+          <ellipse 
+            cx="100" 
+            cy="64" 
+            rx="28" 
+            ry="6" 
+            fill={hairColor} 
+            stroke={outlineColor} 
+            strokeWidth={2}
+            opacity="0.9"
+          />
+        );
+      
       case "short":
         return (
           <path
-            d="M 70 85 Q 100 75, 130 85"
+            d="M 75 70 Q 100 60, 125 70"
             fill={hairColor}
             stroke={outlineColor}
-            strokeWidth={2.5}
+            strokeWidth={2}
           />
         );
       
       case "medium":
         return (
           <g>
-            <ellipse cx="100" cy="80" rx="35" ry="15" fill={hairColor} stroke={outlineColor} strokeWidth={2.5} />
-            <path d="M 68 90 Q 65 100, 62 108" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
-            <path d="M 132 90 Q 135 100, 138 108" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            <ellipse cx="100" cy="65" rx="30" ry="12" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            <path d="M 72 75 Q 70 85, 68 92" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            <path d="M 128 75 Q 130 85, 132 92" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
           </g>
         );
       
       case "long":
         return (
           <g>
-            <ellipse cx="100" cy="80" rx="35" ry="18" fill={hairColor} stroke={outlineColor} strokeWidth={2.5} />
-            <path d="M 65 95 Q 60 115, 58 130" fill={hairColor} stroke={outlineColor} strokeWidth={2.5} />
-            <path d="M 135 95 Q 140 115, 142 130" fill={hairColor} stroke={outlineColor} strokeWidth={2.5} />
+            <ellipse cx="100" cy="65" rx="30" ry="15" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            <path d="M 70 78 Q 65 95, 62 110" fill={hairColor} stroke={outlineColor} strokeWidth={2.5} />
+            <path d="M 130 78 Q 135 95, 138 110" fill={hairColor} stroke={outlineColor} strokeWidth={2.5} />
           </g>
         );
       
       case "curly":
         return (
           <g>
-            <circle cx="85" cy="82" r="10" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
-            <circle cx="100" cy="75" r="12" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
-            <circle cx="115" cy="82" r="10" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
-            <circle cx="75" cy="92" r="8" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
-            <circle cx="125" cy="92" r="8" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            <circle cx="80" cy="68" r="9" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            <circle cx="100" cy="62" r="10" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            <circle cx="120" cy="68" r="9" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            <circle cx="72" cy="78" r="7" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            <circle cx="128" cy="78" r="7" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
           </g>
         );
       
       case "spiky":
         return (
           <g>
-            <path d="M 75 85 L 72 70 L 80 85" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
-            <path d="M 90 85 L 90 65 L 95 85" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
-            <path d="M 100 85 L 100 60 L 105 85" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
-            <path d="M 110 85 L 110 65 L 115 85" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
-            <path d="M 125 85 L 128 70 L 120 85" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            <path d="M 78 72 L 75 56 L 82 72" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            <path d="M 90 72 L 88 52 L 95 72" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            <path d="M 100 72 L 100 48 L 105 72" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            <path d="M 110 72 L 112 52 L 115 72" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            <path d="M 122 72 L 125 56 L 120 72" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
           </g>
-        );
-      
-      case "buzzcut":
-        return (
-          <ellipse cx="100" cy="85" rx="32" ry="8" fill={hairColor} stroke={outlineColor} strokeWidth={2} opacity="0.8" />
         );
       
       default:
         return (
           <path
-            d="M 70 85 Q 100 75, 130 85"
+            d="M 75 70 Q 100 60, 125 70"
             fill={hairColor}
             stroke={outlineColor}
-            strokeWidth={2.5}
+            strokeWidth={2}
           />
         );
     }
@@ -137,43 +158,43 @@ export function AvatarDisplay({
         className="avatar-svg"
       >
         <defs>
-          <radialGradient id="shine">
-            <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.3" />
+          <radialGradient id={`shine-${size}`}>
+            <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.4" />
             <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
           </radialGradient>
         </defs>
 
-        {/* === LEGS (Rubber Hose Style) === */}
+        {/* === LEGS === */}
         {/* Left Leg */}
         <g className="leg-left">
           <rect
-            x="82"
-            y="175"
-            width={8 * attrs.fitness}
-            height="40"
-            rx="4"
+            x={100 - attrs.legWidth / 2 - 14}
+            y="190"
+            width={attrs.legWidth}
+            height="56"
+            rx={attrs.legWidth / 2}
             fill={skinTone}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
           />
-          {/* Shorts over leg */}
+          {/* Shorts */}
           <rect
-            x="80"
-            y="175"
-            width={12 * attrs.fitness}
-            height="25"
-            rx="3"
+            x={100 - attrs.legWidth / 2 - 16}
+            y="185"
+            width={attrs.legWidth + 4}
+            height="32"
+            rx="4"
             fill={shortsColor}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
           />
-          {/* Big cartoon shoe */}
+          {/* Shoe */}
           <ellipse
-            cx="86"
-            cy="220"
-            rx="16"
-            ry="10"
-            fill="#FFD700"
+            cx={100 - 14}
+            cy="252"
+            rx="14"
+            ry="9"
+            fill="#808080"
             stroke={outlineColor}
             strokeWidth={outlineWidth}
           />
@@ -182,103 +203,105 @@ export function AvatarDisplay({
         {/* Right Leg */}
         <g className="leg-right">
           <rect
-            x="110"
-            y="175"
-            width={8 * attrs.fitness}
-            height="40"
-            rx="4"
+            x={100 - attrs.legWidth / 2 + 14}
+            y="190"
+            width={attrs.legWidth}
+            height="56"
+            rx={attrs.legWidth / 2}
             fill={skinTone}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
           />
           <rect
-            x="108"
-            y="175"
-            width={12 * attrs.fitness}
-            height="25"
-            rx="3"
+            x={100 - attrs.legWidth / 2 + 12}
+            y="185"
+            width={attrs.legWidth + 4}
+            height="32"
+            rx="4"
             fill={shortsColor}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
           />
           <ellipse
-            cx="114"
-            cy="220"
-            rx="16"
-            ry="10"
-            fill="#FFD700"
+            cx={100 + 14}
+            cy="252"
+            rx="14"
+            ry="9"
+            fill="#808080"
             stroke={outlineColor}
             strokeWidth={outlineWidth}
           />
         </g>
 
-        {/* === BODY (Pear-Shaped) === */}
-        {/* Lower body/belly */}
+        {/* === BODY === */}
+        {/* Torso - gets wider and more defined with progression */}
         <ellipse
           cx="100"
-          cy="165"
-          rx={30 * attrs.fitness}
-          ry={22 - (attrs.fitness * 5)}
+          cy="155"
+          rx={attrs.bodyWidth / 2}
+          ry="38"
           fill={shirtColor}
           stroke={outlineColor}
           strokeWidth={outlineWidth}
-          className="belly"
+          className="torso"
         />
         
-        {/* Upper torso/chest */}
-        <ellipse
-          cx="100"
-          cy={140 - (attrs.chestPuff * 5)}
-          rx={25 * attrs.shoulderWidth}
-          ry={25 + (attrs.chestPuff * 8)}
-          fill={shirtColor}
-          stroke={outlineColor}
-          strokeWidth={outlineWidth}
-          className="chest"
-        />
+        {/* Chest definition - appears and gets more pronounced */}
+        {attrs.chestDepth > 0 && (
+          <ellipse
+            cx="100"
+            cy={138 - attrs.chestDepth / 2}
+            rx={attrs.shoulderWidth / 2 - 2}
+            ry={18 + attrs.chestDepth}
+            fill={shirtColor}
+            stroke={outlineColor}
+            strokeWidth={outlineWidth}
+            className="chest"
+            style={{ filter: `brightness(0.95)` }}
+          />
+        )}
         
         {/* Shine on shirt */}
         <ellipse
-          cx="90"
+          cx="88"
           cy="135"
-          rx="12"
-          ry="15"
-          fill="url(#shine)"
+          rx="10"
+          ry="14"
+          fill={`url(#shine-${size})`}
         />
 
-        {/* === ARMS (Rubber Hose Style) === */}
+        {/* === ARMS === */}
         {/* Left Arm */}
         <g className="arm-left">
           <rect
-            x="68"
-            y="140"
-            width={6 * attrs.armThickness}
-            height="35"
-            rx="3"
+            x={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 3}
+            y={attrs.shoulderY}
+            width={attrs.armWidth}
+            height="52"
+            rx={attrs.armWidth / 2}
             fill={skinTone}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
           />
-          {/* Wristband */}
           {wristbands && (
             <rect
-              x="66"
-              y="168"
-              width={10 * attrs.armThickness}
-              height="6"
+              x={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 4}
+              y={attrs.shoulderY + 42}
+              width={attrs.armWidth + 2}
+              height="7"
               rx="2"
               fill="#E74C3C"
               stroke={outlineColor}
               strokeWidth={2}
             />
           )}
-          {/* Big cartoon glove/hand */}
+          {/* Hand */}
           <ellipse
-            cx={70 + (3 * attrs.armThickness)}
-            cy="182"
-            rx={10 * attrs.armThickness}
-            ry={8 * attrs.armThickness}
-            fill="#FFFFFF"
+            cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2 - 3}
+            cy={attrs.shoulderY + 58}
+            rx={attrs.armWidth + 2}
+            ry={attrs.armWidth + 1}
+            fill={skinTone}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
           />
@@ -287,21 +310,21 @@ export function AvatarDisplay({
         {/* Right Arm */}
         <g className="arm-right">
           <rect
-            x="126"
-            y="140"
-            width={6 * attrs.armThickness}
-            height="35"
-            rx="3"
+            x={100 + attrs.shoulderWidth / 2 + 3}
+            y={attrs.shoulderY}
+            width={attrs.armWidth}
+            height="52"
+            rx={attrs.armWidth / 2}
             fill={skinTone}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
           />
           {wristbands && (
             <rect
-              x="124"
-              y="168"
-              width={10 * attrs.armThickness}
-              height="6"
+              x={100 + attrs.shoulderWidth / 2 + 2}
+              y={attrs.shoulderY + 42}
+              width={attrs.armWidth + 2}
+              height="7"
               rx="2"
               fill="#E74C3C"
               stroke={outlineColor}
@@ -309,23 +332,35 @@ export function AvatarDisplay({
             />
           )}
           <ellipse
-            cx={130 - (3 * attrs.armThickness)}
-            cy="182"
-            rx={10 * attrs.armThickness}
-            ry={8 * attrs.armThickness}
-            fill="#FFFFFF"
+            cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2 + 3}
+            cy={attrs.shoulderY + 58}
+            rx={attrs.armWidth + 2}
+            ry={attrs.armWidth + 1}
+            fill={skinTone}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
           />
         </g>
 
-        {/* === HEAD (Large and Round) === */}
+        {/* === NECK === */}
+        <rect
+          x={100 - attrs.neckWidth / 2}
+          y="88"
+          width={attrs.neckWidth}
+          height="18"
+          rx={attrs.neckWidth / 2}
+          fill={skinTone}
+          stroke={outlineColor}
+          strokeWidth={outlineWidth}
+        />
+
+        {/* === HEAD === */}
         <g className="head-group">
-          {/* Main head circle */}
+          {/* Main head */}
           <circle
             cx="100"
-            cy="100"
-            r="40"
+            cy="70"
+            r="32"
             fill={skinTone}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
@@ -334,52 +369,52 @@ export function AvatarDisplay({
           {/* Shine on head */}
           <ellipse
             cx="85"
-            cy="85"
-            rx="15"
-            ry="18"
-            fill="url(#shine)"
+            cy="58"
+            rx="12"
+            ry="14"
+            fill={`url(#shine-${size})`}
           />
           
           {/* Hair */}
-          {renderCartoonHair()}
+          {renderHair()}
           
           {/* Headband */}
           {headband && (
             <g className="headband">
               <ellipse
                 cx="100"
-                cy="90"
-                rx="42"
-                ry="6"
+                cy="72"
+                rx="34"
+                ry="5"
                 fill="#E74C3C"
                 stroke={outlineColor}
                 strokeWidth={2.5}
               />
-              <circle cx="138" cy="90" r="5" fill="#C0392B" stroke={outlineColor} strokeWidth={2} />
+              <circle cx="130" cy="72" r="4" fill="#C0392B" stroke={outlineColor} strokeWidth={2} />
             </g>
           )}
           
           {/* Eyes */}
           <g className="eyes">
             {/* Left eye */}
-            <ellipse cx="85" cy="100" rx="10" ry="12" fill="#FFFFFF" stroke={outlineColor} strokeWidth={2.5} />
-            <circle cx="87" cy="102" r="6" fill={outlineColor} className="pupil-left" />
-            <circle cx="89" cy="99" r="2.5" fill="#FFFFFF" className="eye-shine-left" />
+            <ellipse cx="87" cy="74" rx="6" ry="7" fill="#FFFFFF" stroke={outlineColor} strokeWidth={2} />
+            <circle cx="88" cy="75" r="3.5" fill={outlineColor} className="pupil-left" />
+            <circle cx="89" cy="73" r="1.5" fill="#FFFFFF" className="eye-shine" />
             
             {/* Right eye */}
-            <ellipse cx="115" cy="100" rx="10" ry="12" fill="#FFFFFF" stroke={outlineColor} strokeWidth={2.5} />
-            <circle cx="117" cy="102" r="6" fill={outlineColor} className="pupil-right" />
-            <circle cx="119" cy="99" r="2.5" fill="#FFFFFF" className="eye-shine-right" />
+            <ellipse cx="113" cy="74" rx="6" ry="7" fill="#FFFFFF" stroke={outlineColor} strokeWidth={2} />
+            <circle cx="114" cy="75" r="3.5" fill={outlineColor} className="pupil-right" />
+            <circle cx="115" cy="73" r="1.5" fill="#FFFFFF" className="eye-shine" />
           </g>
           
           {/* Nose */}
-          <ellipse cx="100" cy="110" rx="4" ry="5" fill="#FFAA66" stroke={outlineColor} strokeWidth={2} />
+          <ellipse cx="100" cy="82" rx="3" ry="4" fill="#FFAA66" stroke={outlineColor} strokeWidth={1.5} />
           
-          {/* Mouth - smile gets bigger with confidence */}
+          {/* Mouth - smile */}
           <path
-            d={`M ${82} ${118} Q 100 ${120 + (attrs.confidence * 8)}, ${118} ${118}`}
+            d="M 90 88 Q 100 94, 110 88"
             stroke={outlineColor}
-            strokeWidth="3"
+            strokeWidth="2.5"
             strokeLinecap="round"
             fill="none"
           />
@@ -389,41 +424,27 @@ export function AvatarDisplay({
       {/* Stage indicator */}
       <div className="text-center mt-2">
         <div className="text-xs font-semibold text-primary">
-          {stage === 0 && "Beginner"}
-          {stage === 1 && "Novice"}
-          {stage === 2 && "Trainee"}
-          {stage === 3 && "Intermediate"}
-          {stage === 4 && "Advanced"}
-          {stage === 5 && "Expert"}
-          {stage === 6 && "Elite"}
-          {stage === 7 && "Master"}
-          {stage === 8 && "Champion"}
-          {stage === 9 && "Legend"}
+          {stage === 0 && "Skinny Beginner"}
+          {stage === 1 && "Starting Out"}
+          {stage === 2 && "Getting Toned"}
+          {stage === 3 && "Building Muscle"}
+          {stage === 4 && "Solid Build"}
+          {stage === 5 && "Strong"}
+          {stage === 6 && "Muscular"}
+          {stage === 7 && "Very Muscular"}
+          {stage === 8 && "Jacked"}
+          {stage === 9 && "Absolute Unit"}
         </div>
         <div className="text-xs text-muted-foreground">Stage {stage + 1}/10</div>
       </div>
       
       <style>{`
         .avatar-svg {
-          filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.15));
+          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
         }
         
-        /* Bouncy floating animation */
-        .avatar-container {
-          animation: cartoonBounce 2s ease-in-out infinite;
-        }
-        
-        @keyframes cartoonBounce {
-          0%, 100% {
-            transform: translateY(0px);
-          }
-          50% {
-            transform: translateY(-8px);
-          }
-        }
-        
-        /* Breathing animation on body */
-        .chest, .belly {
+        /* Gentle breathing animation */
+        .torso, .chest {
           animation: breathe 3s ease-in-out infinite;
           transform-origin: center;
         }
@@ -433,13 +454,13 @@ export function AvatarDisplay({
             transform: scale(1, 1);
           }
           50% {
-            transform: scale(1.03, 1.05);
+            transform: scale(1.02, 1.03);
           }
         }
         
-        /* Eye blink animation */
+        /* Eye blink */
         .eyes {
-          animation: blink 4s infinite;
+          animation: blink 5s infinite;
         }
         
         @keyframes blink {
@@ -451,9 +472,9 @@ export function AvatarDisplay({
           }
         }
         
-        /* Pupil movement */
+        /* Subtle pupil movement */
         .pupil-left, .pupil-right {
-          animation: lookAround 6s ease-in-out infinite;
+          animation: lookAround 7s ease-in-out infinite;
         }
         
         @keyframes lookAround {
@@ -461,57 +482,13 @@ export function AvatarDisplay({
             transform: translate(0, 0);
           }
           25% {
-            transform: translate(2px, -1px);
+            transform: translate(1.5px, -0.5px);
           }
           50% {
             transform: translate(0, 0);
           }
           75% {
-            transform: translate(-2px, 1px);
-          }
-        }
-        
-        /* Gentle arm sway */
-        .arm-left {
-          animation: armSwayLeft 3s ease-in-out infinite;
-          transform-origin: 71px 140px;
-        }
-        
-        .arm-right {
-          animation: armSwayRight 3s ease-in-out infinite 0.5s;
-          transform-origin: 129px 140px;
-        }
-        
-        @keyframes armSwayLeft {
-          0%, 100% {
-            transform: rotate(-3deg);
-          }
-          50% {
-            transform: rotate(3deg);
-          }
-        }
-        
-        @keyframes armSwayRight {
-          0%, 100% {
-            transform: rotate(3deg);
-          }
-          50% {
-            transform: rotate(-3deg);
-          }
-        }
-        
-        /* Head slight bob */
-        .head-group {
-          animation: headBob 4s ease-in-out infinite;
-          transform-origin: 100px 100px;
-        }
-        
-        @keyframes headBob {
-          0%, 100% {
-            transform: translateY(0px) rotate(-1deg);
-          }
-          50% {
-            transform: translateY(-2px) rotate(1deg);
+            transform: translate(-1.5px, 0.5px);
           }
         }
       `}</style>
