@@ -56,6 +56,13 @@ export const users = pgTable("users", {
   mvlWins: integer("mvl_wins").default(0).notNull(),
   dailyXp: integer("daily_xp").default(0).notNull(),
   lastDailyXpReset: varchar("last_daily_xp_reset"),
+  
+  // Avatar customization
+  characterType: varchar("character_type").default("classic"),
+  shirtColor: varchar("shirt_color").default("#FF6B35"),
+  shortsColor: varchar("shorts_color").default("#1E3A8A"),
+  headband: boolean("headband").default(false),
+  wristbands: boolean("wristbands").default(false),
 });
 
 export const insertUserSchema = createInsertSchema(users).omit({ 
