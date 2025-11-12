@@ -423,21 +423,51 @@ export function AvatarDisplay({
           />
         </g>
 
-        {/* === ARMS - Render BEHIND tank top, angled inward, shorter and closer === */}
+        {/* === ARMS - Render BEHIND tank top, angled inward, with muscle bulges === */}
         {/* Left Arm - angled toward center */}
         <g 
           className="arm-left"
           transform={`rotate(20, ${100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}, 95)`}
         >
+          {/* Upper arm / Bicep area - wider bulge */}
           <ellipse
             cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}
-            cy={137}
+            cy={125}
             rx={attrs.armWidth + 2}
-            ry="42"
+            ry="20"
             fill={skinTone}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
           />
+          {/* Mid arm - bicep peak, even wider for muscular stages */}
+          <ellipse
+            cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}
+            cy={138}
+            rx={stage >= 2 ? attrs.armWidth + 3 : attrs.armWidth + 2}
+            ry="16"
+            fill={skinTone}
+            stroke="none"
+          />
+          {/* Elbow transition - narrower */}
+          <ellipse
+            cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}
+            cy={152}
+            rx={Math.max(attrs.armWidth * 0.7, 4)}
+            ry="10"
+            fill={skinTone}
+            stroke="none"
+          />
+          {/* Forearm - slightly wider than elbow */}
+          <ellipse
+            cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}
+            cy={165}
+            rx={Math.max(attrs.armWidth * 0.85, 4.5)}
+            ry="14"
+            fill={skinTone}
+            stroke={outlineColor}
+            strokeWidth={outlineWidth}
+          />
+          
           {/* Bicep definition line - visible at stage 2+ */}
           {stage >= 2 && attrs.armWidth > 4 && (
             <line
@@ -453,10 +483,10 @@ export function AvatarDisplay({
           {/* Tricep/outer arm definition - visible at stage 3+ */}
           {stage >= 3 && attrs.armWidth > 5 && (
             <line
-              x1={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2 - (attrs.armWidth * 0.6)}
-              y1={130}
-              x2={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2 - (attrs.armWidth * 0.6)}
-              y2={148}
+              x1={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2 - (attrs.armWidth * 0.5)}
+              y1={125}
+              x2={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2 - (attrs.armWidth * 0.5)}
+              y2={145}
               stroke={outlineColor}
               strokeWidth="0.7"
               opacity={Math.min(0.12 + stage * 0.025, 0.3)}
@@ -466,9 +496,9 @@ export function AvatarDisplay({
           {stage >= 4 && attrs.armWidth > 5 && (
             <line
               x1={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}
-              y1={150}
+              y1={155}
               x2={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}
-              y2={168}
+              y2={172}
               stroke={outlineColor}
               strokeWidth="0.7"
               opacity={Math.min(0.1 + stage * 0.02, 0.25)}
@@ -502,15 +532,45 @@ export function AvatarDisplay({
           className="arm-right"
           transform={`rotate(-20, ${100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}, 95)`}
         >
+          {/* Upper arm / Bicep area - wider bulge */}
           <ellipse
             cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}
-            cy={137}
+            cy={125}
             rx={attrs.armWidth + 2}
-            ry="42"
+            ry="20"
             fill={skinTone}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
           />
+          {/* Mid arm - bicep peak, even wider for muscular stages */}
+          <ellipse
+            cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}
+            cy={138}
+            rx={stage >= 2 ? attrs.armWidth + 3 : attrs.armWidth + 2}
+            ry="16"
+            fill={skinTone}
+            stroke="none"
+          />
+          {/* Elbow transition - narrower */}
+          <ellipse
+            cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}
+            cy={152}
+            rx={Math.max(attrs.armWidth * 0.7, 4)}
+            ry="10"
+            fill={skinTone}
+            stroke="none"
+          />
+          {/* Forearm - slightly wider than elbow */}
+          <ellipse
+            cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}
+            cy={165}
+            rx={Math.max(attrs.armWidth * 0.85, 4.5)}
+            ry="14"
+            fill={skinTone}
+            stroke={outlineColor}
+            strokeWidth={outlineWidth}
+          />
+          
           {/* Bicep definition line - visible at stage 2+ */}
           {stage >= 2 && attrs.armWidth > 4 && (
             <line
@@ -526,10 +586,10 @@ export function AvatarDisplay({
           {/* Tricep/outer arm definition - visible at stage 3+ */}
           {stage >= 3 && attrs.armWidth > 5 && (
             <line
-              x1={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2 + (attrs.armWidth * 0.6)}
-              y1={130}
-              x2={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2 + (attrs.armWidth * 0.6)}
-              y2={148}
+              x1={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2 + (attrs.armWidth * 0.5)}
+              y1={125}
+              x2={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2 + (attrs.armWidth * 0.5)}
+              y2={145}
               stroke={outlineColor}
               strokeWidth="0.7"
               opacity={Math.min(0.12 + stage * 0.025, 0.3)}
@@ -539,9 +599,9 @@ export function AvatarDisplay({
           {stage >= 4 && attrs.armWidth > 5 && (
             <line
               x1={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}
-              y1={150}
+              y1={155}
               x2={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}
-              y2={168}
+              y2={172}
               stroke={outlineColor}
               strokeWidth="0.7"
               opacity={Math.min(0.1 + stage * 0.02, 0.25)}
