@@ -23,6 +23,7 @@ Iron Crew is a full-stack fitness tracking application that integrates workout l
 - **Eye Clipping Fix (Nov 12, 2025):** Increased head clip path radius from 27 to 28.5 to prevent eyes from being clipped at head boundary.
 - **Progressive Facial Expressions (Nov 12, 2025):** Added dynamic facial expressions that evolve across stages. Eyebrows: Stage 0-2 (light/uncertain), Stage 3-5 (confident/defined), Stage 6-7 (strong/angled), Stage 8-9 (intense/determined). Mouth: Stage 0-2 (small smile), Stage 3-5 (bigger grin), Stage 6-7 (wide powerful grin), Stage 8-9 (intense determined expression). Creates more personality and reflects the fitness journey visually.
 - **Rotation Feature Removed (Nov 12, 2025):** Completely removed 360° avatar rotation feature (side view, back view) as it didn't render well. Restored simple front-view-only avatar display for cleaner, more consistent appearance across all stages.
+- **Chest Striations (Nov 12, 2025):** Added fine diagonal chest striation lines showing extreme muscle definition at highest stages. Stage 8 shows 1 striation line on each pec, Stage 9 shows 2 striation lines on each pec for maximum muscular detail.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
