@@ -3,7 +3,7 @@
 const TITLE_BUCKETS = [
   "Rookie 1",
   "Rookie 2",
-  "Rookie 3",
+  "Noobie",
   "Amateur",
   "Veteran",
   "Meathead",
@@ -15,7 +15,7 @@ const TITLE_BUCKETS = [
 
 export function xpNeededForLevel(level: number): number {
   if (level >= 50) return 10 ** 9;
-  return Math.floor(100 * Math.pow(1.6, level - 1));
+  return Math.floor(100 * Math.pow(1.125, level - 1));
 }
 
 export function recalcLevel(totalXp: number): number {
