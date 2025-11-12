@@ -55,6 +55,13 @@ const HAIR_COLORS = [
   { name: "White", value: "#E5E7EB" },
 ];
 
+const FACIAL_HAIR_STYLES = [
+  { id: "none", name: "None", description: "Clean shaven" },
+  { id: "stubble", name: "Stubble", description: "Light shadow" },
+  { id: "smallbeard", name: "Small Beard", description: "Trimmed beard" },
+  { id: "bigbeard", name: "Big Beard", description: "Full beard" },
+];
+
 export default function AvatarPage() {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -66,6 +73,7 @@ export default function AvatarPage() {
   const [wristbands, setWristbands] = useState(user?.wristbands || false);
   const [hairStyle, setHairStyle] = useState(user?.hairStyle || "short");
   const [hairColor, setHairColor] = useState(user?.hairColor || "#8B4513");
+  const [facialHair, setFacialHair] = useState(user?.facialHair || "none");
 
   const saveAvatarMutation = useMutation({
     mutationFn: async () => {
@@ -77,6 +85,7 @@ export default function AvatarPage() {
         wristbands,
         hairStyle,
         hairColor,
+        facialHair,
       });
       return await res.json();
     },
@@ -160,6 +169,7 @@ export default function AvatarPage() {
                 wristbands={wristbands}
                 hairStyle={hairStyle}
                 hairColor={hairColor}
+                facialHair={facialHair}
                 size="lg"
               />
               <div className="text-center space-y-1">
@@ -288,6 +298,32 @@ export default function AvatarPage() {
               </CardContent>
             </Card>
 
+            {/* Facial Hair Customization */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Facial Hair</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Style</Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {FACIAL_HAIR_STYLES.map((style) => (
+                      <Button
+                        key={style.id}
+                        variant={facialHair === style.id ? "default" : "outline"}
+                        className="h-auto flex-col gap-1 py-2"
+                        onClick={() => setFacialHair(style.id)}
+                        data-testid={`button-facial-hair-${style.id}`}
+                      >
+                        <span className="font-semibold text-xs">{style.name}</span>
+                        <span className="text-xs opacity-70">{style.description}</span>
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Accessories */}
             <Card>
               <CardHeader>
@@ -351,6 +387,7 @@ export default function AvatarPage() {
                           wristbands={wristbands}
                           hairStyle={hairStyle}
                           hairColor={hairColor}
+                          facialHair={facialHair}
                           size="sm"
                         />
                         <div className="text-center">
