@@ -235,6 +235,9 @@ export function AvatarDisplay({
           <filter id="shadow">
             <feDropShadow dx="0" dy="1" stdDeviation="1" floodOpacity="0.15"/>
           </filter>
+          <clipPath id="head-clip">
+            <circle cx="100" cy="60" r="27" />
+          </clipPath>
         </defs>
 
         {/* === LEGS === */}
@@ -288,11 +291,11 @@ export function AvatarDisplay({
         {/* Left Arm - angled toward center */}
         <g 
           className="arm-left"
-          transform={`rotate(20, ${100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}, 106)`}
+          transform={`rotate(20, ${100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}, 102)`}
         >
           <ellipse
             cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}
-            cy={148}
+            cy={144}
             rx={attrs.armWidth + 2}
             ry="42"
             fill={skinTone}
@@ -302,7 +305,7 @@ export function AvatarDisplay({
           {wristbands && (
             <ellipse
               cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}
-              cy={182}
+              cy={178}
               rx={attrs.armWidth + 3}
               ry="5"
               fill="#E74C3C"
@@ -313,7 +316,7 @@ export function AvatarDisplay({
           {/* Hand */}
           <ellipse
             cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}
-            cy={196}
+            cy={192}
             rx={attrs.armWidth + 4}
             ry={attrs.armWidth + 3}
             fill={skinTone}
@@ -325,11 +328,11 @@ export function AvatarDisplay({
         {/* Right Arm - angled toward center */}
         <g 
           className="arm-right"
-          transform={`rotate(-20, ${100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}, 106)`}
+          transform={`rotate(-20, ${100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}, 102)`}
         >
           <ellipse
             cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}
-            cy={148}
+            cy={144}
             rx={attrs.armWidth + 2}
             ry="42"
             fill={skinTone}
@@ -339,7 +342,7 @@ export function AvatarDisplay({
           {wristbands && (
             <ellipse
               cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}
-              cy={182}
+              cy={178}
               rx={attrs.armWidth + 3}
               ry="5"
               fill="#E74C3C"
@@ -349,7 +352,7 @@ export function AvatarDisplay({
           )}
           <ellipse
             cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}
-            cy={196}
+            cy={192}
             rx={attrs.armWidth + 4}
             ry={attrs.armWidth + 3}
             fill={skinTone}
@@ -457,7 +460,7 @@ export function AvatarDisplay({
           )}
           
           {/* Eyes - simple and clean */}
-          <g className="eyes">
+          <g className="eyes" clipPath="url(#head-clip)">
             {/* Left eye */}
             <ellipse cx="89" cy="62" rx="5" ry="6" fill="#FFFFFF" stroke={outlineColor} strokeWidth={2} />
             <circle cx="90" cy="63" r="3" fill={outlineColor} className="pupil-left" />
