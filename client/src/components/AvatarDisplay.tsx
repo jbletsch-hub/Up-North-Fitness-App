@@ -869,14 +869,77 @@ export function AvatarDisplay({
           {/* Nose */}
           <ellipse cx="100" cy="69" rx="2.5" ry="3" fill="#FFAA66" />
           
-          {/* Smile - simple curve */}
-          <path
-            d="M 92 75 Q 100 80, 108 75"
-            stroke={outlineColor}
-            strokeWidth="2"
-            strokeLinecap="round"
-            fill="none"
-          />
+          {/* Eyebrows - get more intense as you progress */}
+          {stage <= 2 && (
+            <>
+              {/* Light, uncertain eyebrows */}
+              <path d="M 85 54 Q 89 53, 93 54" stroke={outlineColor} strokeWidth="1.5" strokeLinecap="round" fill="none" />
+              <path d="M 107 54 Q 111 53, 115 54" stroke={outlineColor} strokeWidth="1.5" strokeLinecap="round" fill="none" />
+            </>
+          )}
+          {stage >= 3 && stage <= 5 && (
+            <>
+              {/* Confident, defined eyebrows */}
+              <path d="M 84 53 Q 89 51, 94 52" stroke={outlineColor} strokeWidth="2" strokeLinecap="round" fill="none" />
+              <path d="M 106 52 Q 111 51, 116 53" stroke={outlineColor} strokeWidth="2" strokeLinecap="round" fill="none" />
+            </>
+          )}
+          {stage >= 6 && stage <= 7 && (
+            <>
+              {/* Strong, slightly angled eyebrows */}
+              <path d="M 83 52 Q 89 49, 95 51" stroke={outlineColor} strokeWidth="2.2" strokeLinecap="round" fill="none" />
+              <path d="M 105 51 Q 111 49, 117 52" stroke={outlineColor} strokeWidth="2.2" strokeLinecap="round" fill="none" />
+            </>
+          )}
+          {stage >= 8 && (
+            <>
+              {/* Intense, determined angled eyebrows */}
+              <path d="M 82 51 Q 89 47, 96 50" stroke={outlineColor} strokeWidth="2.5" strokeLinecap="round" fill="none" />
+              <path d="M 104 50 Q 111 47, 118 51" stroke={outlineColor} strokeWidth="2.5" strokeLinecap="round" fill="none" />
+            </>
+          )}
+          
+          {/* Mouth - progressive expressions */}
+          {stage <= 2 && (
+            /* Small, uncertain smile - just starting */
+            <path
+              d="M 94 75 Q 100 78, 106 75"
+              stroke={outlineColor}
+              strokeWidth="2"
+              strokeLinecap="round"
+              fill="none"
+            />
+          )}
+          {stage >= 3 && stage <= 5 && (
+            /* Bigger, confident grin - gaining momentum */
+            <path
+              d="M 92 75 Q 100 81, 108 75"
+              stroke={outlineColor}
+              strokeWidth="2"
+              strokeLinecap="round"
+              fill="none"
+            />
+          )}
+          {stage >= 6 && stage <= 7 && (
+            /* Wide, powerful grin - feeling strong */
+            <path
+              d="M 90 74 Q 100 82, 110 74"
+              stroke={outlineColor}
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              fill="none"
+            />
+          )}
+          {stage >= 8 && (
+            /* Intense, determined expression - beast mode */
+            <path
+              d="M 91 76 Q 100 80, 109 76"
+              stroke={outlineColor}
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              fill="none"
+            />
+          )}
         </g>
       </svg>
       
