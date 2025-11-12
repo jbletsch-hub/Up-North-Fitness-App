@@ -11,6 +11,7 @@ Iron Crew is a full-stack fitness tracking application that integrates workout l
 - **App Icon & PWA:** Custom golden dumbbell icon for browser tabs and mobile shortcuts, with web app manifest (manifest.json) for proper Progressive Web App support across iOS, Android, and desktop platforms.
 - **Weekly Goals Limit:** Increased from 1 to 3 weekly goals per week, still resetting every Sunday at midnight Central Time.
 - **Challenge Randomization:** Implemented Fisher-Yates shuffle algorithm for truly random daily challenge selection, eliminating biased patterns.
+- **Arm Anatomy Redesign (Nov 12, 2025):** Arms completely rebuilt with distinct bicep and forearm sections for realistic muscle progression. Bicep is wider (armWidth + 2) with pronounced outer bulge, narrower elbow transition (0.75x), and slimmer forearm (0.85x). Arms rotate at shoulder joint (shoulderY: 88) and angle naturally into tank top. Width progression: 4→21 across 10 stages. Progressive muscle definition with veins appearing from Stage 4+ (forearms) and Stage 5+ (biceps).
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
