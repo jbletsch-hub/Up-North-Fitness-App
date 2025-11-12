@@ -284,6 +284,74 @@ export function AvatarDisplay({
           />
         </g>
 
+        {/* === ARMS - Render BEHIND tank top, TOP starts at y=110 === */}
+        {/* Left Arm */}
+        <g className="arm-left">
+          <ellipse
+            cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 10}
+            cy={158}
+            rx={attrs.armWidth + 2}
+            ry="48"
+            fill={skinTone}
+            stroke={outlineColor}
+            strokeWidth={outlineWidth}
+          />
+          {wristbands && (
+            <ellipse
+              cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 10}
+              cy={196}
+              rx={attrs.armWidth + 3}
+              ry="5"
+              fill="#E74C3C"
+              stroke={outlineColor}
+              strokeWidth={2}
+            />
+          )}
+          {/* Hand */}
+          <ellipse
+            cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 10}
+            cy={212}
+            rx={attrs.armWidth + 4}
+            ry={attrs.armWidth + 3}
+            fill={skinTone}
+            stroke={outlineColor}
+            strokeWidth={outlineWidth}
+          />
+        </g>
+        
+        {/* Right Arm */}
+        <g className="arm-right">
+          <ellipse
+            cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 10}
+            cy={158}
+            rx={attrs.armWidth + 2}
+            ry="48"
+            fill={skinTone}
+            stroke={outlineColor}
+            strokeWidth={outlineWidth}
+          />
+          {wristbands && (
+            <ellipse
+              cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 10}
+              cy={196}
+              rx={attrs.armWidth + 3}
+              ry="5"
+              fill="#E74C3C"
+              stroke={outlineColor}
+              strokeWidth={2}
+            />
+          )}
+          <ellipse
+            cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 10}
+            cy={212}
+            rx={attrs.armWidth + 4}
+            ry={attrs.armWidth + 3}
+            fill={skinTone}
+            stroke={outlineColor}
+            strokeWidth={outlineWidth}
+          />
+        </g>
+
         {/* === BODY/SHIRT === */}
         {/* Tank top that goes all the way up to neck */}
         <ellipse
@@ -308,74 +376,6 @@ export function AvatarDisplay({
           strokeWidth={outlineWidth}
         />
 
-        {/* === ARMS - TOP starts at shoulder/armpit level (y=117) === */}
-        {/* Left Arm */}
-        <g className="arm-left">
-          <ellipse
-            cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 10}
-            cy={165}
-            rx={attrs.armWidth + 2}
-            ry="48"
-            fill={skinTone}
-            stroke={outlineColor}
-            strokeWidth={outlineWidth}
-          />
-          {wristbands && (
-            <ellipse
-              cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 10}
-              cy={203}
-              rx={attrs.armWidth + 3}
-              ry="5"
-              fill="#E74C3C"
-              stroke={outlineColor}
-              strokeWidth={2}
-            />
-          )}
-          {/* Hand */}
-          <ellipse
-            cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 10}
-            cy={219}
-            rx={attrs.armWidth + 4}
-            ry={attrs.armWidth + 3}
-            fill={skinTone}
-            stroke={outlineColor}
-            strokeWidth={outlineWidth}
-          />
-        </g>
-        
-        {/* Right Arm */}
-        <g className="arm-right">
-          <ellipse
-            cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 10}
-            cy={165}
-            rx={attrs.armWidth + 2}
-            ry="48"
-            fill={skinTone}
-            stroke={outlineColor}
-            strokeWidth={outlineWidth}
-          />
-          {wristbands && (
-            <ellipse
-              cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 10}
-              cy={203}
-              rx={attrs.armWidth + 3}
-              ry="5"
-              fill="#E74C3C"
-              stroke={outlineColor}
-              strokeWidth={2}
-            />
-          )}
-          <ellipse
-            cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 10}
-            cy={219}
-            rx={attrs.armWidth + 4}
-            ry={attrs.armWidth + 3}
-            fill={skinTone}
-            stroke={outlineColor}
-            strokeWidth={outlineWidth}
-          />
-        </g>
-        
         {/* Chest definition on top */}
         {attrs.chestWidth > 30 && (
           <ellipse
