@@ -432,7 +432,7 @@ export function AvatarDisplay({
           {/* Upper arm */}
           <ellipse
             cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2}
-            cy={125}
+            cy={118}
             rx={attrs.armWidth + 2}
             ry="22"
             fill={skinTone}
@@ -443,7 +443,7 @@ export function AvatarDisplay({
           {/* Elbow area - narrower transition */}
           <ellipse
             cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2}
-            cy={142}
+            cy={135}
             rx={Math.max(attrs.armWidth * 0.75, 4)}
             ry="10"
             fill={skinTone}
@@ -453,7 +453,7 @@ export function AvatarDisplay({
           {/* Forearm - slimmer than upper arm */}
           <ellipse
             cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2}
-            cy={161}
+            cy={154}
             rx={Math.max(attrs.armWidth * 0.85, 4.5)}
             ry="21"
             fill={skinTone}
@@ -465,9 +465,9 @@ export function AvatarDisplay({
           {stage >= 2 && attrs.armWidth > 5 && (
             <line
               x1={100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2}
-              y1={119}
+              y1={112}
               x2={100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2}
-              y2={139}
+              y2={132}
               stroke={outlineColor}
               strokeWidth="0.9"
               opacity={Math.min(0.18 + stage * 0.03, 0.4)}
@@ -478,9 +478,9 @@ export function AvatarDisplay({
           {stage >= 3 && attrs.armWidth > 6 && (
             <line
               x1={100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2 - (attrs.armWidth * 0.6)}
-              y1={122}
+              y1={115}
               x2={100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2 - (attrs.armWidth * 0.6)}
-              y2={142}
+              y2={135}
               stroke={outlineColor}
               strokeWidth="0.8"
               opacity={Math.min(0.15 + stage * 0.025, 0.35)}
@@ -491,14 +491,14 @@ export function AvatarDisplay({
           {stage >= 4 && attrs.armWidth > 7 && (
             <>
               <path
-                d={`M ${100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2 - 2} 152 Q ${100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2} 160, ${100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2 - 1} 168`}
+                d={`M ${100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2 - 2} 145 Q ${100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2} 153, ${100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2 - 1} 161`}
                 stroke={outlineColor}
                 strokeWidth="0.7"
                 fill="none"
                 opacity={Math.min(0.12 + stage * 0.03, 0.35)}
               />
               <path
-                d={`M ${100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2 + 1.5} 154 Q ${100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2 + 2} 161, ${100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2 + 2} 167`}
+                d={`M ${100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2 + 1.5} 147 Q ${100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2 + 2} 154, ${100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2 + 2} 160`}
                 stroke={outlineColor}
                 strokeWidth="0.6"
                 fill="none"
@@ -510,7 +510,7 @@ export function AvatarDisplay({
           {/* Bicep vein - visible at stage 5+ */}
           {stage >= 5 && attrs.armWidth > 8 && (
             <path
-              d={`M ${100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2 - 3} 122 Q ${100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2 - 2} 130, ${100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2 - 2} 138`}
+              d={`M ${100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2 - 3} 115 Q ${100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2 - 2} 123, ${100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2 - 2} 131`}
               stroke={outlineColor}
               strokeWidth="0.7"
               fill="none"
@@ -521,7 +521,7 @@ export function AvatarDisplay({
           {wristbands && (
             <ellipse
               cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2}
-              cy={175}
+              cy={168}
               rx={attrs.armWidth + 1}
               ry="5"
               fill="#E74C3C"
@@ -532,7 +532,7 @@ export function AvatarDisplay({
           {/* Hand - proportional */}
           <ellipse
             cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2}
-            cy={187}
+            cy={180}
             rx={Math.max(attrs.armWidth * 0.9, 5)}
             ry={Math.max(attrs.armWidth * 0.8, 4.5)}
             fill={skinTone}
@@ -549,7 +549,7 @@ export function AvatarDisplay({
           {/* Upper arm */}
           <ellipse
             cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2}
-            cy={125}
+            cy={118}
             rx={attrs.armWidth + 2}
             ry="22"
             fill={skinTone}
@@ -560,7 +560,7 @@ export function AvatarDisplay({
           {/* Elbow area - narrower transition */}
           <ellipse
             cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2}
-            cy={142}
+            cy={135}
             rx={Math.max(attrs.armWidth * 0.75, 4)}
             ry="10"
             fill={skinTone}
@@ -570,7 +570,7 @@ export function AvatarDisplay({
           {/* Forearm - slimmer than upper arm */}
           <ellipse
             cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2}
-            cy={161}
+            cy={154}
             rx={Math.max(attrs.armWidth * 0.85, 4.5)}
             ry="21"
             fill={skinTone}
@@ -582,9 +582,9 @@ export function AvatarDisplay({
           {stage >= 2 && attrs.armWidth > 5 && (
             <line
               x1={100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2}
-              y1={119}
+              y1={112}
               x2={100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2}
-              y2={139}
+              y2={132}
               stroke={outlineColor}
               strokeWidth="0.9"
               opacity={Math.min(0.18 + stage * 0.03, 0.4)}
@@ -595,9 +595,9 @@ export function AvatarDisplay({
           {stage >= 3 && attrs.armWidth > 6 && (
             <line
               x1={100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2 + (attrs.armWidth * 0.6)}
-              y1={122}
+              y1={115}
               x2={100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2 + (attrs.armWidth * 0.6)}
-              y2={142}
+              y2={135}
               stroke={outlineColor}
               strokeWidth="0.8"
               opacity={Math.min(0.15 + stage * 0.025, 0.35)}
@@ -608,14 +608,14 @@ export function AvatarDisplay({
           {stage >= 4 && attrs.armWidth > 7 && (
             <>
               <path
-                d={`M ${100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2 + 2} 152 Q ${100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2} 160, ${100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2 + 1} 168`}
+                d={`M ${100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2 + 2} 145 Q ${100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2} 153, ${100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2 + 1} 161`}
                 stroke={outlineColor}
                 strokeWidth="0.7"
                 fill="none"
                 opacity={Math.min(0.12 + stage * 0.03, 0.35)}
               />
               <path
-                d={`M ${100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2 - 1.5} 154 Q ${100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2 - 2} 161, ${100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2 - 2} 167`}
+                d={`M ${100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2 - 1.5} 147 Q ${100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2 - 2} 154, ${100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2 - 2} 160`}
                 stroke={outlineColor}
                 strokeWidth="0.6"
                 fill="none"
@@ -627,7 +627,7 @@ export function AvatarDisplay({
           {/* Bicep vein - visible at stage 5+ */}
           {stage >= 5 && attrs.armWidth > 8 && (
             <path
-              d={`M ${100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2 + 3} 122 Q ${100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2 + 2} 130, ${100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2 + 2} 138`}
+              d={`M ${100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2 + 3} 115 Q ${100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2 + 2} 123, ${100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2 + 2} 131`}
               stroke={outlineColor}
               strokeWidth="0.7"
               fill="none"
@@ -638,7 +638,7 @@ export function AvatarDisplay({
           {wristbands && (
             <ellipse
               cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2}
-              cy={175}
+              cy={168}
               rx={attrs.armWidth + 1}
               ry="5"
               fill="#E74C3C"
@@ -649,7 +649,7 @@ export function AvatarDisplay({
           {/* Hand - proportional */}
           <ellipse
             cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2}
-            cy={187}
+            cy={180}
             rx={Math.max(attrs.armWidth * 0.9, 5)}
             ry={Math.max(attrs.armWidth * 0.8, 4.5)}
             fill={skinTone}
