@@ -827,8 +827,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/goals", isAuthenticated, async (req: any, res) => {
     try {
       const { type } = req.query;
-      const goals = await storage.getUserGoals(req.user.id, type);
-      res.json(goals);
+      
+      // If type is specified, return just those goals
+      if (type) {
+        const goals = await storage.getUserGoals(req.user.id, type);
+        res.json(goals);
+        return;
+      }
+      
+      // Otherwise, return all goals grouped by type
+      const allGoals = await storage.getUserGoals(req.user.id);
+      const groupedGoals = {
+        weekly: allGoals.filter((g: any) => g.type === "weekly"),
+        yearly: allGoals.filter((g: any) => g.type === "yearly"),
+        lifetime: allGoals.filter((g: any) => g.type === "lifetime"),
+      };
+      
+      res.json(groupedGoals);
     } catch (error) {
       console.error("Error fetching goals:", error);
       res.status(500).json({ error: "Failed to fetch goals" });
