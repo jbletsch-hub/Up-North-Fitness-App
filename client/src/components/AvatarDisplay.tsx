@@ -453,9 +453,9 @@ export function AvatarDisplay({
           {/* Forearm - slimmer than upper arm */}
           <ellipse
             cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2}
-            cy={154}
-            rx={Math.max(attrs.armWidth * 0.85, 4.5)}
-            ry="21"
+            cy={156}
+            rx={Math.max(attrs.armWidth * 0.7, 4)}
+            ry="24"
             fill={skinTone}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
@@ -533,8 +533,8 @@ export function AvatarDisplay({
           <ellipse
             cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth / 2}
             cy={180}
-            rx={Math.max(attrs.armWidth * 0.9, 5)}
-            ry={Math.max(attrs.armWidth * 0.8, 4.5)}
+            rx={Math.max(attrs.armWidth * 0.7, 4)}
+            ry={Math.max(attrs.armWidth * 0.6, 3.5)}
             fill={skinTone}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
@@ -570,9 +570,9 @@ export function AvatarDisplay({
           {/* Forearm - slimmer than upper arm */}
           <ellipse
             cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2}
-            cy={154}
-            rx={Math.max(attrs.armWidth * 0.85, 4.5)}
-            ry="21"
+            cy={156}
+            rx={Math.max(attrs.armWidth * 0.7, 4)}
+            ry="24"
             fill={skinTone}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
@@ -650,8 +650,8 @@ export function AvatarDisplay({
           <ellipse
             cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth / 2}
             cy={180}
-            rx={Math.max(attrs.armWidth * 0.9, 5)}
-            ry={Math.max(attrs.armWidth * 0.8, 4.5)}
+            rx={Math.max(attrs.armWidth * 0.7, 4)}
+            ry={Math.max(attrs.armWidth * 0.6, 3.5)}
             fill={skinTone}
             stroke={outlineColor}
             strokeWidth={outlineWidth}
