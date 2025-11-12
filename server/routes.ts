@@ -1088,6 +1088,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get all users (public endpoint for browsing)
+  app.get("/api/users", isAuthenticated, async (req, res) => {
+    try {
+      const allUsers = await storage.getAllUsers();
+      
+      // Return only basic public info
+      const publicUsers = allUsers.map((u: any) => ({
+        id: u.id,
+        username: u.username,
+        displayName: u.displayName,
+        level: u.level,
+        xp: u.xp,
+        title: u.title,
+        mvlWins: u.mvlWins || 0,
+      }));
+      
+      res.json(publicUsers);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
   // Today's MVL (Most Valuable Lifter) Leaderboard endpoint
   app.get("/api/leaderboards/mvl", async (req, res) => {
     try {
