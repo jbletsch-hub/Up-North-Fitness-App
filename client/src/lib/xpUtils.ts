@@ -4,7 +4,7 @@ export function getXPForLevel(level: number): number {
   
   let totalXP = 0;
   for (let i = 1; i < level; i++) {
-    totalXP += Math.floor(100 * Math.pow(1.6, i - 1));
+    totalXP += Math.floor(100 * Math.pow(1.125, i - 1));
   }
   return totalXP;
 }
