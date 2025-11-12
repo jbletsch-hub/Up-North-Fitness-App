@@ -2,7 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Trophy, Award } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Trophy, Award, BarChart3 } from "lucide-react";
 import { Link } from "wouter";
 import { MVLBadge } from "@/components/MVLBadge";
 
@@ -50,7 +51,7 @@ export default function LeaderboardsPage() {
                 className="flex items-center justify-between p-3 rounded-lg bg-card-hover"
                 data-testid={`pr-${title.toLowerCase().split(' ')[0]}-${index + 1}`}
               >
-                <div className="flex items-center gap-2 md:gap-3">
+                <div className="flex items-center gap-2 md:gap-3 flex-1">
                   <div
                     className={`font-display text-xl md:text-2xl ${
                       index === 0
@@ -62,7 +63,7 @@ export default function LeaderboardsPage() {
                   >
                     {index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉"}
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <Link href={`/profile/${record.username}`}>
                       <p
                         className="font-semibold hover:text-primary cursor-pointer text-sm md:text-base"
@@ -73,10 +74,17 @@ export default function LeaderboardsPage() {
                     </Link>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="font-display text-base md:text-xl font-bold" data-testid={`text-value-${index + 1}`}>
-                    {record.value} {unit}
-                  </p>
+                <div className="flex items-center gap-2">
+                  <div className="text-right">
+                    <p className="font-display text-base md:text-xl font-bold" data-testid={`text-value-${index + 1}`}>
+                      {record.value} {unit}
+                    </p>
+                  </div>
+                  <Link href={`/stats/${record.userId}`}>
+                    <Button variant="ghost" size="icon" data-testid={`button-view-stats-${title.toLowerCase().split(' ')[0]}-${index + 1}`}>
+                      <BarChart3 className="h-4 w-4" />
+                    </Button>
+                  </Link>
                 </div>
               </div>
             ))}
@@ -120,11 +128,11 @@ export default function LeaderboardsPage() {
                   className="flex items-center justify-between p-3 rounded-lg bg-card-hover"
                   data-testid={`leaderboard-xp-${index + 1}`}
                 >
-                  <div className="flex items-center gap-2 md:gap-3">
+                  <div className="flex items-center gap-2 md:gap-3 flex-1">
                     <div className="font-display text-base md:text-xl font-bold text-muted-foreground w-6 md:w-8">
                       #{index + 1}
                     </div>
-                    <div>
+                    <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <Link href={`/profile/${u.username}`}>
                           <p
@@ -139,11 +147,18 @@ export default function LeaderboardsPage() {
                       <p className="text-sm text-muted-foreground">{u.title}</p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="font-display text-base md:text-xl font-bold" data-testid={`text-xp-${index + 1}`}>
-                      {u.xp.toLocaleString()} XP
-                    </p>
-                    <p className="text-sm text-muted-foreground">Level {u.level}</p>
+                  <div className="flex items-center gap-2 md:gap-3">
+                    <div className="text-right">
+                      <p className="font-display text-base md:text-xl font-bold" data-testid={`text-xp-${index + 1}`}>
+                        {u.xp.toLocaleString()} XP
+                      </p>
+                      <p className="text-sm text-muted-foreground">Level {u.level}</p>
+                    </div>
+                    <Link href={`/stats/${u.id}`}>
+                      <Button variant="ghost" size="icon" data-testid={`button-view-stats-${index + 1}`}>
+                        <BarChart3 className="h-4 w-4" />
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               ))}
