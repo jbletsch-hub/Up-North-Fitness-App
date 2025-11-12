@@ -328,71 +328,75 @@ export default function AvatarPage() {
           </div>
         </div>
 
-        {/* Visual Progression Preview */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Progression Preview</CardTitle>
-            <CardDescription>See how your avatar transforms from Level 1 to Level 50</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              {[1, 6, 11, 16, 21, 26, 31, 36, 41, 46].map((level, idx) => {
-                const stageInfo = getMuscleStageInfo(level);
-                return (
-                  <div key={level} className="flex flex-col items-center space-y-2">
-                    <AvatarDisplay
-                      level={level}
-                      characterType={characterType}
-                      shirtColor={shirtColor}
-                      shortsColor={shortsColor}
-                      headband={headband}
-                      wristbands={wristbands}
-                      hairStyle={hairStyle}
-                      hairColor={hairColor}
-                      size="sm"
-                    />
-                    <div className="text-center">
-                      <div className="text-xs font-semibold">Stage {idx + 1}</div>
-                      <div className="text-xs text-muted-foreground">Lv {level}</div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
+        {/* Admin-Only: Visual Progression Preview */}
+        {user?.isAdmin && (
+          <>
+            <Card>
+              <CardHeader>
+                <CardTitle>Progression Preview (Admin Only)</CardTitle>
+                <CardDescription>See how your avatar transforms from Level 1 to Level 50</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                  {[1, 6, 11, 16, 21, 26, 31, 36, 41, 46].map((level, idx) => {
+                    const stageInfo = getMuscleStageInfo(level);
+                    return (
+                      <div key={level} className="flex flex-col items-center space-y-2">
+                        <AvatarDisplay
+                          level={level}
+                          characterType={characterType}
+                          shirtColor={shirtColor}
+                          shortsColor={shortsColor}
+                          headband={headband}
+                          wristbands={wristbands}
+                          hairStyle={hairStyle}
+                          hairColor={hairColor}
+                          size="sm"
+                        />
+                        <div className="text-center">
+                          <div className="text-xs font-semibold">Stage {idx + 1}</div>
+                          <div className="text-xs text-muted-foreground">Lv {level}</div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
 
-        {/* Muscle Progression Info */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Muscle Progression System</CardTitle>
-            <CardDescription>How your avatar gets jacked as you level up</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-3 text-xs md:text-sm">
-              <div className="text-center p-2 rounded-md bg-secondary/30">
-                <div className="font-semibold">Lv 1-5</div>
-                <div className="text-muted-foreground">Skinny</div>
-              </div>
-              <div className="text-center p-2 rounded-md bg-secondary/40">
-                <div className="font-semibold">Lv 6-10</div>
-                <div className="text-muted-foreground">Toning</div>
-              </div>
-              <div className="text-center p-2 rounded-md bg-secondary/50">
-                <div className="font-semibold">Lv 11-20</div>
-                <div className="text-muted-foreground">Defined</div>
-              </div>
-              <div className="text-center p-2 rounded-md bg-secondary/60">
-                <div className="font-semibold">Lv 21-35</div>
-                <div className="text-muted-foreground">Muscular</div>
-              </div>
-              <div className="text-center p-2 rounded-md bg-primary/20 col-span-2 md:col-span-1">
-                <div className="font-semibold">Lv 36-50</div>
-                <div className="text-primary font-bold">JACKED</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            {/* Muscle Progression Info */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Muscle Progression System (Admin Only)</CardTitle>
+                <CardDescription>How your avatar gets jacked as you level up</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-3 text-xs md:text-sm">
+                  <div className="text-center p-2 rounded-md bg-secondary/30">
+                    <div className="font-semibold">Lv 1-5</div>
+                    <div className="text-muted-foreground">Skinny</div>
+                  </div>
+                  <div className="text-center p-2 rounded-md bg-secondary/40">
+                    <div className="font-semibold">Lv 6-10</div>
+                    <div className="text-muted-foreground">Toning</div>
+                  </div>
+                  <div className="text-center p-2 rounded-md bg-secondary/50">
+                    <div className="font-semibold">Lv 11-20</div>
+                    <div className="text-muted-foreground">Defined</div>
+                  </div>
+                  <div className="text-center p-2 rounded-md bg-secondary/60">
+                    <div className="font-semibold">Lv 21-35</div>
+                    <div className="text-muted-foreground">Muscular</div>
+                  </div>
+                  <div className="text-center p-2 rounded-md bg-primary/20 col-span-2 md:col-span-1">
+                    <div className="font-semibold">Lv 36-50</div>
+                    <div className="text-primary font-bold">JACKED</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </>
+        )}
       </main>
     </div>
   );
