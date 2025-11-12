@@ -284,9 +284,12 @@ export function AvatarDisplay({
           />
         </g>
 
-        {/* === ARMS - Render BEHIND tank top, TOP starts at y=110 === */}
-        {/* Left Arm */}
-        <g className="arm-left">
+        {/* === ARMS - Render BEHIND tank top, angled inward at ~45° === */}
+        {/* Left Arm - angled toward center */}
+        <g 
+          className="arm-left"
+          transform={`rotate(20, ${100 - attrs.shoulderWidth / 2 - attrs.armWidth - 10}, 110)`}
+        >
           <ellipse
             cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 10}
             cy={158}
@@ -319,8 +322,11 @@ export function AvatarDisplay({
           />
         </g>
         
-        {/* Right Arm */}
-        <g className="arm-right">
+        {/* Right Arm - angled toward center */}
+        <g 
+          className="arm-right"
+          transform={`rotate(-20, ${100 + attrs.shoulderWidth / 2 + attrs.armWidth + 10}, 110)`}
+        >
           <ellipse
             cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 10}
             cy={158}
