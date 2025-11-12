@@ -279,8 +279,7 @@ export default function StatsPage() {
                             <AvatarDisplay
                               level={u.level}
                               size="sm"
-                              shirtColor="#FF5722"
-                              shortsColor="#20B2AA"
+                              characterType={u.characterType || "classic"}
                             />
                             <div className="text-center w-full">
                               <div className="flex items-center justify-center gap-1">

@@ -1125,6 +1125,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         xp: u.xp,
         title: u.title,
         mvlWins: u.mvlWins || 0,
+        characterType: u.characterType || "classic",
       }));
       
       res.json(publicUsers);
