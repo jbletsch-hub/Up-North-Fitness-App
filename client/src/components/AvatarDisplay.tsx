@@ -659,12 +659,21 @@ export function AvatarDisplay({
         </g>
 
         {/* === BODY/SHIRT === */}
-        {/* Tank top that goes all the way up to neck */}
-        <ellipse
-          cx="100"
-          cy="128"
-          rx={Math.max(attrs.chestWidth / 2, attrs.torsoWidth / 2) + 6}
-          ry="52"
+        {/* Tank top with V-taper shape (wide chest, narrow waist) */}
+        <path
+          d={`
+            M ${100 - (attrs.chestWidth / 2 + 6)} 88
+            L ${100 - (attrs.chestWidth / 2 + 6)} 115
+            Q ${100 - (attrs.chestWidth / 2 + 6)} 135, ${100 - attrs.torsoWidth / 2} 155
+            L ${100 - attrs.torsoWidth / 2} 165
+            Q ${100 - attrs.torsoWidth / 2} 170, ${100} 170
+            Q ${100 + attrs.torsoWidth / 2} 170, ${100 + attrs.torsoWidth / 2} 165
+            L ${100 + attrs.torsoWidth / 2} 155
+            Q ${100 + (attrs.chestWidth / 2 + 6)} 135, ${100 + (attrs.chestWidth / 2 + 6)} 115
+            L ${100 + (attrs.chestWidth / 2 + 6)} 88
+            Q ${100} 85, ${100 - (attrs.chestWidth / 2 + 6)} 88
+            Z
+          `}
           fill={shirtColor}
           stroke={outlineColor}
           strokeWidth={outlineWidth}
