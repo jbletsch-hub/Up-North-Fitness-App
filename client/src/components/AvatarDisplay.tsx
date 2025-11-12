@@ -710,7 +710,29 @@ export function AvatarDisplay({
           />
         )}
         
-        {/* Chest/Pec curved lines - visible at stage 3+ */}
+        {/* Chest perimeter outline - defines the whole chest shape */}
+        {stage >= 3 && (
+          <>
+            {/* Left pec outline */}
+            <path
+              d={`M 78 ${105 - attrs.posture / 2} Q 80 ${100 - attrs.posture / 2}, 88 ${100 - attrs.posture / 2} Q 95 ${102 - attrs.posture / 2}, 98 ${108 - attrs.posture / 2} Q 95 ${115 - attrs.posture / 2}, 85 ${118 - attrs.posture / 2} Q 78 ${115 - attrs.posture / 2}, 78 ${105 - attrs.posture / 2}`}
+              stroke={outlineColor}
+              strokeWidth="1.4"
+              fill="none"
+              opacity={Math.min(0.22 + stage * 0.05, 0.55)}
+            />
+            {/* Right pec outline */}
+            <path
+              d={`M 122 ${105 - attrs.posture / 2} Q 120 ${100 - attrs.posture / 2}, 112 ${100 - attrs.posture / 2} Q 105 ${102 - attrs.posture / 2}, 102 ${108 - attrs.posture / 2} Q 105 ${115 - attrs.posture / 2}, 115 ${118 - attrs.posture / 2} Q 122 ${115 - attrs.posture / 2}, 122 ${105 - attrs.posture / 2}`}
+              stroke={outlineColor}
+              strokeWidth="1.4"
+              fill="none"
+              opacity={Math.min(0.22 + stage * 0.05, 0.55)}
+            />
+          </>
+        )}
+        
+        {/* Inner chest curved lines - visible at stage 2+ */}
         {stage >= 2 && (
           <>
             <path
@@ -730,50 +752,54 @@ export function AvatarDisplay({
           </>
         )}
         
-        {/* Ab definition lines through shirt - visible at stage 4+ */}
+        {/* Ab definition lines through shirt - visible at stage 3+ */}
         {stage >= 3 && (
           <>
+            {/* Vertical center ab line separates left and right abs */}
             <line
-              x1="95"
+              x1="100"
+              y1="125"
+              x2="100"
+              y2="155"
+              stroke={outlineColor}
+              strokeWidth="1.4"
+              opacity={Math.min(0.2 + stage * 0.04, 0.5)}
+            />
+            
+            {/* Top abs (horizontal line) */}
+            <line
+              x1="93"
               y1="130"
-              x2="105"
+              x2="107"
               y2="130"
               stroke={outlineColor}
-              strokeWidth="1.3"
-              opacity={Math.min(0.18 + stage * 0.04, 0.45)}
+              strokeWidth="1.4"
+              opacity={Math.min(0.2 + stage * 0.045, 0.5)}
             />
+            
+            {/* Middle abs (horizontal line) - visible at stage 4+ */}
             {stage >= 4 && (
               <line
-                x1="94"
+                x1="92"
                 y1="140"
-                x2="106"
+                x2="108"
                 y2="140"
                 stroke={outlineColor}
-                strokeWidth="1.3"
-                opacity={Math.min(0.18 + stage * 0.04, 0.45)}
+                strokeWidth="1.4"
+                opacity={Math.min(0.2 + stage * 0.045, 0.5)}
               />
             )}
+            
+            {/* Lower abs (horizontal line) - visible at stage 5+ */}
             {stage >= 5 && (
               <line
-                x1="95"
+                x1="93"
                 y1="150"
-                x2="105"
+                x2="107"
                 y2="150"
                 stroke={outlineColor}
-                strokeWidth="1.3"
-                opacity={Math.min(0.18 + stage * 0.04, 0.45)}
-              />
-            )}
-            {/* Vertical center ab line for six-pack definition */}
-            {stage >= 4 && (
-              <line
-                x1="100"
-                y1="125"
-                x2="100"
-                y2="155"
-                stroke={outlineColor}
-                strokeWidth="1.2"
-                opacity={Math.min(0.15 + stage * 0.035, 0.4)}
+                strokeWidth="1.4"
+                opacity={Math.min(0.2 + stage * 0.045, 0.5)}
               />
             )}
           </>
