@@ -1077,9 +1077,29 @@ export function AvatarDisplay({
             cy="60"
             r="28"
             fill={skinTone}
-            stroke={outlineColor}
-            strokeWidth={outlineWidth}
+            stroke="none"
           />
+          
+          {/* Head outline - conditionally render based on facial hair */}
+          {facialHair === "bigbeard" ? (
+            // For big beard: only draw upper arc (forehead and temples), skip jawline
+            <path
+              d="M 72 60 Q 72 38, 86 32 Q 93 28, 100 28 Q 107 28, 114 32 Q 128 38, 128 60"
+              fill="none"
+              stroke={outlineColor}
+              strokeWidth={outlineWidth}
+            />
+          ) : (
+            // For other facial hair: draw full circle outline
+            <circle
+              cx="100"
+              cy="60"
+              r="28"
+              fill="none"
+              stroke={outlineColor}
+              strokeWidth={outlineWidth}
+            />
+          )}
           
           {/* Head highlight */}
           <ellipse
