@@ -706,36 +706,36 @@ export function AvatarDisplay({
         )}
         
         {/* === NEW CHEST DEFINITION SYSTEM === */}
-        {/* Stage 2+: Center vertical line that grows progressively longer */}
+        {/* Stage 2+: Center vertical line that grows progressively longer and thicker */}
         {stage >= 2 && (
           <line
             x1="100"
-            y1={110 - attrs.posture / 2}
+            y1={108 - attrs.posture / 2}
             x2="100"
-            y2={118 - attrs.posture / 2 + stage * 1.2}
+            y2={120 - attrs.posture / 2 + stage * 1.8}
             stroke={outlineColor}
-            strokeWidth={1.2 + stage * 0.05}
-            opacity={Math.min(0.25 + stage * 0.02, 0.45)}
+            strokeWidth={1.4 + stage * 0.08}
+            opacity={Math.min(0.3 + stage * 0.03, 0.55)}
           />
         )}
         
-        {/* Stage 3+: Curved pec lines that grow progressively longer - follow muscle contour */}
+        {/* Stage 3+: DRAMATIC curved pec lines - follow muscle contour with BIG curve */}
         {stage >= 3 && (
           <>
-            {/* Left pec bottom line - curved to show definition */}
+            {/* Left pec bottom line - MUCH LONGER with dramatic curve */}
             <path
-              d={`M ${100 - (12 + stage * 1.2)} ${125 - attrs.posture / 2} Q ${100 - (8 + stage * 0.8)} ${126 - attrs.posture / 2 + stage * 0.15}, ${100 - 3} ${125 - attrs.posture / 2}`}
+              d={`M ${100 - (18 + stage * 2)} ${123 - attrs.posture / 2} Q ${100 - (12 + stage * 1.2)} ${125 - attrs.posture / 2 + stage * 0.35}, ${100 - 3} ${123 - attrs.posture / 2}`}
               stroke={outlineColor}
-              strokeWidth={1.1 + stage * 0.05}
-              opacity={Math.min(0.25 + stage * 0.03, 0.6)}
+              strokeWidth={1.4 + stage * 0.08}
+              opacity={Math.min(0.3 + stage * 0.04, 0.65)}
               fill="none"
             />
-            {/* Right pec bottom line - curved to show definition */}
+            {/* Right pec bottom line - MUCH LONGER with dramatic curve */}
             <path
-              d={`M ${100 + 3} ${125 - attrs.posture / 2} Q ${100 + (8 + stage * 0.8)} ${126 - attrs.posture / 2 + stage * 0.15}, ${100 + (12 + stage * 1.2)} ${125 - attrs.posture / 2}`}
+              d={`M ${100 + 3} ${123 - attrs.posture / 2} Q ${100 + (12 + stage * 1.2)} ${125 - attrs.posture / 2 + stage * 0.35}, ${100 + (18 + stage * 2)} ${123 - attrs.posture / 2}`}
               stroke={outlineColor}
-              strokeWidth={1.1 + stage * 0.05}
-              opacity={Math.min(0.25 + stage * 0.03, 0.6)}
+              strokeWidth={1.4 + stage * 0.08}
+              opacity={Math.min(0.3 + stage * 0.04, 0.65)}
               fill="none"
             />
           </>
