@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Moon, Sun, Dumbbell } from "lucide-react";
+import { Moon, Sun, Dumbbell, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "./ThemeProvider";
 import { apiRequest } from "@/lib/queryClient";
@@ -41,6 +41,17 @@ export function Navigation({ isLoggedIn, username, isAdmin, userLevel, userXP, u
           <nav className="flex items-center gap-2">
             {isLoggedIn ? (
               <>
+                {/* Mobile Logout Button */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleLogout}
+                  className="md:hidden"
+                  data-testid="button-logout-mobile"
+                >
+                  <LogOut className="h-5 w-5" />
+                </Button>
+
                 {/* Desktop Navigation */}
                 <div className="hidden md:flex items-center gap-2">
                   <Button variant="ghost" size="sm" asChild data-testid="link-dashboard">
