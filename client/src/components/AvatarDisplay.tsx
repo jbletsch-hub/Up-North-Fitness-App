@@ -719,28 +719,24 @@ export function AvatarDisplay({
           />
         )}
         
-        {/* Stage 3+: Horizontal pec lines that grow progressively longer */}
+        {/* Stage 3+: Curved pec lines that grow progressively longer - follow muscle contour */}
         {stage >= 3 && (
           <>
-            {/* Left pec bottom line - horizontal, grows outward with stage */}
-            <line
-              x1={100 - (10 + stage * 0.8)}
-              y1={125 - attrs.posture / 2}
-              x2={100 - 3}
-              y2={125 - attrs.posture / 2}
+            {/* Left pec bottom line - curved to show definition */}
+            <path
+              d={`M ${100 - (12 + stage * 1.2)} ${125 - attrs.posture / 2} Q ${100 - (8 + stage * 0.8)} ${126 - attrs.posture / 2 + stage * 0.15}, ${100 - 3} ${125 - attrs.posture / 2}`}
               stroke={outlineColor}
-              strokeWidth={1.1 + stage * 0.04}
-              opacity={Math.min(0.25 + stage * 0.03, 0.55)}
+              strokeWidth={1.1 + stage * 0.05}
+              opacity={Math.min(0.25 + stage * 0.03, 0.6)}
+              fill="none"
             />
-            {/* Right pec bottom line - horizontal, grows outward with stage */}
-            <line
-              x1={100 + 3}
-              y1={125 - attrs.posture / 2}
-              x2={100 + (10 + stage * 0.8)}
-              y2={125 - attrs.posture / 2}
+            {/* Right pec bottom line - curved to show definition */}
+            <path
+              d={`M ${100 + 3} ${125 - attrs.posture / 2} Q ${100 + (8 + stage * 0.8)} ${126 - attrs.posture / 2 + stage * 0.15}, ${100 + (12 + stage * 1.2)} ${125 - attrs.posture / 2}`}
               stroke={outlineColor}
-              strokeWidth={1.1 + stage * 0.04}
-              opacity={Math.min(0.25 + stage * 0.03, 0.55)}
+              strokeWidth={1.1 + stage * 0.05}
+              opacity={Math.min(0.25 + stage * 0.03, 0.6)}
+              fill="none"
             />
           </>
         )}
