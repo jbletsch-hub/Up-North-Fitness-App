@@ -817,6 +817,24 @@ export function AvatarDisplay({
           stroke={outlineColor}
           strokeWidth={outlineWidth}
         />
+        
+        {/* Shoulder caps - cover gap between neck and tank top */}
+        <ellipse
+          cx={100 - (attrs.chestWidth / 2 + 3)}
+          cy="90"
+          rx="8"
+          ry="6"
+          fill={skinTone}
+          stroke="none"
+        />
+        <ellipse
+          cx={100 + (attrs.chestWidth / 2 + 3)}
+          cy="90"
+          rx="8"
+          ry="6"
+          fill={skinTone}
+          stroke="none"
+        />
 
         {/* === HEAD === */}
         <g className="head-group">
