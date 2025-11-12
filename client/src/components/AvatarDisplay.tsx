@@ -741,6 +741,58 @@ export function AvatarDisplay({
           </>
         )}
         
+        {/* Stage 8+: Chest striations - extreme muscle definition */}
+        {stage >= 8 && (
+          <>
+            {/* Left chest striation - diagonal line showing muscle fiber detail */}
+            <line
+              x1={100 - 18}
+              y1={115 - attrs.posture / 2}
+              x2={100 - 8}
+              y2={118 - attrs.posture / 2}
+              stroke={outlineColor}
+              strokeWidth="0.8"
+              opacity="0.35"
+            />
+            {/* Right chest striation - diagonal line showing muscle fiber detail */}
+            <line
+              x1={100 + 8}
+              y1={118 - attrs.posture / 2}
+              x2={100 + 18}
+              y2={115 - attrs.posture / 2}
+              stroke={outlineColor}
+              strokeWidth="0.8"
+              opacity="0.35"
+            />
+            
+            {/* Stage 9: Additional striations for maximum definition */}
+            {stage >= 9 && (
+              <>
+                {/* Left chest second striation - lower diagonal */}
+                <line
+                  x1={100 - 20}
+                  y1={118 - attrs.posture / 2}
+                  x2={100 - 10}
+                  y2={121 - attrs.posture / 2}
+                  stroke={outlineColor}
+                  strokeWidth="0.8"
+                  opacity="0.35"
+                />
+                {/* Right chest second striation - lower diagonal */}
+                <line
+                  x1={100 + 10}
+                  y1={121 - attrs.posture / 2}
+                  x2={100 + 20}
+                  y2={118 - attrs.posture / 2}
+                  stroke={outlineColor}
+                  strokeWidth="0.8"
+                  opacity="0.35"
+                />
+              </>
+            )}
+          </>
+        )}
+        
         {/* Ab definition lines through shirt - visible at stage 3+ */}
         {stage >= 3 && (
           <>
