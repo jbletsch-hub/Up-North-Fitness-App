@@ -283,24 +283,93 @@ export function AvatarDisplay({
           />
         </g>
 
-        {/* === SHORTS - Positioned first to go behind body === */}
-        <ellipse
-          cx="100"
-          cy="165"
-          rx={Math.max(attrs.torsoWidth / 2 + 4, 26)}
-          ry="20"
+        {/* === SHORTS - Normal rectangular shorts === */}
+        <rect
+          x={100 - Math.max(attrs.torsoWidth / 2 + 4, 26)}
+          y="158"
+          width={Math.max(attrs.torsoWidth / 2 + 4, 26) * 2}
+          height="28"
+          rx="4"
           fill={shortsColor}
           stroke={outlineColor}
           strokeWidth={outlineWidth}
         />
 
+        {/* === ARMS - Away from body === */}
+        {/* Left Arm - positioned away from body */}
+        <g className="arm-left">
+          <ellipse
+            cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 4}
+            cy={108}
+            rx={attrs.armWidth + 2}
+            ry="50"
+            fill={skinTone}
+            stroke={outlineColor}
+            strokeWidth={outlineWidth}
+          />
+          {wristbands && (
+            <ellipse
+              cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 4}
+              cy={148}
+              rx={attrs.armWidth + 3}
+              ry="5"
+              fill="#E74C3C"
+              stroke={outlineColor}
+              strokeWidth={2}
+            />
+          )}
+          {/* Hand */}
+          <ellipse
+            cx={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 4}
+            cy={164}
+            rx={attrs.armWidth + 4}
+            ry={attrs.armWidth + 3}
+            fill={skinTone}
+            stroke={outlineColor}
+            strokeWidth={outlineWidth}
+          />
+        </g>
+        
+        {/* Right Arm - positioned away from body */}
+        <g className="arm-right">
+          <ellipse
+            cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 4}
+            cy={108}
+            rx={attrs.armWidth + 2}
+            ry="50"
+            fill={skinTone}
+            stroke={outlineColor}
+            strokeWidth={outlineWidth}
+          />
+          {wristbands && (
+            <ellipse
+              cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 4}
+              cy={148}
+              rx={attrs.armWidth + 3}
+              ry="5"
+              fill="#E74C3C"
+              stroke={outlineColor}
+              strokeWidth={2}
+            />
+          )}
+          <ellipse
+            cx={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 4}
+            cy={164}
+            rx={attrs.armWidth + 4}
+            ry={attrs.armWidth + 3}
+            fill={skinTone}
+            stroke={outlineColor}
+            strokeWidth={outlineWidth}
+          />
+        </g>
+
         {/* === BODY/SHIRT === */}
-        {/* Single unified body shape that fits properly */}
+        {/* Tank top that goes all the way up to neck */}
         <ellipse
           cx="100"
-          cy="130"
+          cy="128"
           rx={Math.max(attrs.chestWidth / 2, attrs.torsoWidth / 2) + 2}
-          ry="50"
+          ry="52"
           fill={shirtColor}
           stroke={outlineColor}
           strokeWidth={outlineWidth}
@@ -311,7 +380,7 @@ export function AvatarDisplay({
         {attrs.chestWidth > 30 && (
           <ellipse
             cx="100"
-            cy={115 - attrs.posture / 2}
+            cy={112 - attrs.posture / 2}
             rx={attrs.chestWidth / 2 - 2}
             ry={attrs.chestHeight / 2 - 2}
             fill={shirtColor}
@@ -324,86 +393,18 @@ export function AvatarDisplay({
         {/* Chest highlight */}
         <ellipse
           cx="88"
-          cy={115 - attrs.posture / 2}
+          cy={112 - attrs.posture / 2}
           rx="12"
           ry="16"
           fill={`url(#shine-${size})`}
         />
 
-        {/* === ARMS - Progressive thickness === */}
-        {/* Left Arm - positioned to overlap with shoulder */}
-        <g className="arm-left">
-          <ellipse
-            cx={100 - attrs.shoulderWidth / 2 - 2}
-            cy={105}
-            rx={attrs.armWidth + 2}
-            ry="50"
-            fill={skinTone}
-            stroke={outlineColor}
-            strokeWidth={outlineWidth}
-          />
-          {wristbands && (
-            <ellipse
-              cx={100 - attrs.shoulderWidth / 2 - 2}
-              cy={145}
-              rx={attrs.armWidth + 3}
-              ry="5"
-              fill="#E74C3C"
-              stroke={outlineColor}
-              strokeWidth={2}
-            />
-          )}
-          {/* Hand */}
-          <ellipse
-            cx={100 - attrs.shoulderWidth / 2 - 2}
-            cy={161}
-            rx={attrs.armWidth + 4}
-            ry={attrs.armWidth + 3}
-            fill={skinTone}
-            stroke={outlineColor}
-            strokeWidth={outlineWidth}
-          />
-        </g>
-        
-        {/* Right Arm */}
-        <g className="arm-right">
-          <ellipse
-            cx={100 + attrs.shoulderWidth / 2 + 2}
-            cy={105}
-            rx={attrs.armWidth + 2}
-            ry="50"
-            fill={skinTone}
-            stroke={outlineColor}
-            strokeWidth={outlineWidth}
-          />
-          {wristbands && (
-            <ellipse
-              cx={100 + attrs.shoulderWidth / 2 + 2}
-              cy={145}
-              rx={attrs.armWidth + 3}
-              ry="5"
-              fill="#E74C3C"
-              stroke={outlineColor}
-              strokeWidth={2}
-            />
-          )}
-          <ellipse
-            cx={100 + attrs.shoulderWidth / 2 + 2}
-            cy={161}
-            rx={attrs.armWidth + 4}
-            ry={attrs.armWidth + 3}
-            fill={skinTone}
-            stroke={outlineColor}
-            strokeWidth={outlineWidth}
-          />
-        </g>
-
-        {/* === NECK - Extended down to blend with shirt === */}
+        {/* === NECK - Connects to shirt === */}
         <ellipse
           cx="100"
-          cy="88"
+          cy="86"
           rx={attrs.neckWidth + 2}
-          ry="22"
+          ry="20"
           fill={skinTone}
           stroke={outlineColor}
           strokeWidth={outlineWidth}
