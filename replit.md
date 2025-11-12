@@ -16,7 +16,8 @@ Iron Crew is a full-stack fitness tracking application that integrates workout l
 - **Dynamic Arm Angles (Nov 12, 2025):** Arms now angle from 18° (skinny stages) to 30° (massive stages) instead of static 20° across all stages, creating more natural and dynamic poses as characters evolve.
 - **Final Stage Progression (Nov 12, 2025):** Dramatically increased visual differences between final 3 stages: Stage 7 (shoulders: 56, arms: 18), Stage 8 (shoulders: 68, arms: 22), Stage 9 (shoulders: 72, arms: 26). Neck width capped at 15-17 to maintain proportions even on massive bodies.
 - **V-Taper Physique (Nov 12, 2025):** Torso width now caps at 34 max (down from 66) to create classic bodybuilder V-shape with massive chest (90 max) and slim waist. Replaced rounded ellipse torso with custom path for sharp taper from wide chest to slim waist.
-- **Chest Definition Rebuild (Nov 12, 2025):** Completely rebuilt chest muscle system with progressive definition: Stage 2 (small center line), Stage 3 (bigger center line + 2 small vertical lines defining bottom of pecs), Stage 5+ (extended and more defined lines). Removed complex curved/perimeter outlines in favor of simple, clean vertical lines.
+- **Chest Definition Rebuild (Nov 12, 2025):** Completely rebuilt chest muscle system with progressive definition: Stage 2 (small center line), Stage 3 (bigger center line + 2 small horizontal lines defining bottom of pecs), Stage 5+ (extended and more defined horizontal lines). Removed complex curved/perimeter outlines in favor of simple, clean lines.
+- **Arm Proportions (Nov 12, 2025):** Reduced forearm width from 0.85x to 0.7x armWidth for slimmer forearms. Increased forearm length from ry=21 to ry=24 and repositioned lower (cy: 154→156). Reduced hand sizes from 0.9x/0.8x to 0.7x/0.6x armWidth multipliers for better proportions across all stages.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
