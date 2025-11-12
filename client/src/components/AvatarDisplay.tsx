@@ -701,9 +701,9 @@ export function AvatarDisplay({
         {stage >= 2 && (
           <line
             x1="100"
-            y1={100 - attrs.posture / 2}
+            y1={108 - attrs.posture / 2}
             x2="100"
-            y2={120 - attrs.posture / 2}
+            y2={128 - attrs.posture / 2}
             stroke={outlineColor}
             strokeWidth={stage >= 5 ? 2 : 1.5}
             opacity={Math.min(0.25 + stage * 0.06, 0.6)}
@@ -715,7 +715,7 @@ export function AvatarDisplay({
           <>
             {/* Left pec outline - all coordinates scale with shoulder/chest width */}
             <path
-              d={`M ${100 - attrs.shoulderWidth / 2 - 4} ${105 - attrs.posture / 2} Q ${100 - attrs.shoulderWidth / 2 - 2} ${100 - attrs.posture / 2}, ${100 - attrs.shoulderWidth / 2 + 6} ${100 - attrs.posture / 2} Q ${100 - attrs.shoulderWidth / 4} ${102 - attrs.posture / 2}, ${100 - 2} ${108 - attrs.posture / 2} Q ${100 - attrs.shoulderWidth / 4} ${115 - attrs.posture / 2}, ${100 - attrs.shoulderWidth / 2 + 3} ${118 - attrs.posture / 2} Q ${100 - attrs.shoulderWidth / 2 - 4} ${115 - attrs.posture / 2}, ${100 - attrs.shoulderWidth / 2 - 4} ${105 - attrs.posture / 2}`}
+              d={`M ${100 - attrs.shoulderWidth / 2 - 4} ${113 - attrs.posture / 2} Q ${100 - attrs.shoulderWidth / 2 - 2} ${108 - attrs.posture / 2}, ${100 - attrs.shoulderWidth / 2 + 6} ${108 - attrs.posture / 2} Q ${100 - attrs.shoulderWidth / 4} ${110 - attrs.posture / 2}, ${100 - 2} ${116 - attrs.posture / 2} Q ${100 - attrs.shoulderWidth / 4} ${123 - attrs.posture / 2}, ${100 - attrs.shoulderWidth / 2 + 3} ${126 - attrs.posture / 2} Q ${100 - attrs.shoulderWidth / 2 - 4} ${123 - attrs.posture / 2}, ${100 - attrs.shoulderWidth / 2 - 4} ${113 - attrs.posture / 2}`}
               stroke={outlineColor}
               strokeWidth="1.4"
               fill="none"
@@ -723,7 +723,7 @@ export function AvatarDisplay({
             />
             {/* Right pec outline - all coordinates scale with shoulder/chest width */}
             <path
-              d={`M ${100 + attrs.shoulderWidth / 2 + 4} ${105 - attrs.posture / 2} Q ${100 + attrs.shoulderWidth / 2 + 2} ${100 - attrs.posture / 2}, ${100 + attrs.shoulderWidth / 2 - 6} ${100 - attrs.posture / 2} Q ${100 + attrs.shoulderWidth / 4} ${102 - attrs.posture / 2}, ${100 + 2} ${108 - attrs.posture / 2} Q ${100 + attrs.shoulderWidth / 4} ${115 - attrs.posture / 2}, ${100 + attrs.shoulderWidth / 2 - 3} ${118 - attrs.posture / 2} Q ${100 + attrs.shoulderWidth / 2 + 4} ${115 - attrs.posture / 2}, ${100 + attrs.shoulderWidth / 2 + 4} ${105 - attrs.posture / 2}`}
+              d={`M ${100 + attrs.shoulderWidth / 2 + 4} ${113 - attrs.posture / 2} Q ${100 + attrs.shoulderWidth / 2 + 2} ${108 - attrs.posture / 2}, ${100 + attrs.shoulderWidth / 2 - 6} ${108 - attrs.posture / 2} Q ${100 + attrs.shoulderWidth / 4} ${110 - attrs.posture / 2}, ${100 + 2} ${116 - attrs.posture / 2} Q ${100 + attrs.shoulderWidth / 4} ${123 - attrs.posture / 2}, ${100 + attrs.shoulderWidth / 2 - 3} ${126 - attrs.posture / 2} Q ${100 + attrs.shoulderWidth / 2 + 4} ${123 - attrs.posture / 2}, ${100 + attrs.shoulderWidth / 2 + 4} ${113 - attrs.posture / 2}`}
               stroke={outlineColor}
               strokeWidth="1.4"
               fill="none"
@@ -736,14 +736,14 @@ export function AvatarDisplay({
         {stage >= 2 && (
           <>
             <path
-              d={`M ${100 - attrs.shoulderWidth / 2 + 6} ${105 - attrs.posture / 2} Q ${100 - attrs.shoulderWidth / 4} ${110 - attrs.posture / 2}, 100 ${108 - attrs.posture / 2}`}
+              d={`M ${100 - attrs.shoulderWidth / 2 + 6} ${113 - attrs.posture / 2} Q ${100 - attrs.shoulderWidth / 4} ${118 - attrs.posture / 2}, 100 ${116 - attrs.posture / 2}`}
               stroke={outlineColor}
               strokeWidth="1.3"
               fill="none"
               opacity={Math.min(0.2 + stage * 0.05, 0.5)}
             />
             <path
-              d={`M ${100 + attrs.shoulderWidth / 2 - 6} ${105 - attrs.posture / 2} Q ${100 + attrs.shoulderWidth / 4} ${110 - attrs.posture / 2}, 100 ${108 - attrs.posture / 2}`}
+              d={`M ${100 + attrs.shoulderWidth / 2 - 6} ${113 - attrs.posture / 2} Q ${100 + attrs.shoulderWidth / 4} ${118 - attrs.posture / 2}, 100 ${116 - attrs.posture / 2}`}
               stroke={outlineColor}
               strokeWidth="1.3"
               fill="none"
