@@ -837,7 +837,7 @@ export function AvatarDisplay({
         <ellipse
           cx="100"
           cy="86"
-          rx={attrs.neckWidth + 2}
+          rx={attrs.neckWidth}
           ry="20"
           fill={skinTone}
           stroke={outlineColor}
