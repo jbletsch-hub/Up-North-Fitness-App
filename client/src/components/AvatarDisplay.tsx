@@ -355,22 +355,27 @@ export function AvatarDisplay({
         return (
           <g className="stubble">
             {/* Light stubble pattern - small dots creating shadow effect */}
-            {/* Lower face around jawline and chin */}
-            <circle cx="88" cy="72" r="0.6" fill={facialHairColor} opacity="0.4" />
-            <circle cx="92" cy="73" r="0.6" fill={facialHairColor} opacity="0.4" />
-            <circle cx="96" cy="74" r="0.6" fill={facialHairColor} opacity="0.4" />
-            <circle cx="100" cy="74" r="0.6" fill={facialHairColor} opacity="0.4" />
-            <circle cx="104" cy="74" r="0.6" fill={facialHairColor} opacity="0.4" />
-            <circle cx="108" cy="73" r="0.6" fill={facialHairColor} opacity="0.4" />
-            <circle cx="112" cy="72" r="0.6" fill={facialHairColor} opacity="0.4" />
-            {/* Upper lip area */}
-            <circle cx="94" cy="69" r="0.5" fill={facialHairColor} opacity="0.35" />
-            <circle cx="98" cy="69" r="0.5" fill={facialHairColor} opacity="0.35" />
-            <circle cx="102" cy="69" r="0.5" fill={facialHairColor} opacity="0.35" />
-            <circle cx="106" cy="69" r="0.5" fill={facialHairColor} opacity="0.35" />
+            {/* Mustache area */}
+            <circle cx="92" cy="68" r="0.6" fill={facialHairColor} opacity="0.4" />
+            <circle cx="96" cy="68" r="0.6" fill={facialHairColor} opacity="0.4" />
+            <circle cx="100" cy="68" r="0.6" fill={facialHairColor} opacity="0.4" />
+            <circle cx="104" cy="68" r="0.6" fill={facialHairColor} opacity="0.4" />
+            <circle cx="108" cy="68" r="0.6" fill={facialHairColor} opacity="0.4" />
+            {/* Lower face - jawline and chin */}
+            <circle cx="82" cy="74" r="0.6" fill={facialHairColor} opacity="0.35" />
+            <circle cx="86" cy="76" r="0.6" fill={facialHairColor} opacity="0.35" />
+            <circle cx="90" cy="78" r="0.6" fill={facialHairColor} opacity="0.4" />
+            <circle cx="94" cy="80" r="0.6" fill={facialHairColor} opacity="0.4" />
+            <circle cx="100" cy="82" r="0.6" fill={facialHairColor} opacity="0.4" />
+            <circle cx="106" cy="80" r="0.6" fill={facialHairColor} opacity="0.4" />
+            <circle cx="110" cy="78" r="0.6" fill={facialHairColor} opacity="0.4" />
+            <circle cx="114" cy="76" r="0.6" fill={facialHairColor} opacity="0.35" />
+            <circle cx="118" cy="74" r="0.6" fill={facialHairColor} opacity="0.35" />
             {/* Additional scattered stubble for texture */}
-            <circle cx="90" cy="71" r="0.5" fill={facialHairColor} opacity="0.3" />
-            <circle cx="110" cy="71" r="0.5" fill={facialHairColor} opacity="0.3" />
+            <circle cx="88" cy="72" r="0.5" fill={facialHairColor} opacity="0.3" />
+            <circle cx="96" cy="76" r="0.5" fill={facialHairColor} opacity="0.3" />
+            <circle cx="104" cy="76" r="0.5" fill={facialHairColor} opacity="0.3" />
+            <circle cx="112" cy="72" r="0.5" fill={facialHairColor} opacity="0.3" />
           </g>
         );
       
@@ -378,88 +383,93 @@ export function AvatarDisplay({
         return (
           <g className="small-beard">
             {/* Mustache */}
-            <path
-              d="M 92 69 Q 96 70, 100 70 Q 104 70, 108 69"
-              fill={facialHairColor}
-              stroke={darkerFacialHair}
-              strokeWidth="0.8"
-            />
-            {/* Small goatee/chin beard */}
             <ellipse
               cx="100"
-              cy="74"
-              rx="4"
-              ry="5"
+              cy="68"
+              rx="12"
+              ry="2.5"
               fill={facialHairColor}
               stroke={darkerFacialHair}
-              strokeWidth="0.8"
+              strokeWidth="1"
             />
-            {/* Jawline stubble on sides */}
+            {/* Chin and jawline beard - covering bottom of face */}
             <path
-              d="M 88 72 Q 90 73, 92 73"
-              stroke={facialHairColor}
+              d="M 78 72 Q 80 78, 84 82 Q 90 86, 100 87 Q 110 86, 116 82 Q 120 78, 122 72 
+                 L 120 74 Q 118 80, 114 84 Q 108 87, 100 87.5 Q 92 87, 86 84 Q 82 80, 80 74 Z"
+              fill={facialHairColor}
+              stroke={darkerFacialHair}
               strokeWidth="1.5"
+            />
+            {/* Sideburn connections */}
+            <path
+              d="M 78 72 Q 76 68, 76 65"
+              stroke={facialHairColor}
+              strokeWidth="4"
               fill="none"
-              opacity="0.6"
+              strokeLinecap="round"
             />
             <path
-              d="M 108 73 Q 110 73, 112 72"
+              d="M 122 72 Q 124 68, 124 65"
               stroke={facialHairColor}
-              strokeWidth="1.5"
+              strokeWidth="4"
               fill="none"
-              opacity="0.6"
+              strokeLinecap="round"
             />
-            {/* Detail lines */}
-            <line x1="98" y1="69" x2="98" y2="71" stroke={darkerFacialHair} strokeWidth="0.5" opacity="0.5" />
-            <line x1="102" y1="69" x2="102" y2="71" stroke={darkerFacialHair} strokeWidth="0.5" opacity="0.5" />
+            {/* Texture detail lines */}
+            <line x1="92" y1="78" x2="92" y2="84" stroke={darkerFacialHair} strokeWidth="0.8" opacity="0.3" />
+            <line x1="100" y1="80" x2="100" y2="86" stroke={darkerFacialHair} strokeWidth="0.8" opacity="0.3" />
+            <line x1="108" y1="78" x2="108" y2="84" stroke={darkerFacialHair} strokeWidth="0.8" opacity="0.3" />
           </g>
         );
       
       case "bigbeard":
         return (
           <g className="big-beard">
-            {/* Full mustache */}
-            <path
-              d="M 88 68 Q 94 70, 100 70 Q 106 70, 112 68"
-              fill={facialHairColor}
-              stroke={darkerFacialHair}
-              strokeWidth="1"
-            />
+            {/* Large full mustache */}
             <ellipse
               cx="100"
-              cy="69"
-              rx="10"
-              ry="2"
-              fill={facialHairColor}
-              stroke={darkerFacialHair}
-              strokeWidth="0.8"
-            />
-            {/* Full beard covering chin and jawline */}
-            <path
-              d="M 86 70 Q 88 76, 92 79 Q 96 80, 100 80 Q 104 80, 108 79 Q 112 76, 114 70 L 112 72 Q 110 75, 108 77 Q 104 78, 100 78 Q 96 78, 92 77 Q 90 75, 88 72 Z"
+              cy="68"
+              rx="14"
+              ry="3"
               fill={facialHairColor}
               stroke={darkerFacialHair}
               strokeWidth="1.2"
             />
-            {/* Side burns connecting to beard */}
+            {/* MASSIVE full beard covering entire lower face */}
             <path
-              d="M 86 70 Q 84 66, 84 63"
+              d="M 74 70 Q 76 78, 82 84 Q 88 89, 100 90 Q 112 89, 118 84 Q 124 78, 126 70 
+                 L 124 72 Q 122 80, 116 86 Q 108 90, 100 90.5 Q 92 90, 84 86 Q 78 80, 76 72 Z"
+              fill={facialHairColor}
+              stroke={darkerFacialHair}
+              strokeWidth="1.8"
+            />
+            {/* Thick sideburns connecting to beard */}
+            <path
+              d="M 74 70 Q 72 64, 72 60"
               stroke={facialHairColor}
-              strokeWidth="3"
+              strokeWidth="6"
               fill="none"
               strokeLinecap="round"
             />
             <path
-              d="M 114 70 Q 116 66, 116 63"
+              d="M 126 70 Q 128 64, 128 60"
               stroke={facialHairColor}
-              strokeWidth="3"
+              strokeWidth="6"
               fill="none"
               strokeLinecap="round"
             />
-            {/* Texture detail lines */}
-            <line x1="96" y1="74" x2="96" y2="78" stroke={darkerFacialHair} strokeWidth="0.6" opacity="0.4" />
-            <line x1="100" y1="74" x2="100" y2="79" stroke={darkerFacialHair} strokeWidth="0.6" opacity="0.4" />
-            <line x1="104" y1="74" x2="104" y2="78" stroke={darkerFacialHair} strokeWidth="0.6" opacity="0.4" />
+            {/* Additional volume on sides */}
+            <ellipse cx="78" cy="76" rx="5" ry="8" fill={facialHairColor} opacity="0.8" />
+            <ellipse cx="122" cy="76" rx="5" ry="8" fill={facialHairColor} opacity="0.8" />
+            {/* Lots of texture detail lines for fullness */}
+            <line x1="88" y1="76" x2="88" y2="86" stroke={darkerFacialHair} strokeWidth="1" opacity="0.4" />
+            <line x1="94" y1="78" x2="94" y2="88" stroke={darkerFacialHair} strokeWidth="1" opacity="0.4" />
+            <line x1="100" y1="80" x2="100" y2="89" stroke={darkerFacialHair} strokeWidth="1" opacity="0.4" />
+            <line x1="106" y1="78" x2="106" y2="88" stroke={darkerFacialHair} strokeWidth="1" opacity="0.4" />
+            <line x1="112" y1="76" x2="112" y2="86" stroke={darkerFacialHair} strokeWidth="1" opacity="0.4" />
+            {/* Curved texture for natural look */}
+            <path d="M 84 80 Q 86 84, 90 86" stroke={darkerFacialHair} strokeWidth="0.8" fill="none" opacity="0.3" />
+            <path d="M 116 80 Q 114 84, 110 86" stroke={darkerFacialHair} strokeWidth="0.8" fill="none" opacity="0.3" />
           </g>
         );
       
