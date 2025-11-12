@@ -309,6 +309,17 @@ export function AvatarDisplay({
             />
           )}
           
+          {/* Kneecap - circular definition at the joint */}
+          <ellipse
+            cx={85}
+            cy={226}
+            rx={Math.max(attrs.legWidth * 0.55, 5.5)}
+            ry={Math.max(attrs.legWidth * 0.55, 5.5)}
+            fill={skinTone}
+            stroke={outlineColor}
+            strokeWidth={outlineWidth * 1.2}
+          />
+          
           {/* Shoe at bottom of foot */}
           <ellipse
             cx="85"
@@ -389,6 +400,17 @@ export function AvatarDisplay({
             />
           )}
           
+          {/* Kneecap - circular definition at the joint */}
+          <ellipse
+            cx={115}
+            cy={226}
+            rx={Math.max(attrs.legWidth * 0.55, 5.5)}
+            ry={Math.max(attrs.legWidth * 0.55, 5.5)}
+            fill={skinTone}
+            stroke={outlineColor}
+            strokeWidth={outlineWidth * 1.2}
+          />
+          
           {/* Shoe at bottom of foot */}
           <ellipse
             cx="115"
@@ -416,7 +438,7 @@ export function AvatarDisplay({
             stroke={outlineColor}
             strokeWidth={outlineWidth}
           />
-          {/* Bicep definition line - visible at stage 3+ */}
+          {/* Bicep definition line - visible at stage 2+ */}
           {stage >= 2 && attrs.armWidth > 4 && (
             <line
               x1={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}
@@ -426,6 +448,30 @@ export function AvatarDisplay({
               stroke={outlineColor}
               strokeWidth="0.8"
               opacity={Math.min(0.15 + stage * 0.03, 0.35)}
+            />
+          )}
+          {/* Tricep/outer arm definition - visible at stage 3+ */}
+          {stage >= 3 && attrs.armWidth > 5 && (
+            <line
+              x1={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2 - (attrs.armWidth * 0.6)}
+              y1={130}
+              x2={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2 - (attrs.armWidth * 0.6)}
+              y2={148}
+              stroke={outlineColor}
+              strokeWidth="0.7"
+              opacity={Math.min(0.12 + stage * 0.025, 0.3)}
+            />
+          )}
+          {/* Forearm definition - visible at stage 4+ */}
+          {stage >= 4 && attrs.armWidth > 5 && (
+            <line
+              x1={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}
+              y1={150}
+              x2={100 - attrs.shoulderWidth / 2 - attrs.armWidth - 2}
+              y2={168}
+              stroke={outlineColor}
+              strokeWidth="0.7"
+              opacity={Math.min(0.1 + stage * 0.02, 0.25)}
             />
           )}
           {wristbands && (
@@ -465,7 +511,7 @@ export function AvatarDisplay({
             stroke={outlineColor}
             strokeWidth={outlineWidth}
           />
-          {/* Bicep definition line - visible at stage 3+ */}
+          {/* Bicep definition line - visible at stage 2+ */}
           {stage >= 2 && attrs.armWidth > 4 && (
             <line
               x1={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}
@@ -475,6 +521,30 @@ export function AvatarDisplay({
               stroke={outlineColor}
               strokeWidth="0.8"
               opacity={Math.min(0.15 + stage * 0.03, 0.35)}
+            />
+          )}
+          {/* Tricep/outer arm definition - visible at stage 3+ */}
+          {stage >= 3 && attrs.armWidth > 5 && (
+            <line
+              x1={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2 + (attrs.armWidth * 0.6)}
+              y1={130}
+              x2={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2 + (attrs.armWidth * 0.6)}
+              y2={148}
+              stroke={outlineColor}
+              strokeWidth="0.7"
+              opacity={Math.min(0.12 + stage * 0.025, 0.3)}
+            />
+          )}
+          {/* Forearm definition - visible at stage 4+ */}
+          {stage >= 4 && attrs.armWidth > 5 && (
+            <line
+              x1={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}
+              y1={150}
+              x2={100 + attrs.shoulderWidth / 2 + attrs.armWidth + 2}
+              y2={168}
+              stroke={outlineColor}
+              strokeWidth="0.7"
+              opacity={Math.min(0.1 + stage * 0.02, 0.25)}
             />
           )}
           {wristbands && (
