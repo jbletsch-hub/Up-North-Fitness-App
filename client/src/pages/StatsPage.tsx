@@ -279,7 +279,7 @@ export default function StatsPage() {
                             <AvatarDisplay
                               level={u.level}
                               size="sm"
-                              tankColor="#FF5722"
+                              shirtColor="#FF5722"
                               shortsColor="#20B2AA"
                             />
                             <div className="text-center w-full">
