@@ -402,12 +402,12 @@ export default function Dashboard() {
               <AvatarDisplay
                 level={dashboardUser.level}
                 characterType={dashboardUser.characterType || "classic"}
-                shirtColor={dashboardUser.shirtColor || "#FF6B35"}
-                shortsColor={dashboardUser.shortsColor || "#1E3A8A"}
+                shirtColor={dashboardUser.shirtColor || "#FF5722"}
+                shortsColor={dashboardUser.shortsColor || "#20B2AA"}
                 headband={dashboardUser.headband || false}
                 wristbands={dashboardUser.wristbands || false}
                 hairStyle={dashboardUser.hairStyle || "short"}
-                hairColor={dashboardUser.hairColor || "#4A3728"}
+                hairColor={dashboardUser.hairColor || "#8B4513"}
                 size="md"
               />
             </CardContent>

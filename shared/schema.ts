@@ -59,8 +59,8 @@ export const users = pgTable("users", {
   
   // Avatar customization
   characterType: varchar("character_type").default("classic"),
-  shirtColor: varchar("shirt_color").default("#FF6B35"),
-  shortsColor: varchar("shorts_color").default("#1E3A8A"),
+  shirtColor: varchar("shirt_color").default("#FF5722"),
+  shortsColor: varchar("shorts_color").default("#20B2AA"),
   headband: boolean("headband").default(false),
   wristbands: boolean("wristbands").default(false),
   hairStyle: varchar("hair_style").default("short"),

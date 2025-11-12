@@ -20,7 +20,7 @@ const CHARACTER_TYPES = [
 ];
 
 const SHIRT_COLORS = [
-  { name: "Orange", value: "#FF6B35" },
+  { name: "Orange-Red", value: "#FF5722" },
   { name: "Red", value: "#E74C3C" },
   { name: "Blue", value: "#3498DB" },
   { name: "Green", value: "#27AE60" },
@@ -29,11 +29,11 @@ const SHIRT_COLORS = [
 ];
 
 const SHORTS_COLORS = [
+  { name: "Teal", value: "#20B2AA" },
   { name: "Navy", value: "#1E3A8A" },
   { name: "Black", value: "#1F2937" },
   { name: "Gray", value: "#6B7280" },
   { name: "Blue", value: "#2563EB" },
-  { name: "Red", value: "#DC2626" },
   { name: "Green", value: "#16A34A" },
 ];
 
@@ -61,12 +61,12 @@ export default function AvatarPage() {
   const { toast } = useToast();
   
   const [characterType, setCharacterType] = useState(user?.characterType || "classic");
-  const [shirtColor, setShirtColor] = useState(user?.shirtColor || "#FF6B35");
-  const [shortsColor, setShortsColor] = useState(user?.shortsColor || "#1E3A8A");
+  const [shirtColor, setShirtColor] = useState(user?.shirtColor || "#FF5722");
+  const [shortsColor, setShortsColor] = useState(user?.shortsColor || "#20B2AA");
   const [headband, setHeadband] = useState(user?.headband || false);
   const [wristbands, setWristbands] = useState(user?.wristbands || false);
   const [hairStyle, setHairStyle] = useState(user?.hairStyle || "short");
-  const [hairColor, setHairColor] = useState(user?.hairColor || "#4A3728");
+  const [hairColor, setHairColor] = useState(user?.hairColor || "#8B4513");
 
   const saveAvatarMutation = useMutation({
     mutationFn: async () => {
