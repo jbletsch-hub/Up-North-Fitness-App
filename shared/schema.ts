@@ -159,6 +159,7 @@ export const progressPhotos = pgTable("progress_photos", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
   imagePath: text("image_path").notNull(),
+  uploadDate: varchar("upload_date").notNull(), // YYYY-MM-DD in Central Time
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
