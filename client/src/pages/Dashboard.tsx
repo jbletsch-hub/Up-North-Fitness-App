@@ -433,7 +433,7 @@ export default function Dashboard() {
         <div className="grid md:grid-cols-[auto_1fr] gap-4 md:gap-6 items-start">
           {/* Avatar Card */}
           <Card className="md:w-auto">
-            <CardContent className="pt-4 px-4 pb-6 flex justify-center items-center min-h-[280px]">
+            <CardContent className="pt-4 px-4 pb-6 flex justify-center items-center min-h-[340px]">
               <AvatarWithProgress
                 level={dashboardUser.level}
                 xp={dashboardUser.xp}
