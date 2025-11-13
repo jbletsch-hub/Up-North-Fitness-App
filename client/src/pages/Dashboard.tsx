@@ -23,6 +23,7 @@ import { Progress } from "@/components/ui/progress";
 import { AvatarDisplay } from "@/components/AvatarDisplay";
 import { Card, CardContent } from "@/components/ui/card";
 import { CrewChallengeCard } from "@/components/CrewChallengeCard";
+import { TodayXPWidget, MVLCountdownWidget, ActiveChallengeWidget } from "@/components/DashboardWidgets";
 
 export default function Dashboard() {
   const { toast } = useToast();
@@ -468,6 +469,13 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Dashboard Widgets - Quick Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <TodayXPWidget dailyXp={dashboardUser.dailyXp || 0} />
+          <MVLCountdownWidget currentUserId={dashboardUser.id} />
+          <ActiveChallengeWidget challenges={challenges} />
         </div>
 
         <CrewGoalMeter 
