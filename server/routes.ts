@@ -482,16 +482,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No photo URL provided" });
       }
 
-      // Check if user has already uploaded a photo today
+      // Check if user has already uploaded a photo today (using Central Time date)
       const today = getTodayDate();
       const userPhotos = await storage.getPhotosByUser(userId);
-      const todayPhoto = userPhotos.find(photo => {
-        const photoDate = new Date(photo.createdAt).toLocaleDateString('en-US', { timeZone: 'America/Chicago' });
-        const todayFormatted = new Date(today).toLocaleDateString('en-US', { timeZone: 'America/Chicago' });
-        return photoDate === todayFormatted;
-      });
+      const todayPhoto = userPhotos.find(photo => photo.uploadDate === today);
 
       if (todayPhoto) {
+        console.log("[PHOTO UPLOAD] User already uploaded today:", today);
         return res.status(400).json({ message: "You can only upload one progress photo per day" });
       }
 
@@ -511,10 +508,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log("[PHOTO UPLOAD] Normalized objectPath:", objectPath);
 
-      // Save to database
+      // Save to database with uploadDate in Central Time
       await storage.createProgressPhoto({
         userId,
         imagePath: objectPath,
+        uploadDate: today, // Store the Central Time date
       });
 
       const result = await awardXP(userId, 15, "uploaded a progress photo");
