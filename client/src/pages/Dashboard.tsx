@@ -21,6 +21,7 @@ import { useXPPopup } from "@/components/XPPopup";
 import { getXPToNextLevel, getLevelProgress } from "@/lib/xpUtils";
 import { Progress } from "@/components/ui/progress";
 import { AvatarDisplay } from "@/components/AvatarDisplay";
+import { AvatarWithProgress } from "@/components/AvatarWithProgress";
 import { Card, CardContent } from "@/components/ui/card";
 import { CrewChallengeCard } from "@/components/CrewChallengeCard";
 import { TodayXPWidget, MVLCountdownWidget, ActiveChallengeWidget } from "@/components/DashboardWidgets";
@@ -433,8 +434,9 @@ export default function Dashboard() {
           {/* Avatar Card */}
           <Card className="md:w-auto">
             <CardContent className="p-4 flex justify-center">
-              <AvatarDisplay
+              <AvatarWithProgress
                 level={dashboardUser.level}
+                xp={dashboardUser.xp}
                 characterType={dashboardUser.characterType || "classic"}
                 shirtColor={dashboardUser.shirtColor || "#FF5722"}
                 shortsColor={dashboardUser.shortsColor || "#20B2AA"}
@@ -443,6 +445,7 @@ export default function Dashboard() {
                 hairStyle={dashboardUser.hairStyle || "short"}
                 hairColor={dashboardUser.hairColor || "#8B4513"}
                 size="md"
+                showProgress={true}
               />
             </CardContent>
           </Card>

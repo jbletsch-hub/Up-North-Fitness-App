@@ -103,6 +103,20 @@ export const insertPRSchema = createInsertSchema(prs).omit({ userId: true });
 export type InsertPR = z.infer<typeof insertPRSchema>;
 export type PR = typeof prs.$inferSelect;
 
+// PR History table - tracks progression over time
+export const prHistory = pgTable("pr_history", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  squat: integer("squat").default(0).notNull(),
+  bench: integer("bench").default(0).notNull(),
+  deadlift: integer("deadlift").default(0).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertPRHistorySchema = createInsertSchema(prHistory).omit({ id: true, createdAt: true });
+export type InsertPRHistory = z.infer<typeof insertPRHistorySchema>;
+export type PRHistory = typeof prHistory.$inferSelect;
+
 // Activity table
 export const activities = pgTable("activities", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -254,6 +268,13 @@ export const userGoalsRelations = relations(userGoals, ({ one }) => ({
 export const prsRelations = relations(prs, ({ one }) => ({
   user: one(users, {
     fields: [prs.userId],
+    references: [users.id],
+  }),
+}));
+
+export const prHistoryRelations = relations(prHistory, ({ one }) => ({
+  user: one(users, {
+    fields: [prHistory.userId],
     references: [users.id],
   }),
 }));

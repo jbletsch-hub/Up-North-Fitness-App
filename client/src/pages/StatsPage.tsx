@@ -173,6 +173,75 @@ export default function StatsPage() {
               </CardContent>
             </Card>
 
+            {/* PR Progression Chart */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Trophy className="h-5 w-5 text-yellow-500" />
+                  PR Progression
+                </CardTitle>
+                <CardDescription>Your strength gains over time</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {(stats as any)?.prProgression && (stats as any).prProgression.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={(stats as any).prProgression}>
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                      <XAxis 
+                        dataKey="date" 
+                        tickFormatter={formatDate}
+                        className="text-xs"
+                      />
+                      <YAxis className="text-xs" label={{ value: 'Weight (lbs)', angle: -90, position: 'insideLeft', className: 'text-xs' }} />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: 'hsl(var(--card))', 
+                          border: '1px solid hsl(var(--border))' 
+                        }}
+                        labelFormatter={(label) => `Date: ${formatDate(label)}`}
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="squat" 
+                        stroke="#3b82f6" 
+                        strokeWidth={2}
+                        name="Squat"
+                        dot={{ fill: '#3b82f6' }}
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="bench" 
+                        stroke="#f59e0b" 
+                        strokeWidth={2}
+                        name="Bench"
+                        dot={{ fill: '#f59e0b' }}
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="deadlift" 
+                        stroke="#ef4444" 
+                        strokeWidth={2}
+                        name="Deadlift"
+                        dot={{ fill: '#ef4444' }}
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="total" 
+                        stroke="hsl(var(--primary))" 
+                        strokeWidth={3}
+                        name="Total"
+                        dot={{ fill: 'hsl(var(--primary))' }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <p className="text-center text-muted-foreground py-12">
+                    No PR data yet. Update your personal records to see your progress!
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+
             {/* Current Stats */}
             <div className="grid md:grid-cols-2 gap-4">
               <Card>

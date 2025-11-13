@@ -1,6 +1,7 @@
 import {
   users,
   prs,
+  prHistory,
   activities,
   challengePool,
   userDailyChallenges,
@@ -15,6 +16,8 @@ import {
   type InsertUser,
   type PR,
   type InsertPR,
+  type PRHistory,
+  type InsertPRHistory,
   type Activity,
   type InsertActivity,
   type ChallengePool,
@@ -69,6 +72,10 @@ export interface IStorage {
   getPR(userId: string): Promise<PR | undefined>;
   upsertPR(userId: string, pr: InsertPR): Promise<PR>;
   getAllPRs(): Promise<PR[]>;
+  
+  // PR History operations
+  createPRHistory(userId: string, pr: InsertPR): Promise<PRHistory>;
+  getPRHistory(userId: string, limit?: number): Promise<PRHistory[]>;
   
   // Activity operations
   createActivity(activity: InsertActivity): Promise<Activity>;
@@ -334,6 +341,24 @@ export class DatabaseStorage implements IStorage {
 
   async getAllPRs(): Promise<PR[]> {
     return await db.select().from(prs);
+  }
+
+  // PR History operations
+  async createPRHistory(userId: string, prData: InsertPR): Promise<PRHistory> {
+    const [history] = await db
+      .insert(prHistory)
+      .values({ userId, ...prData })
+      .returning();
+    return history;
+  }
+
+  async getPRHistory(userId: string, limit: number = 30): Promise<PRHistory[]> {
+    return await db
+      .select()
+      .from(prHistory)
+      .where(eq(prHistory.userId, userId))
+      .orderBy(desc(prHistory.createdAt))
+      .limit(limit);
   }
 
   // Activity operations

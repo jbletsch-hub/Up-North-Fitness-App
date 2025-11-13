@@ -410,6 +410,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         deadlift: newDeadlift,
       });
 
+      // Save PR to history for progression tracking
+      await storage.createPRHistory(userId, {
+        squat: newSquat,
+        bench: newBench,
+        deadlift: newDeadlift,
+      });
+
       // Check if crew goal is reached and auto-advance
       const allPRs = await storage.getAllPRs();
       const total = allPRs.reduce((sum, pr) => sum + pr.squat + pr.bench + pr.deadlift, 0);
@@ -1279,8 +1286,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         lifetime: activeGoals.filter((g: any) => g.type === "lifetime"),
       };
       
-      // Get PR history from activities
-      const prActivities = activities.filter((a: any) => a.type === "pr");
+      // Get PR progression history
+      const prProgressionData = await storage.getPRHistory(targetUserId, 30);
+      
+      // Format PR history for chart
+      const prProgression = prProgressionData
+        .reverse() // Oldest first for chart
+        .map((pr) => ({
+          date: new Date(pr.createdAt).toISOString().split('T')[0],
+          squat: pr.squat,
+          bench: pr.bench,
+          deadlift: pr.deadlift,
+          total: pr.squat + pr.bench + pr.deadlift,
+        }));
       
       // Aggregate XP by date
       const xpByDate: Record<string, number> = {};
@@ -1300,7 +1318,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         displayName: user.displayName,
         totalActivities: activities.length,
         xpTrend,
-        prHistory: prActivities.slice(0, 10),
+        prProgression, // PR history for chart
         currentStreak: user?.streakCount || 0,
         totalXP: user?.xp || 0,
         currentLevel: user?.level || 1,
