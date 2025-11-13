@@ -80,7 +80,18 @@ export interface IStorage {
   // Activity operations
   createActivity(activity: InsertActivity): Promise<Activity>;
   getActivitiesByUser(userId: string, limit?: number): Promise<Activity[]>;
-  getRecentActivities(limit?: number): Promise<Array<Activity & { username: string; characterType: string; level: number }>>;
+  getRecentActivities(limit?: number): Promise<Array<Activity & { 
+    username: string; 
+    characterType: string; 
+    level: number;
+    shirtColor: string | null;
+    shortsColor: string | null;
+    headband: boolean | null;
+    wristbands: boolean | null;
+    hairStyle: string | null;
+    hairColor: string | null;
+    facialHair: string | null;
+  }>>;
   
   // Challenge pool operations
   getAllChallenges(): Promise<ChallengePool[]>;
@@ -379,7 +390,18 @@ export class DatabaseStorage implements IStorage {
       .limit(limit);
   }
 
-  async getRecentActivities(limit: number = 10): Promise<Array<Activity & { username: string; characterType: string; level: number }>> {
+  async getRecentActivities(limit: number = 10): Promise<Array<Activity & { 
+    username: string; 
+    characterType: string; 
+    level: number;
+    shirtColor: string | null;
+    shortsColor: string | null;
+    headband: boolean | null;
+    wristbands: boolean | null;
+    hairStyle: string | null;
+    hairColor: string | null;
+    facialHair: string | null;
+  }>> {
     const result = await db
       .select({
         id: activities.id,
@@ -391,6 +413,13 @@ export class DatabaseStorage implements IStorage {
         username: users.username,
         characterType: users.characterType,
         level: users.level,
+        shirtColor: users.shirtColor,
+        shortsColor: users.shortsColor,
+        headband: users.headband,
+        wristbands: users.wristbands,
+        hairStyle: users.hairStyle,
+        hairColor: users.hairColor,
+        facialHair: users.facialHair,
       })
       .from(activities)
       .leftJoin(users, eq(activities.userId, users.id))
@@ -402,6 +431,13 @@ export class DatabaseStorage implements IStorage {
       username: r.username || "Unknown",
       characterType: r.characterType || "classic",
       level: r.level || 1,
+      shirtColor: r.shirtColor,
+      shortsColor: r.shortsColor,
+      headband: r.headband,
+      wristbands: r.wristbands,
+      hairStyle: r.hairStyle,
+      hairColor: r.hairColor,
+      facialHair: r.facialHair,
     }));
   }
 
