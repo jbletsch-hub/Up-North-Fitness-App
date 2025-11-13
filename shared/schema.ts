@@ -188,6 +188,50 @@ export const insertUserGoalSchema = createInsertSchema(userGoals).omit({
 export type InsertUserGoal = z.infer<typeof insertUserGoalSchema>;
 export type UserGoal = typeof userGoals.$inferSelect;
 
+// Weekly crew challenge pool table - admin-managed templates
+export const crewChallengePool = pgTable("crew_challenge_pool", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  text: text("text").notNull(),
+  description: text("description"), // Optional detailed description
+  targetValue: integer("target_value").notNull(), // Total crew target (e.g., 1000 reps, 500 workouts)
+  unit: varchar("unit").notNull(), // "reps", "workouts", "lbs lifted", etc.
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertCrewChallengePoolSchema = createInsertSchema(crewChallengePool).omit({ id: true, createdAt: true });
+export type InsertCrewChallengePool = z.infer<typeof insertCrewChallengePoolSchema>;
+export type CrewChallengePool = typeof crewChallengePool.$inferSelect;
+
+// Active weekly crew challenge - singleton table tracking current challenge
+export const activeCrewChallenge = pgTable("active_crew_challenge", {
+  id: integer("id").primaryKey().default(1), // Always 1 (singleton)
+  challengeId: varchar("challenge_id").references(() => crewChallengePool.id, { onDelete: "set null" }),
+  weekStart: varchar("week_start").notNull(), // Monday date (YYYY-MM-DD format)
+  currentProgress: integer("current_progress").default(0).notNull(), // Crew's total progress
+  completed: boolean("completed").default(false).notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertActiveCrewChallengeSchema = createInsertSchema(activeCrewChallenge).omit({ id: true, updatedAt: true });
+export type InsertActiveCrewChallenge = z.infer<typeof insertActiveCrewChallengeSchema>;
+export type ActiveCrewChallenge = typeof activeCrewChallenge.$inferSelect;
+
+// User progress on weekly crew challenge
+export const userCrewChallengeProgress = pgTable("user_crew_challenge_progress", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  weekStart: varchar("week_start").notNull(), // Week identifier (Monday date YYYY-MM-DD)
+  contribution: integer("contribution").default(0).notNull(), // User's individual contribution
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertUserCrewChallengeProgressSchema = createInsertSchema(userCrewChallengeProgress).omit({ 
+  id: true, 
+  updatedAt: true 
+});
+export type InsertUserCrewChallengeProgress = z.infer<typeof insertUserCrewChallengeProgressSchema>;
+export type UserCrewChallengeProgress = typeof userCrewChallengeProgress.$inferSelect;
+
 // Relations
 export const usersRelations = relations(users, ({ one, many }) => ({
   pr: one(prs, {
