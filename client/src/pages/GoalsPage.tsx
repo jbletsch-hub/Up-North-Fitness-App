@@ -12,10 +12,12 @@ import { useState } from "react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
+import { useGoalCompletionPopup } from "@/components/GoalCompletionPopup";
 
 export default function GoalsPage() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { showGoalCompletion, popup: goalPopup } = useGoalCompletionPopup();
   const [newGoalTitle, setNewGoalTitle] = useState("");
   const [newGoalTargetValue, setNewGoalTargetValue] = useState("");
   const [newGoalUnit, setNewGoalUnit] = useState("times");
@@ -55,16 +57,37 @@ export default function GoalsPage() {
   });
 
   const completeGoalMutation = useMutation({
-    mutationFn: async (goalId: string) => {
+    mutationFn: async ({ goalId, goalTitle, position }: { goalId: string; goalTitle: string; position?: { x: number; y: number } }) => {
       const res = await apiRequest("PATCH", `/api/goals/${goalId}/complete`);
-      return await res.json();
+      return { data: await res.json(), goalTitle, position };
     },
-    onSuccess: (data) => {
+    onSuccess: (response: any) => {
+      const { data, goalTitle, position } = response;
       queryClient.invalidateQueries({ queryKey: ["/api/goals"] });
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      
+      // Show goal completion animation
+      if (position) {
+        const fakeEvent = {
+          currentTarget: {
+            getBoundingClientRect: () => ({
+              left: position.x - 50,
+              top: position.y,
+              width: 100,
+              height: 40,
+              right: position.x + 50,
+              bottom: position.y + 40,
+              x: position.x - 50,
+              y: position.y,
+            }),
+          },
+        };
+        showGoalCompletion(goalTitle, data.xpAwarded, fakeEvent as any);
+      }
+      
       toast({
-        title: "Goal completed!",
+        title: "Goal completed! 🎉",
         description: `You earned ${data.xpAwarded} XP!`,
       });
     },
@@ -137,7 +160,18 @@ export default function GoalsPage() {
                       <Button
                         size="icon"
                         variant="ghost"
-                        onClick={() => completeGoalMutation.mutate(goal.id)}
+                        onClick={(event) => {
+                          const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+                          const position = {
+                            x: rect.left + rect.width / 2,
+                            y: rect.top,
+                          };
+                          completeGoalMutation.mutate({ 
+                            goalId: goal.id, 
+                            goalTitle: goal.title,
+                            position 
+                          });
+                        }}
                         disabled={completeGoalMutation.isPending}
                         data-testid={`button-complete-${goal.id}`}
                       >
@@ -308,6 +342,8 @@ export default function GoalsPage() {
           </div>
         )}
       </main>
+
+      {goalPopup}
     </div>
   );
 }

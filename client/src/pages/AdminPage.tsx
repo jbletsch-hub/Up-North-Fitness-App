@@ -23,6 +23,14 @@ export default function AdminPage() {
   const [xpAmount, setXpAmount] = useState("");
   const [editingDisplayName, setEditingDisplayName] = useState<{ userId: string; currentName: string } | null>(null);
   const [newDisplayName, setNewDisplayName] = useState("");
+  
+  // Crew challenge state
+  const [newCrewChallenge, setNewCrewChallenge] = useState({
+    text: "",
+    description: "",
+    targetValue: "",
+    unit: "lbs",
+  });
 
   // Redirect non-admins
   if (user && !user.isAdmin) {
@@ -43,6 +51,10 @@ export default function AdminPage() {
 
   const { data: stats } = useQuery({
     queryKey: ["/api/home"],
+  });
+
+  const { data: crewChallenges = [] } = useQuery<any[]>({
+    queryKey: ["/api/admin/crew-challenges"],
   });
 
   const addChallengeMutation = useMutation({
@@ -240,6 +252,35 @@ export default function AdminPage() {
         title: "Error",
         description: error.message || "Failed to award MVL badge",
         variant: "destructive",
+      });
+    },
+  });
+
+  const addCrewChallengeMutation = useMutation({
+    mutationFn: async (data: typeof newCrewChallenge) => {
+      const res = await apiRequest("POST", "/api/admin/crew-challenges", data);
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/crew-challenges"] });
+      setNewCrewChallenge({ text: "", description: "", targetValue: "", unit: "lbs" });
+      toast({
+        title: "Crew challenge created!",
+        description: "The crew challenge has been added to the pool.",
+      });
+    },
+  });
+
+  const deleteCrewChallengeMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await apiRequest("DELETE", `/api/admin/crew-challenges/${id}`);
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/crew-challenges"] });
+      toast({
+        title: "Crew challenge deleted",
+        description: "The crew challenge has been removed from the pool.",
       });
     },
   });
@@ -677,6 +718,131 @@ export default function AdminPage() {
               ) : (
                 <p className="text-muted-foreground text-center py-8">
                   No challenges in the pool yet. Add some above!
+                </p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Crew Challenge Pool Management */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              Crew Challenge Pool
+            </CardTitle>
+            <CardDescription>Manage weekly crew challenges. One challenge is randomly selected every Monday.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="crew-challenge-text">Challenge Name</Label>
+                <Input
+                  id="crew-challenge-text"
+                  placeholder="e.g., Crew Squat Challenge"
+                  value={newCrewChallenge.text}
+                  onChange={(e) => setNewCrewChallenge({ ...newCrewChallenge, text: e.target.value })}
+                  data-testid="input-crew-challenge-text"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="crew-challenge-desc">Description</Label>
+                <Input
+                  id="crew-challenge-desc"
+                  placeholder="e.g., Team up and squat together!"
+                  value={newCrewChallenge.description}
+                  onChange={(e) => setNewCrewChallenge({ ...newCrewChallenge, description: e.target.value })}
+                  data-testid="input-crew-challenge-desc"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-2">
+                  <Label htmlFor="crew-challenge-target">Target Value</Label>
+                  <Input
+                    id="crew-challenge-target"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    placeholder="e.g., 50000"
+                    value={newCrewChallenge.targetValue}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^0-9]/g, '');
+                      setNewCrewChallenge({ ...newCrewChallenge, targetValue: value });
+                    }}
+                    data-testid="input-crew-challenge-target"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="crew-challenge-unit">Unit</Label>
+                  <Select
+                    value={newCrewChallenge.unit}
+                    onValueChange={(value) => setNewCrewChallenge({ ...newCrewChallenge, unit: value })}
+                  >
+                    <SelectTrigger id="crew-challenge-unit" data-testid="select-crew-challenge-unit">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="lbs">lbs</SelectItem>
+                      <SelectItem value="reps">reps</SelectItem>
+                      <SelectItem value="miles">miles</SelectItem>
+                      <SelectItem value="minutes">minutes</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <Button
+                onClick={() => {
+                  if (newCrewChallenge.text.trim() && newCrewChallenge.description.trim() && newCrewChallenge.targetValue) {
+                    addCrewChallengeMutation.mutate({
+                      ...newCrewChallenge,
+                      targetValue: newCrewChallenge.targetValue,
+                    });
+                  }
+                }}
+                disabled={!newCrewChallenge.text.trim() || !newCrewChallenge.description.trim() || !newCrewChallenge.targetValue}
+                data-testid="button-add-crew-challenge"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Crew Challenge
+              </Button>
+            </div>
+
+            <div className="space-y-2">
+              {crewChallenges.length > 0 ? (
+                crewChallenges.map((challenge: any) => (
+                  <div
+                    key={challenge.id}
+                    className="flex items-start justify-between p-3 rounded-lg border bg-card gap-3"
+                    data-testid={`crew-challenge-${challenge.id}`}
+                  >
+                    <div className="flex-1">
+                      <div className="font-semibold">{challenge.text}</div>
+                      <div className="text-sm text-muted-foreground">{challenge.description}</div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        Target: {challenge.targetValue.toLocaleString()} {challenge.unit}
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        if (confirm(`Delete "${challenge.text}"?`)) {
+                          deleteCrewChallengeMutation.mutate(challenge.id);
+                        }
+                      }}
+                      data-testid={`button-delete-crew-challenge-${challenge.id}`}
+                    >
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                  </div>
+                ))
+              ) : (
+                <p className="text-muted-foreground text-center py-8">
+                  No crew challenges in the pool yet. Add some above!
                 </p>
               )}
             </div>
