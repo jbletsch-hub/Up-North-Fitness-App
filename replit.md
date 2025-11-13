@@ -18,9 +18,11 @@ The gamification system features an XP curve (1.125 multiplier, ~200k XP for lev
 
 ### System Design Choices
 - **Avatar System:** Features a 10-stage visual progression with dynamic facial expressions and muscle definition, evolving from "skinny" to "jacked." Users can select from four distinct character types (Classic, Bulky, Athletic, Powerlifter) which modify body proportions.
-- **UI/UX:** Uses custom golden dumbbell app icon, supports PWA (Progressive Web App) with `manifest.json`.
+- **UI/UX:** Uses custom golden dumbbell app icon, supports PWA (Progressive Web App) with `manifest.json` (v1.0.1 with cache-busting for iOS updates).
 - **Public Profiles:** User stats pages are publicly viewable, accessible via a dedicated route (`/stats/:userId`) and linked from leaderboards and a "Browse Users" section.
-- **MVL Race Logic:** MVL calculation focuses solely on XP from daily activities to emphasize consistent daily effort.
+- **MVL Race Logic:** MVL calculation focuses solely on XP from daily activities to emphasize consistent daily effort. Goal completions don't count toward MVL standings.
+- **PR XP Awards:** Users only receive 10 XP for PR updates if at least one lift (squat, bench, deadlift) actually increases. Same/lower numbers award no XP.
+- **Mobile Input Fix:** Uses `type="text"` with `inputMode="numeric"` for number inputs to fix iOS Safari typing bug.
 
 ## External Dependencies
 
