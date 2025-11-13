@@ -1097,6 +1097,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const allGoals = await storage.getUserGoals(targetUserId);
       const completedGoalsCount = allGoals.filter((g: any) => g.completed).length;
       
+      // Group active goals by type
+      const activeGoals = allGoals.filter((g: any) => !g.completed);
+      const groupedGoals = {
+        weekly: activeGoals.filter((g: any) => g.type === "weekly"),
+        yearly: activeGoals.filter((g: any) => g.type === "yearly"),
+        lifetime: activeGoals.filter((g: any) => g.type === "lifetime"),
+      };
+      
       // Get PR history from activities
       const prActivities = activities.filter((a: any) => a.type === "pr");
       
@@ -1126,6 +1134,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         calories: user?.calories,
         mvlWins: user?.mvlWins || 0,
         completedGoals: completedGoalsCount,
+        goals: groupedGoals,
         characterType: user?.characterType || "classic",
         shirtColor: user?.shirtColor,
         shortsColor: user?.shortsColor,
