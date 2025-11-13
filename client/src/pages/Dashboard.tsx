@@ -22,6 +22,7 @@ import { getXPToNextLevel, getLevelProgress } from "@/lib/xpUtils";
 import { Progress } from "@/components/ui/progress";
 import { AvatarDisplay } from "@/components/AvatarDisplay";
 import { Card, CardContent } from "@/components/ui/card";
+import { CrewChallengeCard } from "@/components/CrewChallengeCard";
 
 export default function Dashboard() {
   const { toast } = useToast();
@@ -35,6 +36,16 @@ export default function Dashboard() {
 
   const { data: homeData } = useQuery<{ leaderboard: any[] }>({
     queryKey: ["/api/home"],
+    enabled: !!user,
+  });
+
+  const { data: crewChallengeData = null } = useQuery<any>({
+    queryKey: ["/api/crew-challenge/current"],
+    enabled: !!user,
+  });
+
+  const { data: crewLeaderboard = [] } = useQuery<any[]>({
+    queryKey: ["/api/crew-challenge/leaderboard"],
     enabled: !!user,
   });
 
@@ -350,6 +361,28 @@ export default function Dashboard() {
     },
   });
 
+  const crewContributionMutation = useMutation({
+    mutationFn: async (contribution: number) => {
+      const res = await apiRequest("POST", "/api/crew-challenge/progress", { contribution });
+      return await res.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/crew-challenge/current"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/crew-challenge/leaderboard"] });
+      toast({
+        title: "Contribution recorded!",
+        description: `You added ${data.userContribution.toLocaleString()} to the crew challenge!`,
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to record contribution",
+        variant: "destructive",
+      });
+    },
+  });
+
   if (isLoading || !dashboardData) {
     return <div className="min-h-screen bg-background flex items-center justify-center">
       <div className="text-center">
@@ -534,6 +567,13 @@ export default function Dashboard() {
         </div>
 
         <DailyMVLCard />
+
+        <CrewChallengeCard
+          challengeData={crewChallengeData}
+          leaderboard={crewLeaderboard}
+          onContribute={(contribution) => crewContributionMutation.mutate(contribution)}
+          isSubmitting={crewContributionMutation.isPending}
+        />
 
         <LeaderboardCard users={leaderboard} />
 

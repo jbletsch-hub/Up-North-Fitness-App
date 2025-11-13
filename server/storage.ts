@@ -119,7 +119,7 @@ export interface IStorage {
   // User crew challenge progress operations
   getUserCrewProgress(userId: string, weekStart: string): Promise<UserCrewChallengeProgress | undefined>;
   updateUserCrewProgress(userId: string, weekStart: string, contribution: number): Promise<UserCrewChallengeProgress>;
-  getCrewLeaderboard(weekStart: string, limit?: number): Promise<Array<UserCrewChallengeProgress & { username: string; displayName: string | null }>>;
+  getCrewLeaderboard(weekStart: string, limit?: number): Promise<Array<UserCrewChallengeProgress & { username: string; displayName: string | null; characterType: string; level: number }>>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -742,7 +742,7 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async getCrewLeaderboard(weekStart: string, limit: number = 10): Promise<Array<UserCrewChallengeProgress & { username: string; displayName: string | null }>> {
+  async getCrewLeaderboard(weekStart: string, limit: number = 10): Promise<Array<UserCrewChallengeProgress & { username: string; displayName: string | null; characterType: string; level: number }>> {
     const results = await db
       .select({
         id: userCrewChallengeProgress.id,
@@ -752,6 +752,8 @@ export class DatabaseStorage implements IStorage {
         updatedAt: userCrewChallengeProgress.updatedAt,
         username: users.username,
         displayName: users.displayName,
+        characterType: users.characterType,
+        level: users.level,
       })
       .from(userCrewChallengeProgress)
       .innerJoin(users, eq(userCrewChallengeProgress.userId, users.id))
