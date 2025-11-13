@@ -303,6 +303,12 @@ export default function Dashboard() {
       const response = await apiRequest("POST", "/api/photos", {
         photoURL,
       });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to upload photo");
+      }
+      
       const data = await response.json();
       console.log("[PHOTO] Success! XP awarded:", data.xpAwarded);
       return data;
@@ -334,7 +340,7 @@ export default function Dashboard() {
     },
     onError: (error: Error) => {
       toast({
-        title: "Error",
+        title: "Upload Failed",
         description: error.message || "Failed to upload photo",
         variant: "destructive",
       });
