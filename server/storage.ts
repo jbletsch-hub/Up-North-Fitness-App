@@ -7,6 +7,9 @@ import {
   progressPhotos,
   crewState,
   userGoals,
+  crewChallengePool,
+  activeCrewChallenge,
+  userCrewChallengeProgress,
   type User,
   type UpsertUser,
   type InsertUser,
@@ -24,6 +27,12 @@ import {
   type InsertCrewState,
   type UserGoal,
   type InsertUserGoal,
+  type CrewChallengePool,
+  type InsertCrewChallengePool,
+  type ActiveCrewChallenge,
+  type InsertActiveCrewChallenge,
+  type UserCrewChallengeProgress,
+  type InsertUserCrewChallengeProgress,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, sql } from "drizzle-orm";
@@ -95,6 +104,22 @@ export interface IStorage {
   hasWeeklyGoalThisWeek(userId: string, weekStart: string): Promise<boolean>;
   hasYearlyGoalThisYear(userId: string, yearStart: string): Promise<boolean>;
   getPRLeaderboards(): Promise<{ bench: any[], squat: any[], deadlift: any[] }>;
+  
+  // Crew challenge pool operations (admin)
+  getAllCrewChallenges(): Promise<CrewChallengePool[]>;
+  createCrewChallenge(challenge: InsertCrewChallengePool): Promise<CrewChallengePool>;
+  updateCrewChallenge(id: string, challenge: Partial<InsertCrewChallengePool>): Promise<CrewChallengePool>;
+  deleteCrewChallenge(id: string): Promise<void>;
+  
+  // Active crew challenge operations
+  getActiveCrewChallenge(): Promise<(ActiveCrewChallenge & { challenge: CrewChallengePool | null }) | null>;
+  setActiveCrewChallenge(challengeId: string, weekStart: string): Promise<ActiveCrewChallenge>;
+  updateCrewChallengeProgress(weekStart: string, progress: number): Promise<ActiveCrewChallenge>;
+  
+  // User crew challenge progress operations
+  getUserCrewProgress(userId: string, weekStart: string): Promise<UserCrewChallengeProgress | undefined>;
+  updateUserCrewProgress(userId: string, weekStart: string, contribution: number): Promise<UserCrewChallengeProgress>;
+  getCrewLeaderboard(weekStart: string, limit?: number): Promise<Array<UserCrewChallengeProgress & { username: string; displayName: string | null }>>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -587,6 +612,154 @@ export class DatabaseStorage implements IStorage {
       squat: squatTop,
       deadlift: deadliftTop,
     };
+  }
+
+  // Crew challenge pool operations (admin)
+  async getAllCrewChallenges(): Promise<CrewChallengePool[]> {
+    return await db
+      .select()
+      .from(crewChallengePool)
+      .orderBy(desc(crewChallengePool.createdAt));
+  }
+
+  async createCrewChallenge(challengeData: InsertCrewChallengePool): Promise<CrewChallengePool> {
+    const [challenge] = await db
+      .insert(crewChallengePool)
+      .values(challengeData)
+      .returning();
+    return challenge;
+  }
+
+  async updateCrewChallenge(id: string, challengeData: Partial<InsertCrewChallengePool>): Promise<CrewChallengePool> {
+    const [challenge] = await db
+      .update(crewChallengePool)
+      .set(challengeData)
+      .where(eq(crewChallengePool.id, id))
+      .returning();
+    return challenge;
+  }
+
+  async deleteCrewChallenge(id: string): Promise<void> {
+    await db.delete(crewChallengePool).where(eq(crewChallengePool.id, id));
+  }
+
+  // Active crew challenge operations
+  async getActiveCrewChallenge(): Promise<(ActiveCrewChallenge & { challenge: CrewChallengePool | null }) | null> {
+    const results = await db
+      .select({
+        id: activeCrewChallenge.id,
+        challengeId: activeCrewChallenge.challengeId,
+        weekStart: activeCrewChallenge.weekStart,
+        currentProgress: activeCrewChallenge.currentProgress,
+        completed: activeCrewChallenge.completed,
+        updatedAt: activeCrewChallenge.updatedAt,
+        challenge: crewChallengePool,
+      })
+      .from(activeCrewChallenge)
+      .leftJoin(crewChallengePool, eq(activeCrewChallenge.challengeId, crewChallengePool.id))
+      .where(eq(activeCrewChallenge.id, 1));
+
+    if (results.length === 0) {
+      return null;
+    }
+
+    return results[0] as ActiveCrewChallenge & { challenge: CrewChallengePool | null };
+  }
+
+  async setActiveCrewChallenge(challengeId: string, weekStart: string): Promise<ActiveCrewChallenge> {
+    const [challenge] = await db
+      .insert(activeCrewChallenge)
+      .values({
+        id: 1,
+        challengeId,
+        weekStart,
+        currentProgress: 0,
+        completed: false,
+      })
+      .onConflictDoUpdate({
+        target: activeCrewChallenge.id,
+        set: {
+          challengeId,
+          weekStart,
+          currentProgress: 0,
+          completed: false,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return challenge;
+  }
+
+  async updateCrewChallengeProgress(weekStart: string, progress: number): Promise<ActiveCrewChallenge> {
+    const [challenge] = await db
+      .update(activeCrewChallenge)
+      .set({
+        currentProgress: progress,
+        updatedAt: new Date(),
+      })
+      .where(eq(activeCrewChallenge.id, 1))
+      .returning();
+    return challenge;
+  }
+
+  // User crew challenge progress operations
+  async getUserCrewProgress(userId: string, weekStart: string): Promise<UserCrewChallengeProgress | undefined> {
+    const [progress] = await db
+      .select()
+      .from(userCrewChallengeProgress)
+      .where(
+        and(
+          eq(userCrewChallengeProgress.userId, userId),
+          eq(userCrewChallengeProgress.weekStart, weekStart)
+        )
+      );
+    return progress;
+  }
+
+  async updateUserCrewProgress(userId: string, weekStart: string, contribution: number): Promise<UserCrewChallengeProgress> {
+    const existing = await this.getUserCrewProgress(userId, weekStart);
+
+    if (existing) {
+      const [progress] = await db
+        .update(userCrewChallengeProgress)
+        .set({
+          contribution,
+          updatedAt: new Date(),
+        })
+        .where(eq(userCrewChallengeProgress.id, existing.id))
+        .returning();
+      return progress;
+    } else {
+      const [progress] = await db
+        .insert(userCrewChallengeProgress)
+        .values({
+          userId,
+          weekStart,
+          contribution,
+        })
+        .returning();
+      return progress;
+    }
+  }
+
+  async getCrewLeaderboard(weekStart: string, limit: number = 10): Promise<Array<UserCrewChallengeProgress & { username: string; displayName: string | null }>> {
+    const results = await db
+      .select({
+        id: userCrewChallengeProgress.id,
+        userId: userCrewChallengeProgress.userId,
+        weekStart: userCrewChallengeProgress.weekStart,
+        contribution: userCrewChallengeProgress.contribution,
+        updatedAt: userCrewChallengeProgress.updatedAt,
+        username: users.username,
+        displayName: users.displayName,
+      })
+      .from(userCrewChallengeProgress)
+      .innerJoin(users, eq(userCrewChallengeProgress.userId, users.id))
+      .where(eq(userCrewChallengeProgress.weekStart, weekStart))
+      .orderBy(desc(userCrewChallengeProgress.contribution))
+      .limit(limit);
+
+    return results;
   }
 }
 

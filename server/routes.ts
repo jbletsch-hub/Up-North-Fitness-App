@@ -880,6 +880,80 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Crew Challenge Admin endpoints
+  app.get("/api/admin/crew-challenges", isAuthenticated, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.id);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+
+      const challenges = await storage.getAllCrewChallenges();
+      res.json(challenges);
+    } catch (error) {
+      console.error("Error fetching crew challenges:", error);
+      res.status(500).json({ message: "Failed to fetch crew challenges" });
+    }
+  });
+
+  app.post("/api/admin/crew-challenges", isAuthenticated, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.id);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+
+      const { text, description, targetValue, unit } = req.body;
+      const challenge = await storage.createCrewChallenge({
+        text,
+        description,
+        targetValue: parseInt(targetValue),
+        unit,
+      });
+      res.status(201).json(challenge);
+    } catch (error) {
+      console.error("Error creating crew challenge:", error);
+      res.status(500).json({ message: "Failed to create crew challenge" });
+    }
+  });
+
+  app.patch("/api/admin/crew-challenges/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.id);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+
+      const { text, description, targetValue, unit } = req.body;
+      const updateData: any = {};
+      if (text !== undefined) updateData.text = text;
+      if (description !== undefined) updateData.description = description;
+      if (targetValue !== undefined) updateData.targetValue = parseInt(targetValue);
+      if (unit !== undefined) updateData.unit = unit;
+
+      const challenge = await storage.updateCrewChallenge(req.params.id, updateData);
+      res.json(challenge);
+    } catch (error) {
+      console.error("Error updating crew challenge:", error);
+      res.status(500).json({ message: "Failed to update crew challenge" });
+    }
+  });
+
+  app.delete("/api/admin/crew-challenges/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.user.id);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+
+      await storage.deleteCrewChallenge(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting crew challenge:", error);
+      res.status(500).json({ message: "Failed to delete crew challenge" });
+    }
+  });
+
   // Goals endpoints
   app.get("/api/goals", isAuthenticated, async (req: any, res) => {
     try {
