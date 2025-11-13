@@ -475,6 +475,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No photo URL provided" });
       }
 
+      // Check if user has already uploaded a photo today
+      const today = getTodayDate();
+      const userPhotos = await storage.getPhotosByUser(userId);
+      const todayPhoto = userPhotos.find(photo => {
+        const photoDate = new Date(photo.createdAt).toLocaleDateString('en-US', { timeZone: 'America/Chicago' });
+        const todayFormatted = new Date(today).toLocaleDateString('en-US', { timeZone: 'America/Chicago' });
+        return photoDate === todayFormatted;
+      });
+
+      if (todayPhoto) {
+        return res.status(400).json({ message: "You can only upload one progress photo per day" });
+      }
+
       // Import ObjectStorageService here to avoid circular dependency
       const { ObjectStorageService } = await import("./objectStorage");
       const objectStorageService = new ObjectStorageService();
