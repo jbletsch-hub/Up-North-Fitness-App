@@ -143,6 +143,13 @@ export default function ActivityFeedPage() {
                           <AvatarDisplay 
                             level={activity.level || 1}
                             characterType={activity.characterType || "classic"}
+                            shirtColor={activity.shirtColor || "#FF5722"}
+                            shortsColor={activity.shortsColor || "#20B2AA"}
+                            headband={activity.headband || false}
+                            wristbands={activity.wristbands || false}
+                            hairStyle={activity.hairStyle || "short"}
+                            hairColor={activity.hairColor || "#8B4513"}
+                            facialHair={activity.facialHair || "none"}
                             size="sm"
                           />
                         </div>
