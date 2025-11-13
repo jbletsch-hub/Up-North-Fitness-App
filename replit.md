@@ -18,10 +18,15 @@ The gamification system features an XP curve (1.125 multiplier, ~200k XP for lev
 
 ### System Design Choices
 - **Avatar System:** Features a 10-stage visual progression with dynamic facial expressions and muscle definition, evolving from "skinny" to "jacked." Users can select from four distinct character types (Classic, Bulky, Athletic, Powerlifter) which modify body proportions.
+- **Avatar Progress Ring:** Dashboard displays user avatar with circular SVG progress ring showing XP progress to next level (November 13, 2025).
 - **UI/UX:** Uses custom golden dumbbell app icon, supports PWA (Progressive Web App) with `manifest.json` (v1.0.1 with cache-busting for iOS updates).
 - **Public Profiles:** User stats pages are publicly viewable, accessible via a dedicated route (`/stats/:userId`) and linked from leaderboards and a "Browse Users" section.
 - **MVL Race Logic:** MVL calculation focuses solely on XP from daily activities to emphasize consistent daily effort. Goal completions don't count toward MVL standings.
 - **PR XP Awards:** Users only receive 10 XP for PR updates if at least one lift (squat, bench, deadlift) actually increases. Same/lower numbers award no XP.
+- **PR History Tracking:** Separate `prHistory` database table tracks all PR updates for historical progression analysis. PR progression chart on Stats page displays squat/bench/deadlift/total improvements over time using recharts LineChart (November 13, 2025).
+- **Goal Completion Animations:** Goal completions trigger celebratory popup with particle effects, scaling animations, and auto-dismiss, following XP popup pattern (November 13, 2025).
+- **Activity Feed Enhancements:** Filter buttons (All, PRs, Photos, Challenges), user avatars via AvatarDisplay component, proper Lucide icons instead of emojis (November 13, 2025).
+- **Dashboard Widgets:** Today's XP tracker with reset countdown, MVL standings with live countdown to midnight CT and user position, Active Challenges showing completion progress (November 13, 2025).
 - **Mobile Input Fix:** Uses `type="text"` with `inputMode="numeric"` for number inputs to fix iOS Safari typing bug.
 
 ## External Dependencies
