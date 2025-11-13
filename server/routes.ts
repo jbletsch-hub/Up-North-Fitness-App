@@ -378,14 +378,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "You can only update your PRs once per day" });
       }
 
+      // Get old PR values to check if numbers increased
+      const oldPR = await storage.getPR(userId);
+      const newSquat = parseInt(squat) || 0;
+      const newBench = parseInt(bench) || 0;
+      const newDeadlift = parseInt(deadlift) || 0;
+      
+      // Only award XP if at least one lift increased
+      let xpAwarded = 0;
+      let result;
+      if (oldPR) {
+        const squatIncreased = newSquat > oldPR.squat;
+        const benchIncreased = newBench > oldPR.bench;
+        const deadliftIncreased = newDeadlift > oldPR.deadlift;
+        
+        if (squatIncreased || benchIncreased || deadliftIncreased) {
+          result = await awardXP(userId, 10, "improved their PRs!");
+          xpAwarded = 10;
+        }
+      } else {
+        // First time setting PRs - always award XP
+        result = await awardXP(userId, 10, "set their first PRs!");
+        xpAwarded = 10;
+      }
+
       await storage.updateUserPRDate(userId, today);
-      const result = await awardXP(userId, 10, "updated their PRs");
-      const xpAwarded = 10;
 
       const pr = await storage.upsertPR(userId, {
-        squat: parseInt(squat) || 0,
-        bench: parseInt(bench) || 0,
-        deadlift: parseInt(deadlift) || 0,
+        squat: newSquat,
+        bench: newBench,
+        deadlift: newDeadlift,
       });
 
       // Check if crew goal is reached and auto-advance
