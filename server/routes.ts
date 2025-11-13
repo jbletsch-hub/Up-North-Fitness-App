@@ -962,6 +962,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(201).json(goal);
       }
       
+      // Check if this is a lifetime goal and if user already has 2 active lifetime goals
+      if (type === "lifetime") {
+        const activeLifetimeGoals = await storage.getUserGoals(userId, "lifetime");
+        const activeCount = activeLifetimeGoals.filter(g => !g.completed).length;
+        
+        if (activeCount >= 2) {
+          return res.status(400).json({ 
+            error: "You can only have 2 active lifetime goals at a time. Complete or delete an existing one first." 
+          });
+        }
+      }
+      
       // Create lifetime goal
       const goal = await storage.createGoal({
         userId,
