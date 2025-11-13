@@ -192,11 +192,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid character type" });
       }
 
-      await db.update(users)
-        .set({ characterType })
-        .where(eq(users.id, userId));
-
-      const user = await storage.getUser(userId);
+      const user = await storage.updateUserAvatar(userId, { characterType });
       res.json({ success: true, user });
     } catch (error) {
       console.error("Error updating character type:", error);
@@ -973,7 +969,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const goal = await storage.completeGoal(id);
       
-      // Award XP based on goal type
+      // Award XP based on goal type (does NOT count toward MVL race)
       let xpAmount: number;
       let xpReason: string;
       
@@ -988,7 +984,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         xpReason = "completed a lifetime goal!";
       }
       
-      const result = await awardXP(userId, xpAmount, xpReason);
+      // Don't count goal XP toward daily MVL race
+      const result = await awardXP(userId, xpAmount, xpReason, false);
 
       res.json({ ...goal, ...result });
     } catch (error) {
