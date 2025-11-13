@@ -1,8 +1,9 @@
 {
   "name": "Iron Crew",
   "short_name": "Iron Crew",
+  "version": "1.0.1",
   "description": "Fitness tracking with gamification - Track workouts, earn XP, complete challenges, and level up!",
-  "start_url": "/",
+  "start_url": "/?v=1.0.1",
   "display": "standalone",
   "background_color": "#1A1F2E",
   "theme_color": "#E8B500",
