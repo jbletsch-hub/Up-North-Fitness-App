@@ -954,6 +954,81 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Crew Challenge user endpoints
+  app.get("/api/crew-challenge/current", isAuthenticated, async (req: any, res) => {
+    try {
+      const activeChallenge = await storage.getActiveCrewChallenge();
+      
+      if (!activeChallenge || !activeChallenge.challenge) {
+        return res.json({ active: false, challenge: null });
+      }
+      
+      res.json({
+        active: true,
+        ...activeChallenge,
+      });
+    } catch (error) {
+      console.error("Error fetching active crew challenge:", error);
+      res.status(500).json({ message: "Failed to fetch active crew challenge" });
+    }
+  });
+
+  app.post("/api/crew-challenge/progress", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const { contribution } = req.body;
+      
+      if (!contribution || contribution <= 0) {
+        return res.status(400).json({ message: "Invalid contribution value" });
+      }
+      
+      const activeChallenge = await storage.getActiveCrewChallenge();
+      
+      if (!activeChallenge) {
+        return res.status(404).json({ message: "No active crew challenge" });
+      }
+      
+      // Update user's contribution
+      const userProgress = await storage.updateUserCrewProgress(
+        userId,
+        activeChallenge.weekStart,
+        contribution
+      );
+      
+      // Calculate total crew progress by summing all user contributions
+      const leaderboard = await storage.getCrewLeaderboard(activeChallenge.weekStart, 1000);
+      const totalProgress = leaderboard.reduce((sum, user) => sum + user.contribution, 0);
+      
+      // Update crew challenge progress
+      await storage.updateCrewChallengeProgress(activeChallenge.weekStart, totalProgress);
+      
+      res.json({
+        success: true,
+        userContribution: userProgress.contribution,
+        totalProgress,
+      });
+    } catch (error) {
+      console.error("Error updating crew challenge progress:", error);
+      res.status(500).json({ message: "Failed to update crew challenge progress" });
+    }
+  });
+
+  app.get("/api/crew-challenge/leaderboard", isAuthenticated, async (req: any, res) => {
+    try {
+      const activeChallenge = await storage.getActiveCrewChallenge();
+      
+      if (!activeChallenge) {
+        return res.json([]);
+      }
+      
+      const leaderboard = await storage.getCrewLeaderboard(activeChallenge.weekStart, 10);
+      res.json(leaderboard);
+    } catch (error) {
+      console.error("Error fetching crew challenge leaderboard:", error);
+      res.status(500).json({ message: "Failed to fetch crew challenge leaderboard" });
+    }
+  });
+
   // Goals endpoints
   app.get("/api/goals", isAuthenticated, async (req: any, res) => {
     try {
