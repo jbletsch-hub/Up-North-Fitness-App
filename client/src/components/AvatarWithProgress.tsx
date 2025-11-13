@@ -63,11 +63,18 @@ export function AvatarWithProgress({
   const offset = circumference - (progress / 100) * circumference;
 
   return (
-    <div className="relative inline-flex items-center justify-center" data-testid="avatar-with-progress">
+    <div 
+      className="relative inline-flex items-center justify-center" 
+      data-testid="avatar-with-progress"
+      style={{
+        width: config.containerSize,
+        height: config.containerSize,
+      }}
+    >
       {/* Progress Ring */}
       {showProgress && (
         <svg
-          className="absolute inset-0"
+          className="absolute top-0 left-0"
           width={config.containerSize}
           height={config.containerSize}
           style={{ transform: "rotate(-90deg)" }}
@@ -101,8 +108,8 @@ export function AvatarWithProgress({
         </svg>
       )}
 
-      {/* Avatar */}
-      <div className="relative z-10">
+      {/* Avatar - centered within container */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
         <AvatarDisplay
           level={level}
           characterType={characterType}
@@ -120,18 +127,24 @@ export function AvatarWithProgress({
       {/* XP Info Badge */}
       {showProgress && (
         <div
-          className="absolute bg-card border-2 border-primary rounded-full px-3 py-1 shadow-lg"
+          className="absolute bg-card border-2 border-primary rounded-full px-3 py-1.5 shadow-lg z-20"
           style={{
             bottom: "8px",
             left: "50%",
             transform: "translateX(-50%)",
           }}
         >
-          <div className="flex flex-col items-center">
-            <span className="font-display text-primary font-bold" style={{ fontSize: config.fontSize }}>
+          <div className="flex flex-col items-center gap-0.5">
+            <span 
+              className="font-display text-primary font-bold leading-none" 
+              style={{ fontSize: config.fontSize }}
+            >
               {progress.toFixed(0)}%
             </span>
-            <span className="text-muted-foreground whitespace-nowrap" style={{ fontSize: config.fontSize }}>
+            <span 
+              className="text-muted-foreground whitespace-nowrap leading-none" 
+              style={{ fontSize: config.fontSize }}
+            >
               {xpToNext.toLocaleString()} XP
             </span>
           </div>
