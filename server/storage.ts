@@ -73,7 +73,7 @@ export interface IStorage {
   // Activity operations
   createActivity(activity: InsertActivity): Promise<Activity>;
   getActivitiesByUser(userId: string, limit?: number): Promise<Activity[]>;
-  getRecentActivities(limit?: number): Promise<Array<Activity & { username: string }>>;
+  getRecentActivities(limit?: number): Promise<Array<Activity & { username: string; characterType: string; level: number }>>;
   
   // Challenge pool operations
   getAllChallenges(): Promise<ChallengePool[]>;
@@ -354,7 +354,7 @@ export class DatabaseStorage implements IStorage {
       .limit(limit);
   }
 
-  async getRecentActivities(limit: number = 10): Promise<Array<Activity & { username: string }>> {
+  async getRecentActivities(limit: number = 10): Promise<Array<Activity & { username: string; characterType: string; level: number }>> {
     const result = await db
       .select({
         id: activities.id,
@@ -364,6 +364,8 @@ export class DatabaseStorage implements IStorage {
         xpAwarded: activities.xpAwarded,
         createdAt: activities.createdAt,
         username: users.username,
+        characterType: users.characterType,
+        level: users.level,
       })
       .from(activities)
       .leftJoin(users, eq(activities.userId, users.id))
@@ -373,6 +375,8 @@ export class DatabaseStorage implements IStorage {
     return result.map(r => ({
       ...r,
       username: r.username || "Unknown",
+      characterType: r.characterType || "classic",
+      level: r.level || 1,
     }));
   }
 

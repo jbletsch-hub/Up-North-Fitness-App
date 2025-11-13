@@ -2,12 +2,19 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent } from "@/components/ui/card";
-import { Activity, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Activity, Clock, Dumbbell, Target, Trophy, Camera, CheckCircle, Scale, Utensils, Star, Filter } from "lucide-react";
 import { Link } from "wouter";
 import { formatDistanceToNow } from "date-fns";
+import { useState } from "react";
+import { AvatarDisplay } from "@/components/AvatarDisplay";
+
+type ActivityFilter = "all" | "pr" | "photo" | "challenge" | "checkin" | "weighin" | "calories" | "goal";
 
 export default function ActivityFeedPage() {
   const { user } = useAuth();
+  const [activeFilter, setActiveFilter] = useState<ActivityFilter>("all");
 
   const { data: activities, isLoading } = useQuery({
     queryKey: ["/api/activity-feed"],
@@ -23,27 +30,45 @@ export default function ActivityFeedPage() {
   };
 
   const getActivityIcon = (type: string) => {
+    const className = "h-5 w-5";
     switch (type) {
       case "pr":
-        return "💪";
+        return <Dumbbell className={className} />;
       case "challenge":
-        return "🎯";
+        return <Target className={className} />;
       case "goal":
-        return "🏆";
+        return <Trophy className={className} />;
       case "photo":
-        return "📸";
+        return <Camera className={className} />;
       case "achievement":
-        return "⭐";
+        return <Star className={className} />;
       case "checkin":
-        return "✅";
+        return <CheckCircle className={className} />;
       case "weighin":
-        return "⚖️";
+        return <Scale className={className} />;
       case "calories":
-        return "🍽️";
+        return <Utensils className={className} />;
       default:
-        return "📝";
+        return <Activity className={className} />;
     }
   };
+
+  const filterOptions = [
+    { value: "all" as const, label: "All", icon: Filter },
+    { value: "pr" as const, label: "PRs", icon: Dumbbell },
+    { value: "photo" as const, label: "Photos", icon: Camera },
+    { value: "challenge" as const, label: "Challenges", icon: Target },
+    { value: "checkin" as const, label: "Check-ins", icon: CheckCircle },
+    { value: "weighin" as const, label: "Weigh-ins", icon: Scale },
+    { value: "calories" as const, label: "Calories", icon: Utensils },
+    { value: "goal" as const, label: "Goals", icon: Trophy },
+  ];
+
+  const filteredActivities = activities
+    ? (activities as any[]).filter(activity => 
+        activeFilter === "all" || activity.type === activeFilter
+      )
+    : [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -67,19 +92,43 @@ export default function ActivityFeedPage() {
           </p>
         </div>
 
+        {/* Filter Buttons */}
+        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+          {filterOptions.map((option) => {
+            const Icon = option.icon;
+            return (
+              <Button
+                key={option.value}
+                size="sm"
+                variant={activeFilter === option.value ? "default" : "outline"}
+                onClick={() => setActiveFilter(option.value)}
+                className="flex-shrink-0"
+                data-testid={`filter-${option.value}`}
+              >
+                <Icon className="h-4 w-4 mr-1" />
+                {option.label}
+              </Button>
+            );
+          })}
+        </div>
+
         {isLoading ? (
           <div className="text-center py-12">
             <div className="font-display text-xl">Loading...</div>
           </div>
-        ) : !activities || (activities as any[]).length === 0 ? (
+        ) : filteredActivities.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center">
-              <p className="text-muted-foreground">No activity yet. Be the first!</p>
+              <p className="text-muted-foreground">
+                {activeFilter === "all" 
+                  ? "No activity yet. Be the first!" 
+                  : `No ${filterOptions.find(f => f.value === activeFilter)?.label.toLowerCase()} activities yet`}
+              </p>
             </CardContent>
           </Card>
         ) : (
           <div className="space-y-3">
-            {(activities as any[]).map((activity: any) => (
+            {filteredActivities.map((activity: any) => (
               <Card 
                 key={activity.id} 
                 className="hover-elevate transition-all"
@@ -87,9 +136,19 @@ export default function ActivityFeedPage() {
               >
                 <CardContent className="py-4">
                   <div className="flex items-start gap-3">
-                    <div className="text-2xl flex-shrink-0" aria-label="Activity icon">
-                      {getActivityIcon(activity.type)}
+                    {/* User Avatar */}
+                    <div className="flex-shrink-0">
+                      <Link href={`/profile/${activity.username}`}>
+                        <div className="cursor-pointer hover-elevate rounded-lg">
+                          <AvatarDisplay 
+                            level={activity.level || 1}
+                            characterType={activity.characterType || "classic"}
+                            size="sm"
+                          />
+                        </div>
+                      </Link>
                     </div>
+                    
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2 mb-1">
                         <Link href={`/profile/${activity.username}`}>
@@ -97,10 +156,17 @@ export default function ActivityFeedPage() {
                             {activity.username}
                           </span>
                         </Link>
+                        <Badge variant="outline" className="w-fit">
+                          <div className="flex items-center gap-1">
+                            {getActivityIcon(activity.type)}
+                            <span className="text-xs">Lv {activity.level}</span>
+                          </div>
+                        </Badge>
                         {activity.xpAwarded > 0 && (
-                          <span className="text-xs font-semibold text-primary">
+                          <Badge className="bg-primary/10 text-primary border-0 w-fit">
+                            <Star className="h-3 w-3 mr-1" fill="currentColor" />
                             +{activity.xpAwarded} XP
-                          </span>
+                          </Badge>
                         )}
                       </div>
                       <p className="text-sm md:text-base text-foreground mb-2">
