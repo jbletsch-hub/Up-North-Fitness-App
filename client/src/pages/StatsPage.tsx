@@ -3,10 +3,12 @@ import { useAuth } from "@/hooks/use-auth";
 import { useParams, Link } from "wouter";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, Award, Target, Flame, Scale, Utensils, Trophy, CheckCircle, Users } from "lucide-react";
+import { TrendingUp, Award, Target, Flame, Scale, Utensils, Trophy, CheckCircle, Users, Calendar } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { AvatarDisplay } from "@/components/AvatarDisplay";
 import { MVLBadge } from "@/components/MVLBadge";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 
 export default function StatsPage() {
   const { user } = useAuth();
@@ -217,6 +219,113 @@ export default function StatsPage() {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Active Goals */}
+            {(stats as any)?.goals && (
+              <>
+                {/* Weekly Goals */}
+                {(stats as any).goals.weekly && (stats as any).goals.weekly.length > 0 && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Calendar className="h-5 w-5 text-primary" />
+                        Weekly Goals
+                      </CardTitle>
+                      <CardDescription>Active goals for this week</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      {(stats as any).goals.weekly.map((goal: any) => (
+                        <div key={goal.id} className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <p className="text-sm font-medium">{goal.title}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {goal.currentValue} / {goal.targetValue} {goal.unit}
+                              </p>
+                            </div>
+                            <Badge variant="outline" className="text-xs">
+                              {Math.round((goal.currentValue / goal.targetValue) * 100)}%
+                            </Badge>
+                          </div>
+                          <Progress 
+                            value={(goal.currentValue / goal.targetValue) * 100} 
+                            className="h-2"
+                          />
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Yearly Goals */}
+                {(stats as any).goals.yearly && (stats as any).goals.yearly.length > 0 && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Trophy className="h-5 w-5 text-yellow-500" />
+                        Yearly Goals
+                      </CardTitle>
+                      <CardDescription>Active goals for this year</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      {(stats as any).goals.yearly.map((goal: any) => (
+                        <div key={goal.id} className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <p className="text-sm font-medium">{goal.title}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {goal.currentValue} / {goal.targetValue} {goal.unit}
+                              </p>
+                            </div>
+                            <Badge variant="outline" className="text-xs">
+                              {Math.round((goal.currentValue / goal.targetValue) * 100)}%
+                            </Badge>
+                          </div>
+                          <Progress 
+                            value={(goal.currentValue / goal.targetValue) * 100} 
+                            className="h-2"
+                          />
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Lifetime Goals */}
+                {(stats as any).goals.lifetime && (stats as any).goals.lifetime.length > 0 && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Target className="h-5 w-5 text-primary" />
+                        Lifetime Goals
+                      </CardTitle>
+                      <CardDescription>Long-term fitness goals</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      {(stats as any).goals.lifetime.map((goal: any) => (
+                        <div key={goal.id} className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <p className="text-sm font-medium">{goal.title}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {goal.currentValue} / {goal.targetValue} {goal.unit}
+                              </p>
+                            </div>
+                            <Badge variant="outline" className="text-xs">
+                              {Math.round((goal.currentValue / goal.targetValue) * 100)}%
+                            </Badge>
+                          </div>
+                          <Progress 
+                            value={(goal.currentValue / goal.targetValue) * 100} 
+                            className="h-2"
+                          />
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                )}
+              </>
+            )}
 
             {/* Recent PR History */}
             <Card>
