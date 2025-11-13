@@ -36,7 +36,7 @@ function getRelativeTime(date: Date): string {
   return `${days} day${days > 1 ? "s" : ""} ago`;
 }
 
-async function awardXP(userId: string, amount: number, reason: string) {
+async function awardXP(userId: string, amount: number, reason: string, countTowardMVL = true) {
   const user = await storage.getUser(userId);
   if (!user) return;
 
@@ -53,15 +53,18 @@ async function awardXP(userId: string, amount: number, reason: string) {
   });
 
   // Track daily XP for MVL (Most Valuable Lifter) leaderboard
-  const today = getTodayDate();
-  let newDailyXP = user.dailyXp + amount;
-  
-  // Reset daily XP if it's a new day
-  if (user.lastDailyXpReset !== today) {
-    newDailyXP = amount;
+  // Only count daily activities, NOT goal completions
+  if (countTowardMVL) {
+    const today = getTodayDate();
+    let newDailyXP = user.dailyXp + amount;
+    
+    // Reset daily XP if it's a new day
+    if (user.lastDailyXpReset !== today) {
+      newDailyXP = amount;
+    }
+    
+    await storage.updateUserDailyXP(userId, newDailyXP, today);
   }
-  
-  await storage.updateUserDailyXP(userId, newDailyXP, today);
 
   const leveledUp = level > oldLevel;
 
