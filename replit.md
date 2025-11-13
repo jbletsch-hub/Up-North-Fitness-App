@@ -25,9 +25,10 @@ The gamification system features an XP curve (1.125 multiplier, ~200k XP for lev
 - **PR XP Awards:** Users only receive 10 XP for PR updates if at least one lift (squat, bench, deadlift) actually increases. Same/lower numbers award no XP.
 - **PR History Tracking:** Separate `prHistory` database table tracks all PR updates for historical progression analysis. PR progression chart on Stats page displays squat/bench/deadlift/total improvements over time using recharts LineChart (November 13, 2025).
 - **Goal Completion Animations:** Goal completions trigger celebratory popup with particle effects, scaling animations, and auto-dismiss, following XP popup pattern (November 13, 2025).
-- **Activity Feed Enhancements:** Filter buttons (All, PRs, Photos, Challenges), user avatars via AvatarDisplay component, proper Lucide icons instead of emojis (November 13, 2025).
+- **Activity Feed Enhancements:** Filter buttons (All, PRs, Photos, Challenges), user avatars via AvatarDisplay component with full customization (shirt, shorts, hair, accessories), proper Lucide icons instead of emojis (November 13, 2025).
 - **Dashboard Widgets:** Today's XP tracker with reset countdown, MVL standings with live countdown to midnight CT and user position, Active Challenges showing completion progress (November 13, 2025).
 - **Mobile Input Fix:** Uses `type="text"` with `inputMode="numeric"` for number inputs to fix iOS Safari typing bug.
+- **Photo Upload System:** Progress photos include `uploadDate` field (YYYY-MM-DD in Central Time) for reliable daily limit enforcement. 1-photo-per-day limit resets exactly at midnight CT. Enhanced error handling shows clear messages for upload failures and daily limit violations (November 13, 2025).
 
 ## External Dependencies
 
