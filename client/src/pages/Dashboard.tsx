@@ -240,11 +240,16 @@ export default function Dashboard() {
           },
         };
         showXP(data.xpAwarded, fakeEvent as any);
+        toast({
+          title: "Weight recorded!",
+          description: "Your weight has been saved and you earned 15 XP!",
+        });
+      } else {
+        toast({
+          title: "Weight recorded!",
+          description: "Your weight has been saved (same as yesterday, no XP awarded).",
+        });
       }
-      toast({
-        title: "Weight recorded!",
-        description: "Your weight has been saved.",
-      });
     },
     onError: (error: Error) => {
       toast({
