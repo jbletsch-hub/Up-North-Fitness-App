@@ -25,6 +25,8 @@ export default function AdminPage() {
   const [xpAmount, setXpAmount] = useState("");
   const [editingDisplayName, setEditingDisplayName] = useState<{ userId: string; currentName: string } | null>(null);
   const [newDisplayName, setNewDisplayName] = useState("");
+  const [editingChallenge, setEditingChallenge] = useState<{ id: string; text: string; xpValue: number } | null>(null);
+  const [editChallengeXP, setEditChallengeXP] = useState("20");
   
   // Crew challenge state
   const [newCrewChallenge, setNewCrewChallenge] = useState({
@@ -85,6 +87,22 @@ export default function AdminPage() {
       toast({
         title: "Challenge deleted",
         description: "The challenge has been removed from the pool.",
+      });
+    },
+  });
+
+  const editChallengeMutation = useMutation({
+    mutationFn: async ({ id, xpValue }: { id: string; xpValue: number }) => {
+      const res = await apiRequest("PATCH", `/api/admin/challenges/${id}`, { xpValue });
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/challenges"] });
+      setEditingChallenge(null);
+      setEditChallengeXP("20");
+      toast({
+        title: "Challenge updated!",
+        description: "The challenge XP value has been updated.",
       });
     },
   });
@@ -759,14 +777,85 @@ export default function AdminPage() {
                         {challenge.xpValue || 20} XP
                       </span>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => deleteChallengeMutation.mutate(challenge.id)}
-                      data-testid={`button-delete-challenge-${challenge.id}`}
-                    >
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
+                    <div className="flex gap-1">
+                      <Dialog open={editingChallenge?.id === challenge.id} onOpenChange={(open) => {
+                        if (!open) {
+                          setEditingChallenge(null);
+                          setEditChallengeXP("20");
+                        }
+                      }}>
+                        <DialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              setEditingChallenge(challenge);
+                              setEditChallengeXP(challenge.xpValue?.toString() || "20");
+                            }}
+                            data-testid={`button-edit-challenge-${challenge.id}`}
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Edit Challenge XP</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4 py-4">
+                            <div className="space-y-2">
+                              <Label>Challenge</Label>
+                              <p className="text-sm text-muted-foreground">{challenge.text}</p>
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="edit-xp">XP Value</Label>
+                              <Select value={editChallengeXP} onValueChange={setEditChallengeXP}>
+                                <SelectTrigger id="edit-xp" data-testid="select-edit-challenge-xp">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="15">15 XP</SelectItem>
+                                  <SelectItem value="20">20 XP</SelectItem>
+                                  <SelectItem value="25">25 XP</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                          <DialogFooter>
+                            <Button
+                              variant="outline"
+                              onClick={() => {
+                                setEditingChallenge(null);
+                                setEditChallengeXP("20");
+                              }}
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              onClick={() => {
+                                if (editingChallenge) {
+                                  editChallengeMutation.mutate({
+                                    id: editingChallenge.id,
+                                    xpValue: parseInt(editChallengeXP),
+                                  });
+                                }
+                              }}
+                              disabled={editChallengeMutation.isPending}
+                              data-testid="button-save-challenge-xp"
+                            >
+                              {editChallengeMutation.isPending ? "Saving..." : "Save"}
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => deleteChallengeMutation.mutate(challenge.id)}
+                        data-testid={`button-delete-challenge-${challenge.id}`}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
                   </div>
                 ))
               ) : (
