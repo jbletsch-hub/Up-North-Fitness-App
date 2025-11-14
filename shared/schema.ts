@@ -135,6 +135,7 @@ export type Activity = typeof activities.$inferSelect;
 export const challengePool = pgTable("challenge_pool", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   text: text("text").notNull(),
+  xpValue: integer("xp_value").default(20).notNull(), // 15, 20, or 25 XP
 });
 
 export const insertChallengePoolSchema = createInsertSchema(challengePool).omit({ id: true });
