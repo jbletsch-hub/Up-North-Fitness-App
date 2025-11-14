@@ -98,6 +98,7 @@ export interface IStorage {
   getAllChallenges(): Promise<ChallengePool[]>;
   createChallenge(challenge: InsertChallengePool): Promise<ChallengePool>;
   deleteChallenge(id: string): Promise<void>;
+  updateChallengeXP(id: string, xpValue: number): Promise<ChallengePool>;
   
   // User daily challenges operations
   getUserDailyChallenges(userId: string, date: string): Promise<Array<UserDailyChallenge & { text: string; xpValue: number }>>;
@@ -466,6 +467,15 @@ export class DatabaseStorage implements IStorage {
 
   async deleteChallenge(id: string): Promise<void> {
     await db.delete(challengePool).where(eq(challengePool.id, id));
+  }
+
+  async updateChallengeXP(id: string, xpValue: number): Promise<ChallengePool> {
+    const [updated] = await db
+      .update(challengePool)
+      .set({ xpValue })
+      .where(eq(challengePool.id, id))
+      .returning();
+    return updated;
   }
 
   // User daily challenges operations

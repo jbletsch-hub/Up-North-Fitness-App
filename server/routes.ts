@@ -778,6 +778,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.patch("/api/admin/challenges/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+
+      const { xpValue } = req.body;
+      const updatedChallenge = await storage.updateChallengeXP(req.params.id, xpValue);
+      res.json(updatedChallenge);
+    } catch (error) {
+      console.error("Error updating challenge XP:", error);
+      res.status(500).json({ message: "Failed to update challenge XP" });
+    }
+  });
+
   app.post("/api/admin/goal", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.id;
