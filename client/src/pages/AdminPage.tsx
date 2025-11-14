@@ -5,6 +5,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -211,6 +212,20 @@ export default function AdminPage() {
       toast({
         title: "Display name updated!",
         description: "The user's leaderboard display name has been changed.",
+      });
+    },
+  });
+
+  const toggleAdminMutation = useMutation({
+    mutationFn: async ({ userId, isAdmin }: { userId: string; isAdmin: boolean }) => {
+      const res = await apiRequest("POST", `/api/admin/users/${userId}/toggle-admin`, { isAdmin });
+      return await res.json();
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/home"] });
+      toast({
+        title: variables.isAdmin ? "Admin granted!" : "Admin revoked",
+        description: variables.isAdmin ? "User is now an admin." : "User is no longer an admin.",
       });
     },
   });
@@ -512,7 +527,12 @@ export default function AdminPage() {
                     className="flex items-center justify-between p-3 rounded-lg border bg-card hover-elevate"
                   >
                     <div className="flex-1">
-                      <div className="font-semibold">{u.username}</div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold">{u.username}</span>
+                        {u.isAdmin && (
+                          <Badge variant="default" className="text-xs">Admin</Badge>
+                        )}
+                      </div>
                       <div className="text-sm text-muted-foreground">
                         Level {u.level} • {u.xp.toLocaleString()} XP
                       </div>
@@ -589,6 +609,20 @@ export default function AdminPage() {
                           </DialogFooter>
                         </DialogContent>
                       </Dialog>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          const action = u.isAdmin ? "revoke admin access from" : "promote to admin";
+                          if (confirm(`Are you sure you want to ${action} ${u.username}?`)) {
+                            toggleAdminMutation.mutate({ userId: u.id, isAdmin: !u.isAdmin });
+                          }
+                        }}
+                        data-testid={`button-toggle-admin-${u.id}`}
+                        title={u.isAdmin ? "Revoke Admin" : "Promote to Admin"}
+                      >
+                        <Zap className={`h-4 w-4 ${u.isAdmin ? 'text-primary' : 'text-muted-foreground'}`} />
+                      </Button>
                       <Button
                         variant="ghost"
                         size="icon"

@@ -708,6 +708,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/admin/users/:id/toggle-admin", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+
+      const { isAdmin } = req.body;
+      const updatedUser = await storage.toggleUserAdmin(req.params.id, isAdmin);
+      res.json({ success: true, user: updatedUser });
+    } catch (error) {
+      console.error("Error toggling admin status:", error);
+      res.status(500).json({ message: "Failed to toggle admin status" });
+    }
+  });
+
   app.get("/api/admin/challenges", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.id;
