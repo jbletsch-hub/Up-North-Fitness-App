@@ -470,6 +470,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Edit weigh-in (no XP awarded)
+  app.patch("/api/weighin", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const { weight } = req.body;
+
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const today = getTodayDate();
+      
+      // Only allow editing if already weighed in today
+      if (user.lastWeighinDate !== today) {
+        return res.status(400).json({ message: "You haven't weighed in today yet" });
+      }
+
+      // Update weight without awarding XP
+      await storage.updateUserWeight(userId, parseFloat(weight), today);
+
+      res.json({ success: true, weight: parseFloat(weight), xpAwarded: 0 });
+    } catch (error) {
+      console.error("Error updating weight:", error);
+      res.status(500).json({ message: "Failed to update weight" });
+    }
+  });
+
   // Upload progress photo (using object storage)
   app.post("/api/photos", isAuthenticated, async (req: any, res) => {
     try {
