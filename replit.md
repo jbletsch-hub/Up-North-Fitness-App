@@ -29,6 +29,7 @@ The gamification system features an XP curve (1.125 multiplier, ~200k XP for lev
 - **Dashboard Widgets:** Today's XP tracker with reset countdown, MVL standings with live countdown to midnight CT and user position, Active Challenges showing completion progress (November 13, 2025).
 - **Mobile Input Fix:** Uses `type="text"` with `inputMode="numeric"` for number inputs to fix iOS Safari typing bug.
 - **Photo Upload System:** Progress photos include `uploadDate` field (YYYY-MM-DD in Central Time) for reliable daily limit enforcement. 1-photo-per-day limit resets exactly at midnight CT. Enhanced error handling shows clear messages for upload failures and daily limit violations (November 13, 2025).
+- **Edit Weight Feature:** Users can correct weight entry mistakes after initial daily weigh-in without earning XP. POST /api/weighin awards 15 XP for first daily weigh-in, PATCH /api/weighin allows editing weight with no XP awarded. WeighInCard shows "Weigh In" button before daily weigh-in and "Edit Weight" button after (disabled when unchanged, "Weight Saved" label). Prevents accidental duplicate XP from typo corrections (November 14, 2025).
 
 ## External Dependencies
 
