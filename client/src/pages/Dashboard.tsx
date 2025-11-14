@@ -255,6 +255,28 @@ export default function Dashboard() {
     },
   });
 
+  const editWeighinMutation = useMutation({
+    mutationFn: async ({ weight }: { weight: number }) => {
+      const res = await apiRequest("PATCH", "/api/weighin", { weight });
+      return await res.json();
+    },
+    onSuccess: (data: any) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      toast({
+        title: "Weight updated!",
+        description: "Your weight has been updated.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update weight",
+        variant: "destructive",
+      });
+    },
+  });
+
   const calorieMutation = useMutation({
     mutationFn: async ({ calories, position }: { calories: number; position?: { x: number; y: number } }) => {
       const res = await apiRequest("POST", "/api/calories", { calories });
@@ -422,6 +444,7 @@ export default function Dashboard() {
   };
   
   const hasLoggedCaloriesToday = dashboardUser?.lastCalorieLogDate === getTodayDate();
+  const hasWeighedInToday = dashboardUser?.lastWeighinDate === getTodayDate();
 
   return (
     <div className="min-h-screen bg-background">
@@ -537,6 +560,7 @@ export default function Dashboard() {
           <div className="space-y-6">
             <WeighInCard
               currentWeight={dashboardUser.weight}
+              hasWeighedInToday={hasWeighedInToday}
               onWeighIn={(weight, event) => {
                 const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
                 const position = {
@@ -544,6 +568,9 @@ export default function Dashboard() {
                   y: rect.top,
                 };
                 weighinMutation.mutate({ weight, position });
+              }}
+              onEditWeight={(weight) => {
+                editWeighinMutation.mutate({ weight });
               }}
             />
             <CalorieTrackerCard
