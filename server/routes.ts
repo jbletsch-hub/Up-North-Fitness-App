@@ -244,12 +244,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const allPRs = await storage.getAllPRs();
       const total = allPRs.reduce((sum, pr) => sum + pr.squat + pr.bench + pr.deadlift, 0);
 
+      // Check if user has already uploaded a photo today
+      const userPhotos = await storage.getPhotosByUser(userId);
+      const hasUploadedToday = userPhotos.some(photo => photo.uploadDate === today);
+
       res.json({
         user,
         challenges,
         pr,
         goal,
         total,
+        hasUploadedToday,
       });
     } catch (error) {
       console.error("Error fetching dashboard:", error);

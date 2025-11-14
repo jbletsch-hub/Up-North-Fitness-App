@@ -426,7 +426,7 @@ export default function Dashboard() {
     </div>;
   }
 
-  const { user: dashboardUser, challenges, pr, goal, total } = dashboardData as any;
+  const { user: dashboardUser, challenges, pr, goal, total, hasUploadedToday } = dashboardData as any;
   const leaderboard = homeData?.leaderboard || [];
   
   const xpToNextLevel = getXPToNextLevel(dashboardUser.xp, dashboardUser.level);
@@ -585,33 +585,45 @@ export default function Dashboard() {
                 calorieMutation.mutate({ calories });
               }}
             />
-            <ObjectUploader
-              maxNumberOfFiles={1}
-              maxFileSize={10485760}
-              onGetUploadParameters={async () => {
-                console.log("[PHOTO] Getting upload URL...");
-                const response = await apiRequest("POST", "/api/photos/upload-url");
-                const { uploadURL } = await response.json();
-                console.log("[PHOTO] Got upload URL:", uploadURL);
-                return {
-                  method: "PUT" as const,
-                  url: uploadURL,
-                };
-              }}
-              onComplete={(result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
-                console.log("[PHOTO] Upload complete:", result);
-                if (result.successful && result.successful.length > 0) {
-                  const uploadedFile = result.successful[0];
-                  const uploadURL = uploadedFile.uploadURL;
-                  console.log("[PHOTO] Calling mutation with uploadURL:", uploadURL);
-                  if (uploadURL) {
-                    photoMutation.mutate(uploadURL);
+            {!hasUploadedToday ? (
+              <ObjectUploader
+                maxNumberOfFiles={1}
+                maxFileSize={10485760}
+                onGetUploadParameters={async () => {
+                  console.log("[PHOTO] Getting upload URL...");
+                  const response = await apiRequest("POST", "/api/photos/upload-url");
+                  const { uploadURL } = await response.json();
+                  console.log("[PHOTO] Got upload URL:", uploadURL);
+                  return {
+                    method: "PUT" as const,
+                    url: uploadURL,
+                  };
+                }}
+                onComplete={(result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
+                  console.log("[PHOTO] Upload complete:", result);
+                  if (result.successful && result.successful.length > 0) {
+                    const uploadedFile = result.successful[0];
+                    const uploadURL = uploadedFile.uploadURL;
+                    console.log("[PHOTO] Calling mutation with uploadURL:", uploadURL);
+                    if (uploadURL) {
+                      photoMutation.mutate(uploadURL);
+                    }
                   }
-                }
-              }}
-            >
-              <span>📸 Upload Photo</span>
-            </ObjectUploader>
+                }}
+              >
+                <span>📸 Upload Photo</span>
+              </ObjectUploader>
+            ) : (
+              <Card>
+                <CardContent className="flex items-center justify-center p-6">
+                  <div className="text-center space-y-2">
+                    <div className="text-4xl">✅</div>
+                    <div className="font-medium">Photo Uploaded Today!</div>
+                    <div className="text-sm text-muted-foreground">Come back tomorrow to upload another</div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
 
