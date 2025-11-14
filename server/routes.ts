@@ -458,12 +458,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "You can only weigh in once per day" });
       }
 
-      const result = await awardXP(userId, 15, "recorded their weight");
-      const xpAwarded = 15;
+      const newWeight = parseFloat(weight);
+      const currentWeight = user.weight || 0;
+      
+      // Only award XP if weight has changed
+      let xpAwarded = 0;
+      if (newWeight !== currentWeight) {
+        await awardXP(userId, 15, "recorded their weight");
+        xpAwarded = 15;
+      }
 
-      await storage.updateUserWeight(userId, parseFloat(weight), today);
+      await storage.updateUserWeight(userId, newWeight, today);
 
-      res.json({ success: true, weight: parseFloat(weight), xpAwarded });
+      res.json({ success: true, weight: newWeight, xpAwarded });
     } catch (error) {
       console.error("Error recording weight:", error);
       res.status(500).json({ message: "Failed to record weight" });
