@@ -263,11 +263,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.id;
       const challengeId = req.params.id;
 
+      // Get the challenge to find its XP value
+      const today = getTodayDate();
+      const challenges = await storage.getUserDailyChallenges(userId, today);
+      const challenge = challenges.find((c) => c.id === challengeId);
+      
+      if (!challenge) {
+        return res.status(404).json({ message: "Challenge not found" });
+      }
+
+      const xpValue = challenge.xpValue || 20; // Default to 20 if not set
+
       await storage.completeChallenge(challengeId);
-      const result = await awardXP(userId, 15, "completed a daily challenge");
+      const result = await awardXP(userId, xpValue, "completed a daily challenge");
 
       // Check if all daily challenges are completed
-      const today = getTodayDate();
       const allChallenges = await storage.getUserDailyChallenges(userId, today);
       const allCompleted = allChallenges.every((c) => c.completed);
 

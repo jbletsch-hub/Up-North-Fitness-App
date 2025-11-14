@@ -99,7 +99,7 @@ export interface IStorage {
   deleteChallenge(id: string): Promise<void>;
   
   // User daily challenges operations
-  getUserDailyChallenges(userId: string, date: string): Promise<Array<UserDailyChallenge & { text: string }>>;
+  getUserDailyChallenges(userId: string, date: string): Promise<Array<UserDailyChallenge & { text: string; xpValue: number }>>;
   createUserDailyChallenge(challenge: InsertUserDailyChallenge): Promise<UserDailyChallenge>;
   completeChallenge(id: string): Promise<UserDailyChallenge>;
   deleteUserDailyChallenges(userId: string, date: string): Promise<void>;
@@ -459,7 +459,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   // User daily challenges operations
-  async getUserDailyChallenges(userId: string, date: string): Promise<Array<UserDailyChallenge & { text: string }>> {
+  async getUserDailyChallenges(userId: string, date: string): Promise<Array<UserDailyChallenge & { text: string; xpValue: number }>> {
     const result = await db
       .select({
         id: userDailyChallenges.id,
@@ -468,6 +468,7 @@ export class DatabaseStorage implements IStorage {
         challengeId: userDailyChallenges.challengeId,
         completed: userDailyChallenges.completed,
         text: challengePool.text,
+        xpValue: challengePool.xpValue,
       })
       .from(userDailyChallenges)
       .leftJoin(challengePool, eq(userDailyChallenges.challengeId, challengePool.id))
@@ -476,6 +477,7 @@ export class DatabaseStorage implements IStorage {
     return result.map(r => ({
       ...r,
       text: r.text || "",
+      xpValue: r.xpValue || 20,
     }));
   }
 
