@@ -8,6 +8,7 @@ interface Challenge {
   id: string;
   text: string;
   completed: boolean;
+  xpValue?: number;
 }
 
 interface DailyChallengesProps {
@@ -83,7 +84,7 @@ export function DailyChallenges({
                   onClick={(e) => handleComplete(challenge.id, e)}
                   data-testid={`button-complete-${challenge.id}`}
                 >
-                  Done (+15 XP)
+                  Done (+{challenge.xpValue || 20} XP)
                 </Button>
               )}
             </div>
