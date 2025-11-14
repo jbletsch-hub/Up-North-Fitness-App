@@ -7,10 +7,12 @@ import { Scale } from "lucide-react";
 
 interface WeighInCardProps {
   currentWeight?: number;
+  hasWeighedInToday?: boolean;
   onWeighIn?: (weight: number, event: React.FormEvent) => void;
+  onEditWeight?: (weight: number, event: React.FormEvent) => void;
 }
 
-export function WeighInCard({ currentWeight, onWeighIn }: WeighInCardProps) {
+export function WeighInCard({ currentWeight, hasWeighedInToday, onWeighIn, onEditWeight }: WeighInCardProps) {
   const [weight, setWeight] = useState<string>(currentWeight?.toString() || '');
 
   // Update input when currentWeight prop changes
@@ -23,12 +25,18 @@ export function WeighInCard({ currentWeight, onWeighIn }: WeighInCardProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const weightValue = parseFloat(weight) || 0;
-    onWeighIn?.(weightValue, e);
-    console.log("Weight saved:", weightValue);
+    
+    if (hasWeighedInToday) {
+      onEditWeight?.(weightValue, e);
+    } else {
+      onWeighIn?.(weightValue, e);
+    }
   };
 
   const hasChanged = currentWeight && parseFloat(weight) !== currentWeight;
-  const buttonText = currentWeight ? (hasChanged ? "Update Weight" : "Save Weight") : "Save Weight";
+  const buttonText = hasWeighedInToday 
+    ? (hasChanged ? "Edit Weight" : "Weight Saved") 
+    : "Weigh In";
 
   return (
     <Card className="border-card-border">
@@ -37,7 +45,9 @@ export function WeighInCard({ currentWeight, onWeighIn }: WeighInCardProps) {
           <Scale className="h-5 w-5 text-primary" />
           WEIGH-IN
         </CardTitle>
-        <p className="text-sm text-muted-foreground">+15 XP once per day</p>
+        <p className="text-sm text-muted-foreground">
+          {hasWeighedInToday ? "Edit your weight (no XP)" : "+15 XP once per day"}
+        </p>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -58,7 +68,12 @@ export function WeighInCard({ currentWeight, onWeighIn }: WeighInCardProps) {
               </p>
             )}
           </div>
-          <Button type="submit" className="w-full" data-testid="button-save-weight">
+          <Button 
+            type="submit" 
+            className="w-full" 
+            disabled={!hasChanged && hasWeighedInToday}
+            data-testid="button-save-weight"
+          >
             {buttonText}
           </Button>
         </form>
