@@ -18,6 +18,7 @@ export default function AdminPage() {
   const { toast } = useToast();
   const [, navigate] = useLocation();
   const [newChallenge, setNewChallenge] = useState("");
+  const [newChallengeXP, setNewChallengeXP] = useState("20");
   const [newGoal, setNewGoal] = useState("");
   const [selectedUser, setSelectedUser] = useState("");
   const [xpAmount, setXpAmount] = useState("");
@@ -58,13 +59,14 @@ export default function AdminPage() {
   });
 
   const addChallengeMutation = useMutation({
-    mutationFn: async (description: string) => {
-      const res = await apiRequest("POST", "/api/admin/challenges", { text: description });
+    mutationFn: async ({ text, xpValue }: { text: string; xpValue: number }) => {
+      const res = await apiRequest("POST", "/api/admin/challenges", { text, xpValue });
       return await res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/challenges"] });
       setNewChallenge("");
+      setNewChallengeXP("20");
       toast({
         title: "Challenge added!",
         description: "The challenge has been added to the pool.",
@@ -671,30 +673,43 @@ export default function AdminPage() {
             <CardDescription>Manage daily challenges that are randomly assigned to users</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex gap-2">
-              <Input
-                placeholder="Enter new challenge description"
-                value={newChallenge}
-                onChange={(e) => setNewChallenge(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && newChallenge.trim()) {
-                    addChallengeMutation.mutate(newChallenge.trim());
-                  }
-                }}
-                data-testid="input-new-challenge"
-              />
-              <Button
-                onClick={() => {
-                  if (newChallenge.trim()) {
-                    addChallengeMutation.mutate(newChallenge.trim());
-                  }
-                }}
-                disabled={!newChallenge.trim()}
-                data-testid="button-add-challenge"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Challenge
-              </Button>
+            <div className="space-y-3">
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Enter new challenge description"
+                  value={newChallenge}
+                  onChange={(e) => setNewChallenge(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && newChallenge.trim()) {
+                      addChallengeMutation.mutate({ text: newChallenge.trim(), xpValue: parseInt(newChallengeXP) });
+                    }
+                  }}
+                  data-testid="input-new-challenge"
+                  className="flex-1"
+                />
+                <Select value={newChallengeXP} onValueChange={setNewChallengeXP}>
+                  <SelectTrigger className="w-[100px]" data-testid="select-challenge-xp">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="15">15 XP</SelectItem>
+                    <SelectItem value="20">20 XP</SelectItem>
+                    <SelectItem value="25">25 XP</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button
+                  onClick={() => {
+                    if (newChallenge.trim()) {
+                      addChallengeMutation.mutate({ text: newChallenge.trim(), xpValue: parseInt(newChallengeXP) });
+                    }
+                  }}
+                  disabled={!newChallenge.trim()}
+                  data-testid="button-add-challenge"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add
+                </Button>
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -704,7 +719,12 @@ export default function AdminPage() {
                     key={challenge.id}
                     className="flex items-center justify-between p-3 rounded-lg border bg-card"
                   >
-                    <span>{challenge.text}</span>
+                    <div className="flex items-center gap-3 flex-1">
+                      <span className="flex-1">{challenge.text}</span>
+                      <span className="text-sm font-semibold text-primary px-2 py-1 rounded bg-primary/10">
+                        {challenge.xpValue || 20} XP
+                      </span>
+                    </div>
                     <Button
                       variant="ghost"
                       size="icon"

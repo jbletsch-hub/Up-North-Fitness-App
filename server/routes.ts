@@ -734,8 +734,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Forbidden" });
       }
 
-      const { text } = req.body;
-      const challenge = await storage.createChallenge({ text });
+      const { text, xpValue } = req.body;
+      const challenge = await storage.createChallenge({ text, xpValue: xpValue || 20 });
       res.json(challenge);
     } catch (error) {
       console.error("Error creating challenge:", error);
