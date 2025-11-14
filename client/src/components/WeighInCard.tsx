@@ -46,7 +46,7 @@ export function WeighInCard({ currentWeight, hasWeighedInToday, onWeighIn, onEdi
           WEIGH-IN
         </CardTitle>
         <p className="text-sm text-muted-foreground">
-          {hasWeighedInToday ? "Edit your weight (no XP)" : "+15 XP once per day"}
+          {hasWeighedInToday ? "Edit your weight (no XP)" : "+15 XP if weight changes"}
         </p>
       </CardHeader>
       <CardContent>
