@@ -1,10 +1,11 @@
 import { Link, useLocation } from "wouter";
-import { Moon, Sun, Dumbbell, LogOut } from "lucide-react";
+import { Moon, Sun, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "./ThemeProvider";
 import { apiRequest } from "@/lib/queryClient";
 import { MobileNav } from "./MobileNav";
 import { BottomNav } from "./BottomNav";
+import compassLogo from "@assets/Screenshot_20251114_232454_Chrome_1763184328691.jpg";
 
 interface NavigationProps {
   isLoggedIn: boolean;
@@ -46,7 +47,7 @@ export function Navigation({ isLoggedIn, username, isAdmin, userLevel, userXP, u
 
           {/* Logo and Title */}
           <Link href="/" className="flex items-center gap-2 hover-elevate active-elevate-2 px-3 py-2 rounded-md">
-            <Dumbbell className="h-5 w-5 md:h-6 md:w-6 text-primary" />
+            <img src={compassLogo} alt="Up North Fitness" className="h-5 w-5 md:h-6 md:w-6 object-contain" />
             <span className="font-display text-lg md:text-xl lg:text-2xl tracking-wider whitespace-nowrap">UP NORTH FITNESS</span>
           </Link>
 
