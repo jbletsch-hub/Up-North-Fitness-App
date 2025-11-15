@@ -1,9 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { useParams, Link } from "wouter";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, Award, Target, Flame, Scale, Utensils, Trophy, CheckCircle, Users, Calendar } from "lucide-react";
+import { TrendingUp, Award, Target, Flame, Scale, Utensils, Trophy, CheckCircle, Users, Calendar, UserPlus, Shield } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { AvatarDisplay } from "@/components/AvatarDisplay";
 import { MVLBadge } from "@/components/MVLBadge";
@@ -12,10 +12,20 @@ import { Badge } from "@/components/ui/badge";
 import { StreakCalendar } from "@/components/StreakCalendar";
 import { StreakMilestones } from "@/components/StreakMilestones";
 import { PRComparison } from "@/components/PRComparison";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
 export default function StatsPage() {
   const { user } = useAuth();
   const { userId } = useParams<{ userId?: string }>();
+  const { toast } = useToast();
+  const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
+  const [assignDialogOpen, setAssignDialogOpen] = useState(false);
+  const [selectedCrewId, setSelectedCrewId] = useState<string>("");
 
   // Use the userId from params, or the logged-in user's id
   const targetUserId = userId || user?.id;
@@ -30,6 +40,18 @@ export default function StatsPage() {
     queryKey: ["/api/users"],
   });
 
+  // Fetch all crews (for admin assignment)
+  const { data: allCrews } = useQuery({
+    queryKey: ["/api/crews"],
+    enabled: !!user?.isAdmin && !isOwnStats,
+  });
+
+  // Fetch user's crew memberships (to find crews where they're a leader)
+  const { data: userCrews } = useQuery({
+    queryKey: ["/api/crews"],
+    enabled: !!user && !isOwnStats,
+  });
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return `${date.getMonth() + 1}/${date.getDate()}`;
@@ -38,6 +60,70 @@ export default function StatsPage() {
   // Determine if viewing own stats or someone else's
   const isOwnStats = !userId || userId === user?.id;
   const displayName = (stats as any)?.displayName || (stats as any)?.username || "User";
+
+  // Filter crews where current user is a leader
+  const leaderCrews = userCrews ? 
+    (userCrews as any[]).filter((crew: any) => {
+      // Check if user is a leader of this crew
+      return crew.members?.some((m: any) => m.userId === user?.id && m.role === "leader");
+    }) : [];
+
+  // Invite to crew mutation
+  const inviteMutation = useMutation({
+    mutationFn: async ({ crewId, targetUserId }: { crewId: string; targetUserId: string }) => {
+      return await apiRequest("POST", `/api/crews/${crewId}/invite`, { targetUserId });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Invitation sent!",
+        description: `Invited ${displayName} to your crew.`,
+      });
+      setInviteDialogOpen(false);
+      setSelectedCrewId("");
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Failed to send invitation",
+        description: error.message || "Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Admin assign to crew mutation
+  const assignMutation = useMutation({
+    mutationFn: async ({ crewId, targetUserId }: { crewId: string; targetUserId: string }) => {
+      return await apiRequest("POST", "/api/admin/assign-to-crew", { crewId, targetUserId });
+    },
+    onSuccess: () => {
+      toast({
+        title: "User assigned!",
+        description: `Assigned ${displayName} to the crew.`,
+      });
+      setAssignDialogOpen(false);
+      setSelectedCrewId("");
+      queryClient.invalidateQueries({ queryKey: ["/api/stats", targetUserId] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Failed to assign user",
+        description: error.message || "Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleInvite = () => {
+    if (selectedCrewId && targetUserId) {
+      inviteMutation.mutate({ crewId: selectedCrewId, targetUserId });
+    }
+  };
+
+  const handleAssign = () => {
+    if (selectedCrewId && targetUserId) {
+      assignMutation.mutate({ crewId: selectedCrewId, targetUserId });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -62,6 +148,111 @@ export default function StatsPage() {
             {isOwnStats ? "Track your progress and performance" : `View ${displayName}'s fitness journey`}
           </p>
         </div>
+
+        {/* Crew Actions - Show when viewing someone else's profile */}
+        {!isOwnStats && user && (
+          <div className="flex flex-wrap gap-2 justify-center">
+            {/* Crew Leader Invitation */}
+            {leaderCrews.length > 0 && (
+              <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="default" size="default" data-testid="button-invite-to-crew">
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    Invite to Crew
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Invite {displayName} to Crew</DialogTitle>
+                    <DialogDescription>
+                      Select a crew to invite this user to join.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 py-4">
+                    <Select value={selectedCrewId} onValueChange={setSelectedCrewId}>
+                      <SelectTrigger data-testid="select-crew">
+                        <SelectValue placeholder="Select a crew" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {leaderCrews.map((crew: any) => (
+                          <SelectItem key={crew.id} value={crew.id}>
+                            {crew.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <DialogFooter>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setInviteDialogOpen(false)}
+                      data-testid="button-cancel-invite"
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      onClick={handleInvite} 
+                      disabled={!selectedCrewId || inviteMutation.isPending}
+                      data-testid="button-send-invite"
+                    >
+                      {inviteMutation.isPending ? "Sending..." : "Send Invitation"}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            )}
+
+            {/* Admin Assignment */}
+            {user.isAdmin && allCrews && (
+              <Dialog open={assignDialogOpen} onOpenChange={setAssignDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="secondary" size="default" data-testid="button-admin-assign">
+                    <Shield className="h-4 w-4 mr-2" />
+                    Assign to Crew (Admin)
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Assign {displayName} to Crew</DialogTitle>
+                    <DialogDescription>
+                      Directly assign this user to a crew (bypasses invitation).
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 py-4">
+                    <Select value={selectedCrewId} onValueChange={setSelectedCrewId}>
+                      <SelectTrigger data-testid="select-admin-crew">
+                        <SelectValue placeholder="Select a crew" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {(allCrews as any[]).map((crew: any) => (
+                          <SelectItem key={crew.id} value={crew.id}>
+                            {crew.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <DialogFooter>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setAssignDialogOpen(false)}
+                      data-testid="button-cancel-assign"
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      onClick={handleAssign} 
+                      disabled={!selectedCrewId || assignMutation.isPending}
+                      data-testid="button-confirm-assign"
+                    >
+                      {assignMutation.isPending ? "Assigning..." : "Assign to Crew"}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            )}
+          </div>
+        )}
 
         {isLoading ? (
           <div className="text-center py-12">
