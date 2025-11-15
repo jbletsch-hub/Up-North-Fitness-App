@@ -27,6 +27,7 @@ import { CrewChallengeCard } from "@/components/CrewChallengeCard";
 import { CrewCompetitionsCard } from "@/components/CrewCompetitionsCard";
 import { WeeklyMVMCard } from "@/components/WeeklyMVMCard";
 import { QuickStatsWidget } from "@/components/QuickStatsWidget";
+import { LiftingClubWidget } from "@/components/LiftingClubWidget";
 import { CollapsibleSection } from "@/components/CollapsibleSection";
 import { ViewContextSwitcher } from "@/components/ViewContextSwitcher";
 import { useViewContext } from "@/hooks/use-view-context";
@@ -570,7 +571,19 @@ export default function Dashboard() {
         {!isCrewView && <GymTotalCard total={total} />}
 
         {/* Quick Stats Overview - Only show in crew view */}
-        {isCrewView && <QuickStatsWidget />}
+        {/* Quick Stats and Lifting Club - Only show in crew view */}
+        {isCrewView && (
+          <div className="grid md:grid-cols-2 gap-6">
+            <QuickStatsWidget />
+            {pr && (
+              <LiftingClubWidget 
+                squat={pr.squat || 0}
+                bench={pr.bench || 0}
+                deadlift={pr.deadlift || 0}
+              />
+            )}
+          </div>
+        )}
 
         {/* Crew Goal - Only show in crew view */}
         {isCrewView && (

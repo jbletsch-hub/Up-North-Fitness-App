@@ -947,6 +947,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get best performance day for a user
+  app.get("/api/stats/best-day/:userId", isAuthenticated, async (req: any, res) => {
+    try {
+      const { userId } = req.params;
+      
+      // Get all PR history for this user (large limit to capture full history)
+      // Storage layer limits to what's reasonable, but we want as much data as possible
+      const prHistoryRecords = await storage.getPRHistory(userId, 10000);
+      
+      if (prHistoryRecords.length === 0) {
+        return res.json({ 
+          bestDay: null, 
+          prCount: 0,
+          dayBreakdown: [] 
+        });
+      }
+      
+      // Count PRs by day of week
+      const dayCount: Record<string, number> = {
+        Sunday: 0,
+        Monday: 0,
+        Tuesday: 0,
+        Wednesday: 0,
+        Thursday: 0,
+        Friday: 0,
+        Saturday: 0,
+      };
+      
+      const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      
+      prHistoryRecords.forEach((record: any) => {
+        const date = new Date(record.recordedAt);
+        const dayOfWeek = dayNames[date.getDay()];
+        dayCount[dayOfWeek]++;
+      });
+      
+      // Find the day with most PRs
+      let bestDay = 'Monday';
+      let maxCount = 0;
+      
+      Object.entries(dayCount).forEach(([day, count]) => {
+        if (count > maxCount) {
+          maxCount = count;
+          bestDay = day;
+        }
+      });
+      
+      // Format for frontend
+      const dayBreakdown = dayNames.map(day => ({
+        day,
+        count: dayCount[day],
+      }));
+      
+      res.json({
+        bestDay: maxCount > 0 ? bestDay : null,
+        prCount: maxCount,
+        dayBreakdown,
+        totalPRs: prHistoryRecords.length,
+      });
+    } catch (error) {
+      console.error("Error fetching best performance day:", error);
+      res.status(500).json({ message: "Failed to fetch performance stats" });
+    }
+  });
+
   // Admin routes
   app.get("/api/admin/users", isAuthenticated, async (req: any, res) => {
     try {

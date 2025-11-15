@@ -9,6 +9,8 @@ import { Trophy, TrendingUp, Calendar, Target, Check } from "lucide-react";
 import { useParams } from "wouter";
 import { useState } from "react";
 import { MVLBadge } from "@/components/MVLBadge";
+import { LiftingClubProgress } from "@/components/LiftingClubProgress";
+import { BestPerformanceDay } from "@/components/BestPerformanceDay";
 
 export default function ProfilePage() {
   const { user } = useAuth();
@@ -233,6 +235,18 @@ export default function ProfilePage() {
             </Card>
           )}
         </div>
+
+        {/* Lifting Club Progress and Best Performance Day */}
+        {pr && (
+          <div className="grid md:grid-cols-2 gap-6">
+            <LiftingClubProgress 
+              squat={pr.squat || 0}
+              bench={pr.bench || 0}
+              deadlift={pr.deadlift || 0}
+            />
+            <BestPerformanceDay userId={profileUser.id} />
+          </div>
+        )}
 
         {/* Daily Challenges */}
         {challenges.length > 0 && (
