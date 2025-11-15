@@ -1,7 +1,7 @@
 # Up North Fitness - Fitness Tracking & Gamification Platform
 
 ## Overview
-Up North Fitness is a full-stack fitness tracking and gamification platform. Its core purpose is to engage users in their fitness journey through workout logging, personal record tracking, daily challenges, and progress photo uploads. The platform incorporates a gamified experience with an XP leveling system, streak tracking, collaborative crew goals, leaderboards (XP and PR), and a unique daily "Most Valuable Lifter" (MVL) badge system. Key features include yearly goals, calorie tracking, and a dynamic avatar system that visually progresses with user achievements. The vision is to provide a comprehensive and motivating environment for fitness enthusiasts.
+Up North Fitness is a full-stack fitness tracking and gamification platform designed to engage users in their fitness journey. It offers workout logging, personal record tracking, daily challenges, and progress photo uploads. The platform gamifies fitness with an XP leveling system, streak tracking, collaborative crew goals, leaderboards (XP and PR), and a daily "Most Valuable Lifter" (MVL) badge system. Key features include yearly goals, calorie tracking, and a dynamic avatar system that visually progresses with user achievements. The platform aims to provide a comprehensive and motivating environment for fitness enthusiasts.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
@@ -9,57 +9,49 @@ Preferred communication style: Simple, everyday language.
 ## System Architecture
 
 ### Frontend Architecture
-The frontend is built with React 18, TypeScript, and Vite, utilizing Wouter for routing and TanStack Query for data fetching. Styling is handled by Tailwind CSS, complemented by Radix UI primitives and shadcn/ui components for a consistent "New York" design aesthetic with light/dark modes. The typography uses Inter and Bebas Neue. State management leverages TanStack Query for server state, a custom `useAuth` hook for authentication, and React hooks for local component state. The application is designed to be mobile-responsive, featuring a mobile-first navigation with a hamburger menu for smaller screens.
+The frontend is built with React 18, TypeScript, and Vite, using Wouter for routing and TanStack Query for data fetching. Styling is managed by Tailwind CSS, Radix UI primitives, and shadcn/ui components, adhering to a "New York" design aesthetic with light/dark modes. Typography uses Inter and Bebas Neue. State management combines TanStack Query for server state, a custom `useAuth` hook for authentication, and React hooks for local component state. The application is mobile-responsive with a mobile-first navigation.
 
 ### Backend Architecture
-The backend is an Express.js application written in TypeScript. Authentication is session-based, using `express-session` with `passport-local` and PostgreSQL for session storage. Data persistence is managed via Drizzle ORM with Neon serverless PostgreSQL, following a schema-driven design and `drizzle-kit` for migrations. The API is RESTful, with protected routes enforced by authentication middleware.
+The backend is an Express.js application written in TypeScript. It uses session-based authentication with `express-session`, `passport-local`, and PostgreSQL for session storage. Data is persisted using Drizzle ORM with Neon serverless PostgreSQL, following a schema-driven design and `drizzle-kit` for migrations. The API is RESTful with protected routes.
 
-The gamification system features an XP curve (1.125 multiplier, ~200k XP for level 50) and an 11-tier title progression. XP is awarded for various daily activities (check-ins, weigh-ins, PRs, photos, calorie logs, daily challenges) and goal completions (weekly, yearly, lifetime). A daily MVL competition tracks the highest XP earner from daily activities. Daily challenges are randomized using the Fisher-Yates shuffle algorithm. All time-based operations are anchored to Central Time (America/Chicago). Admin functionalities include XP management and user level recalculation.
+The gamification system includes an XP curve (~200k XP for level 50) and an 11-tier title progression. XP is awarded for various daily activities and goal completions. A daily MVL competition tracks the highest XP earner from daily activities. Daily challenges are randomized using the Fisher-Yates shuffle. All time-based operations are anchored to Central Time (America/Chicago). Admin functionalities include XP management and user level recalculation.
 
 ### System Design Choices
-- **Avatar System:** Features a 10-stage visual progression with dynamic facial expressions and muscle definition, evolving from "skinny" to "jacked." Users can select from four distinct character types (Classic, Bulky, Athletic, Powerlifter) which modify body proportions.
-- **Avatar Progress Ring:** Dashboard displays user avatar with circular SVG progress ring showing XP progress to next level (November 13, 2025).
-- **UI/UX:** Uses custom golden dumbbell app icon, supports PWA (Progressive Web App) with `manifest.json` (v1.0.1 with cache-busting for iOS updates).
-- **Public Profiles:** User stats pages are publicly viewable, accessible via a dedicated route (`/stats/:userId`) and linked from leaderboards and a "Browse Users" section.
-- **MVL Race Logic:** MVL calculation focuses solely on XP from daily activities to emphasize consistent daily effort. Goal completions don't count toward MVL standings.
-- **PR XP Awards:** Users only receive 10 XP for PR updates if at least one lift (squat, bench, deadlift) actually increases. Same/lower numbers award no XP.
-- **PR History Tracking:** Separate `prHistory` database table tracks all PR updates for historical progression analysis. PR progression chart on Stats page displays squat/bench/deadlift/total improvements over time using recharts LineChart (November 13, 2025).
-- **Goal Completion Animations:** Goal completions trigger celebratory popup with particle effects, scaling animations, and auto-dismiss, following XP popup pattern (November 13, 2025).
-- **Activity Feed Enhancements:** Filter buttons (All, PRs, Photos, Challenges), user avatars via AvatarDisplay component with full customization (shirt, shorts, hair, accessories), proper Lucide icons instead of emojis (November 13, 2025).
-- **Dashboard Widgets:** Today's XP tracker with reset countdown, MVL standings with live countdown to midnight CT and user position, Active Challenges showing completion progress (November 13, 2025).
-- **Mobile Input Fix:** Uses `type="text"` with `inputMode="numeric"` for number inputs to fix iOS Safari typing bug.
-- **Photo Upload System:** Progress photos include `uploadDate` field (YYYY-MM-DD in Central Time) for reliable daily limit enforcement. 1-photo-per-day limit resets exactly at midnight CT. Enhanced error handling shows clear messages for upload failures and daily limit violations. Dashboard API returns `hasUploadedToday` flag to conditionally render upload button vs. completion card. Prevents multiple uploads per day (November 14, 2025).
-- **Edit Weight Feature:** Users can correct weight entry mistakes after initial daily weigh-in without earning XP. POST /api/weighin awards 15 XP for first daily weigh-in only if weight changes from previous weight, PATCH /api/weighin allows editing weight with no XP awarded. WeighInCard shows "Weigh In" button before daily weigh-in and "Edit Weight" button after (disabled when unchanged, "Weight Saved" label). Prevents accidental duplicate XP from typo corrections. Weight must differ from yesterday to earn XP (November 14, 2025).
-- **Variable Challenge XP:** Daily challenges now have configurable XP values (15, 20, or 25 XP) to reduce MVL race ties and add strategic variety. Each challenge stores its xpValue in the database (default 20). Admin panel includes XP selector dropdown when creating challenges and edit button (pencil icon) for modifying existing challenges. Edit dialog allows admins to change XP values for challenges already in the pool. Challenge cards and activity feed display the specific XP amount (+15 XP, +20 XP, or +25 XP). Challenge completion awards the custom xpValue instead of fixed amount. Backend endpoint PATCH /api/admin/challenges/:id handles XP value updates (November 14, 2025).
-- **Admin Promotion System:** Admins can grant or revoke admin privileges to other users. Admin panel User Management section includes Zap icon toggle buttons for each user (colored when user is admin, muted when not). Users with admin status display an "Admin" badge next to their username. Confirmation dialog appears before toggling admin status. Backend endpoint POST /api/admin/users/:id/toggle-admin handles privilege changes (November 14, 2025).
-- **Weekly Goals Limit:** Changed from 3 to 2 active weekly goals per week. Storage layer checks for 2 existing goals before allowing new weekly goal creation. Error message updated to reflect new limit (November 14, 2025).
-- **Weekly Challenge Limit:** Users can complete maximum 2 daily challenges per week, resetting Monday at midnight CT. Database tracks lastChallengeWeekStart and challengesCompletedThisWeek. Challenge completion endpoint checks weekly limit before awarding XP. Clear error message when limit reached (November 15, 2025).
-- **Admin Streak Editor:** Admins can manually adjust user check-in streaks via admin panel. User Management section displays each user's current streak count. Flame icon button opens dialog for editing streak value. Backend endpoint POST /api/admin/users/:id/update-streak validates and updates streakCount (November 15, 2025).
-- **Streak Calendar Visualization:** Stats page displays 90-day check-in calendar with visual grid showing days user checked in (green squares) vs. missed days (muted squares). Today is highlighted with ring. Month labels and legend included. Backend extracts check-in history from activities table (November 15, 2025).
-- **Streak Milestones:** Achievement badges for streak milestones: Week Warrior (7 days), Monthly Master (30 days), Century Crusher (100 days), Yearly Legend (365 days). Unlocked badges display in color with "Unlocked!" badge. Shows progress to next milestone. All milestones unlocked message at 365+ days (November 15, 2025).
-- **Quick Stats Dashboard Widget:** Dashboard displays compact overview widget showing 4 key metrics: current streak (with days suffix), monthly check-ins, weekly PRs, and MVL wins. Each stat has color-coded icon (flame, activity, trophy, award). Backend endpoint GET /api/dashboard/quick-stats calculates real-time stats (November 15, 2025).
-- **PR Comparison Tool:** Stats page displays PR comparison card showing how user's lifts (squat, bench, deadlift, total) compare to gym averages and percentile rankings. Visual progress bars indicate percentile for each lift. Shows percentage above/below average with color-coded indicators. Lists top 3 lifters in the gym by total. Backend endpoint GET /api/pr-comparison/:userId calculates gym averages, percentiles, and top lifter rankings (November 15, 2025).
-- **Dashboard Decluttering:** Removed separate widgets (Today's XP, MVL Countdown, Active Challenges) and merged into expanded Quick Stats Widget showing 6 metrics: Today's XP, Current Streak, Active Challenges (X/Y format), Monthly Workouts, Weekly PRs, MVL Wins. Removed GoalsCard from Dashboard (goals fully manageable on dedicated Goals page with complete CRUD). Backend endpoint /api/dashboard/quick-stats updated to return all 6 stats including challenge completion status (November 15, 2025).
-- **Collapsible Dashboard Sections:** All major dashboard sections now collapsible with localStorage persistence: Crew Goal, Daily Actions (challenges + check-in), Tracking (PR/weight/calories/photo), MVL Race, Crew Challenge, Leaderboards. CollapsibleSection component wraps each section with expand/collapse toggle using ChevronUp/ChevronDown icons. User preferences saved to localStorage with unique IDs per section (November 15, 2025).
-- **Top Lifts Widget:** Component displays top 3 users for squat, bench press, and deadlift separately. Each lift type shows ranked users with their PR values, clickable links to user profiles, and color-coded badges. Backend endpoint GET /api/top-lifts fetches top performers for each lift category (November 15, 2025).
-- **Multi-Crew System (November 15, 2025):** Complete backend infrastructure for multi-crew gym system. Database includes 3 new tables: `crews` (name, description, color), `crewMemberships` (links users to crews with leader/member roles), `crewInvites` (pending invitations). Storage layer implements 16 CRUD methods for crew management. API provides 11 endpoints: GET /api/crews (list all), GET /api/crews/my-crew (user's crew), GET /api/crews/:id (crew details), POST /api/crews (create crew), PATCH /api/crews/:id (update crew), GET /api/crews/:id/members (roster), POST /api/crews/leave (leave crew), POST /api/crews/:id/invite (send invite), GET /api/crews/invites/my-invites (pending invites), POST /api/crews/invites/:id/:action (accept/decline), POST /api/crews/:id/members/:userId/role (promote/demote), DELETE /api/crews/:id/members/:userId (remove member). Frontend includes Crews page (/crews route) with create crew form (name, description, color picker), roster view, leave functionality. Desktop navigation includes Crews link. Mobile bottom nav features 5 core items (Home, Feed, Goals, Avatar, Stats). Hamburger menu (MobileNav) displays Crews link with dynamic crew name when user is in a crew, shows "UP NORTH FITNESS" branding with crew name underneath in menu header. Safety checks prevent orphaned crews (last leader must transfer leadership before leaving), empty crews auto-delete. Users can only join one crew at a time. Crew creators automatically become leaders.
-- **Crew Invitation System:** Leaders can invite users by username via Crews page. Backend validates usernames and prevents duplicate invites. CrewInviteForm shows success/error feedback. Pending invites display in separate card with Accept/Decline buttons. GET /api/crews/invites/my-invites fetches user's pending invitations. POST /api/crews/invites/:id/accept joins user to crew and deletes invite. POST /api/crews/invites/:id/decline removes invitation without joining (November 15, 2025).
-- **View Context Switcher:** Dashboard includes toggle to switch between crew view and gym-wide "Up North Fitness" view. ViewContextSwitcher component (Shield icon for crew, Users icon for gym) persists preference to localStorage via useViewContext hook. Context affects which data displays: crew-specific MVL, crew challenges, crew leaderboards vs gym-wide versions. Located in Dashboard header for easy access (November 15, 2025).
-- **Crew-Specific MVL:** Daily MVL race can filter by crew membership. Backend method getCrewMVLLeaderboard(crewId, limit) queries users in specific crew with today's dailyXp. API endpoint GET /api/leaderboards/crew-mvl/:crewId returns crew-only leaderboard. DailyMVLCard accepts crewId/crewName/isCrewView props to display crew-specific competition. Title changes to "{CrewName} MVL RACE" when in crew view. Dashboard passes crew context from useViewContext hook (November 15, 2025).
+- **Avatar System:** Features a 10-stage visual progression with dynamic facial expressions and muscle definition, evolving from "skinny" to "jacked." Users can select from four character types.
+- **UI/UX:** Custom golden dumbbell app icon, PWA support, public profiles for user stats.
+- **MVL Race Logic:** MVL calculation focuses on XP from daily activities to emphasize consistent daily effort.
+- **PR Tracking:** Separate `prHistory` table tracks all PR updates for historical analysis, displayed on stats page.
+- **Goal Completion Animations:** Celebratory popups with particle effects for goal completions.
+- **Activity Feed Enhancements:** Filter buttons, user avatars via AvatarDisplay component, Lucide icons.
+- **Dashboard Widgets:** Today's XP tracker, MVL standings, Active Challenges.
+- **Photo Upload System:** Enforces a 1-photo-per-day limit (resets midnight CT) with enhanced error handling.
+- **Edit Weight Feature:** Allows correcting weight entries without awarding duplicate XP.
+- **Variable Challenge XP:** Daily challenges have configurable XP values (15, 20, or 25 XP).
+- **Admin Promotion System:** Admins can grant or revoke admin privileges.
+- **Weekly Goals & Challenge Limits:** Users are limited to 2 active weekly goals and can complete a maximum of 2 daily challenges per week.
+- **Streak Management:** Admins can edit user check-in streaks. Stats page displays a 90-day check-in calendar. Achievement badges are awarded for streak milestones (7, 30, 100, 365 days).
+- **Quick Stats Dashboard Widget:** Displays current streak, monthly check-ins, weekly PRs, and MVL wins.
+- **PR Comparison Tool:** Compares user's lifts to gym averages and percentile rankings.
+- **Dashboard Decluttering:** Consolidated dashboard widgets and moved goals management to a dedicated page.
+- **Collapsible Dashboard Sections:** Major dashboard sections are collapsible with `localStorage` persistence.
+- **Top Lifts Widget:** Displays top 3 users for squat, bench press, and deadlift.
+- **Multi-Crew System:** Supports multiple crews with membership management, invitations, and roles. Users can only join one crew.
+- **View Context Switcher:** Allows toggling between crew-specific and gym-wide views for leaderboards and challenges.
+- **Crew-Specific MVL:** Daily MVL race can be filtered by crew membership.
+- **Crew vs Crew Competitions:** Dashboard displays four competitive categories: Weekly Check-In Battle, Monthly XP War, Challenge Completion %, and Total Lift Showdown.
+- **Weekly MVM System:** Tracks and awards the top weekly XP earner across the entire gym.
 
 ## External Dependencies
 
 ### Third-Party Services
 - **Neon Serverless PostgreSQL:** Database service.
-- **Replit Object Storage:** For storing user-uploaded progress photos.
+- **Replit Object Storage:** Stores user-uploaded progress photos.
 
 ### Key NPM Packages
 - **Frontend:** `@radix-ui/*`, `tailwindcss`, `lucide-react`, `cmdk`, `@uppy/react`, `@tanstack/react-query`.
 - **Backend:** `express`, `passport`, `passport-local`, `bcrypt`, `drizzle-orm`, `drizzle-kit`, `zod`, `multer`, `connect-pg-simple`.
-- **Development:** `vite`, `typescript`, `tsx`.
 
 ### Environment Variables
 - `DATABASE_URL`
 - `SESSION_SECRET`
-- `REPL_ID` (optional, Replit-specific)
 - `NODE_ENV`
