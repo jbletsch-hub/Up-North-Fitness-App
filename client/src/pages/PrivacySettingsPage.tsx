@@ -21,7 +21,8 @@ export default function PrivacySettingsPage() {
       return await apiRequest("POST", "/api/user/privacy-settings", settings);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/user'] });
+      // Force immediate refetch to update UI
+      queryClient.refetchQueries({ queryKey: ['/api/user'] });
       toast({
         title: "Privacy Updated",
         description: "Your privacy settings have been saved.",
