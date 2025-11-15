@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,20 +19,14 @@ interface DailyChallengesProps {
 }
 
 export function DailyChallenges({ 
-  challenges: initialChallenges, 
+  challenges, 
   onComplete,
   canReroll = false,
   onReroll,
   isRerolling = false
 }: DailyChallengesProps) {
-  const [challenges, setChallenges] = useState(initialChallenges);
-
   const handleComplete = (id: string, event: React.MouseEvent) => {
-    setChallenges((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, completed: true } : c))
-    );
     onComplete?.(id, event);
-    console.log("Challenge completed:", id);
   };
 
   return (
