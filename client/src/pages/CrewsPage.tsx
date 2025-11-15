@@ -53,7 +53,7 @@ export default function CrewsPage() {
 
   const createCrewMutation = useMutation({
     mutationFn: async (data: CreateCrewForm) => {
-      return await apiRequest("/api/crews", "POST", data);
+      return await apiRequest("POST", "/api/crews", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/crews"] });
@@ -72,7 +72,7 @@ export default function CrewsPage() {
 
   const leaveCrewMutation = useMutation({
     mutationFn: async () => {
-      return await apiRequest("/api/crews/leave", "POST");
+      return await apiRequest("POST", "/api/crews/leave");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/crews"] });
