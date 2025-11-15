@@ -83,17 +83,26 @@ The gamification system includes an XP curve (~200k XP for level 50) and an 11-t
 - **Simplified Privacy System (Nov 15, 2025):** Complete redesign from 6 individual toggles to a single "Private Profile" toggle:
   - **Single Toggle:** `isProfilePrivate` boolean field (default `false` = public)
   - **Public Profile (OFF):** Everyone sees full profile including PRs, photos, activities, stats, goals, and body metrics
-  - **Private Profile (ON):** Non-crew members only see name, crew name, and level
-  - **Crew Member Override:** Crew members ALWAYS bypass privacy settings and see full profiles regardless of toggle state
+  - **Private Profile (ON):** Non-crew members see limited data; crew members always see full profile
+  - **Crew Member Override:** Crew members ALWAYS bypass privacy restrictions on profile/stats pages regardless of toggle state
   - **Backend Implementation:** 
     - Database field: `is_profile_private` (snake_case)
     - TypeScript/Frontend: `isProfilePrivate` (camelCase via Drizzle ORM auto-mapping)
     - POST `/api/user/privacy-settings` endpoint accepts `{ isProfilePrivate: boolean }`
   - **Privacy Enforcement:**
-    - `/api/profile/:username` - Private profiles return only user.name, crew, level to non-crew viewers
-    - `/api/stats/:userId` - Returns 403 Forbidden for private profiles viewed by non-crew members
-    - `/api/activity-feed` - Filters out activities from private users unless viewer is crew member
+    - **Profile/Stats Pages:** 
+      - `/api/profile/:username` - Private profiles return only user.name, crew, level to non-crew viewers
+      - `/api/stats/:userId` - Returns 403 Forbidden for private profiles viewed by non-crew members
+      - Crew members always bypass and see full data
+    - **Activity Feed:** `/api/activity-feed` filters out activities from private users unless viewer is crew member
+    - **Leaderboards (Public/Competitive Views):** All leaderboard endpoints apply `sanitizeUserForLeaderboard()` helper:
+      - Private profiles show: id, username, displayName, level, xp, title, crewName, mvlWins, dailyXp, avatar data
+      - Private profiles hide: PRs, weight, calories, photos, goals, streak, detailed stats
+      - Public profiles show: All user data unchanged
+      - Endpoints: `/api/home`, `/api/leaderboards/mvl`, `/api/leaderboards/crew-mvl/:crewId`, `/api/users`
+      - Note: Leaderboards show competitive info even for private users; crew override only applies to profile/stats pages
   - **UI:** Clean single-toggle interface at `/settings/privacy` with clear explanations of public vs private visibility
+  - **Security Audit:** Passed comprehensive architect review (Nov 15, 2025) - no privacy leaks or data exposure detected
 
 ## External Dependencies
 
