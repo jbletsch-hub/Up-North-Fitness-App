@@ -231,6 +231,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Toggle privacy setting
+  app.post("/api/user/privacy", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const { isPrivate } = req.body;
+
+      if (typeof isPrivate !== "boolean") {
+        return res.status(400).json({ message: "isPrivate must be a boolean" });
+      }
+
+      const user = await storage.updateUserPrivacy(userId, isPrivate);
+      res.json({ success: true, user });
+    } catch (error) {
+      console.error("Error updating privacy:", error);
+      res.status(500).json({ message: "Failed to update privacy setting" });
+    }
+  });
+
   // Update character type endpoint
   app.post("/api/profile/character-type", isAuthenticated, async (req: any, res) => {
     try {

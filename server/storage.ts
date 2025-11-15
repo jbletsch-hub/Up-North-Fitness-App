@@ -79,6 +79,7 @@ export interface IStorage {
   updateUserProfile(id: string, firstName: string, lastName: string | undefined, profileImageUrl: string): Promise<User>;
   updateUserDisplayName(id: string, displayName: string): Promise<User>;
   toggleUserAdmin(id: string, isAdmin: boolean): Promise<User>;
+  updateUserPrivacy(id: string, isPrivate: boolean): Promise<User>;
   updateUserAvatar(id: string, avatar: { gender?: string; skinColor?: string; characterType?: string; shirtColor?: string; shortsColor?: string; headband?: boolean; wristbands?: boolean; hairStyle?: string; hairColor?: string; facialHair?: string }): Promise<User>;
   getTodayMVLLeaderboard(limit: number): Promise<User[]>;
   getCrewMVLLeaderboard(crewId: string, limit: number): Promise<User[]>;
@@ -371,6 +372,15 @@ export class DatabaseStorage implements IStorage {
     const [user] = await db
       .update(users)
       .set({ isAdmin })
+      .where(eq(users.id, id))
+      .returning();
+    return user;
+  }
+
+  async updateUserPrivacy(id: string, isPrivate: boolean): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({ isPrivateProfile: isPrivate })
       .where(eq(users.id, id))
       .returning();
     return user;
