@@ -227,7 +227,7 @@ export function GoalsCard() {
               if (open) setGoalType(type);
             }}>
               <DialogTrigger asChild>
-                <Button size="icon" variant="ghost" data-testid={`button-add-${type}-goal`}>
+                <Button type="button" size="icon" variant="ghost" data-testid={`button-add-${type}-goal`}>
                   <Plus className="h-4 w-4" />
                 </Button>
               </DialogTrigger>
@@ -279,7 +279,7 @@ export function GoalsCard() {
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button onClick={handleCreateGoal} data-testid="button-create-goal">
+                  <Button type="button" onClick={handleCreateGoal} data-testid="button-create-goal">
                     Create Goal
                   </Button>
                 </DialogFooter>
@@ -304,6 +304,7 @@ export function GoalsCard() {
                       {goal.currentValue} / {goal.targetValue} {goal.unit}
                     </span>
                     <Button
+                      type="button"
                       size="icon"
                       variant="ghost"
                       onClick={() => {
@@ -316,6 +317,7 @@ export function GoalsCard() {
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button
+                      type="button"
                       size="icon"
                       variant="ghost"
                       onClick={(e) => {
@@ -331,6 +333,7 @@ export function GoalsCard() {
                       <Check className="h-4 w-4" />
                     </Button>
                     <Button
+                      type="button"
                       size="icon"
                       variant="ghost"
                       onClick={() => deleteGoalMutation.mutate(goal.id)}
@@ -404,7 +407,7 @@ export function GoalsCard() {
             </div>
           </div>
           <DialogFooter>
-            <Button onClick={handleUpdateProgress} data-testid="button-save-progress">
+            <Button type="button" onClick={handleUpdateProgress} data-testid="button-save-progress">
               Save Progress
             </Button>
           </DialogFooter>
