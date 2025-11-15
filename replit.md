@@ -16,7 +16,22 @@ The backend is an Express.js application written in TypeScript. It uses session-
 
 The gamification system includes an XP curve (~200k XP for level 50) and an 11-tier title progression. XP is awarded for various daily activities and goal completions. A daily MVL competition tracks the highest XP earner from daily activities. Daily challenges are randomized using the Fisher-Yates shuffle. All time-based operations are anchored to Central Time (America/Chicago). Admin functionalities include XP management and user level recalculation.
 
-### System Design Choices
+### Recent Fixes (Nov 15, 2025)
+- **CRITICAL: Check-in & Daily Challenge Persistence Bug Fixed**
+  - **Root Cause:** Components used optimistic local state (`useState`) that updated before API calls completed. On page refresh, local state was lost even though server had saved data correctly.
+  - **Fix Applied:** Removed all local state from CheckInCard and DailyChallenges components. Now rely entirely on server data via TanStack Query cache invalidation.
+  - **CheckInCard:** Added `hasCheckedInToday` field to `/api/dashboard` endpoint, component receives this from server instead of managing local state.
+  - **DailyChallenges:** Component reads `completed` field directly from server data in `user_daily_challenges` table.
+  - **Impact:** Check-ins and challenge completions now persist correctly across page refreshes.
+- **Apple PWA Icon Optimization:** Reduced icon size from 1.8MB to 50KB using compass-icon.jpg, updated manifest.json and service worker to v1.0.5 for proper caching.
+
+## State Management Best Practices
+- **NEVER use optimistic local state** (useState) for server-persisted data in components
+- **ALWAYS rely on TanStack Query cache invalidation** after mutations
+- **Server as source of truth:** Components should read data from query results, not maintain their own state for persisted data
+- **Example pattern:** Mutation → invalidate queries → refetch → component re-renders with server data
+
+## System Design Choices
 - **Avatar System:** Features a 10-stage visual progression with dynamic facial expressions and muscle definition, evolving from "skinny" to "jacked." Users can select from four character types. Comprehensive diversity system includes:
   - **Gender Options:** Male and female with distinct body proportions (females have wider hips at 140% of torso width, narrower waist at 75% of torso, and sloped shoulders)
   - **Skin Tones:** 6 diverse skin tone options stored as hex values: Fair (#FFE0BD), Light (#FFCC99), Medium (#E0AC69), Tan (#C68642), Brown (#8D5524), Dark Brown (#6B3E2E)
@@ -25,13 +40,13 @@ The gamification system includes an XP curve (~200k XP for level 50) and an 11-t
   - **Facial Hair (Males Only):** None, stubble, small beard, big beard options; section hidden for female avatars
   - **Automatic Validation:** Hair style resets to valid option when switching genders
   - **Avatar Customization Display:** All avatar props (facial hair, hair style, hair color, skin color, gender, character type, accessories) display correctly across all pages. Fixed by adding missing `skinColor` and `gender` fields to `/api/stats` and `/api/users` endpoints. Frontend fallback values use proper hex color codes.
-- **UI/UX:** Custom compass navigation logo, PWA support with compass icon, public profiles for user stats.
+- **UI/UX:** Custom compass navigation logo, PWA support with optimized compass icon (50KB), public profiles for user stats.
 - **MVL Race Logic:** MVL calculation focuses on XP from daily activities to emphasize consistent daily effort.
 - **PR Tracking:** Separate `prHistory` table tracks all PR updates for historical analysis, displayed on stats page.
 - **Goal Completion Animations:** Celebratory popups with particle effects for goal completions.
 - **Activity Feed Enhancements:** Filter buttons, user avatars via AvatarDisplay component, Lucide icons.
 - **Dashboard Widgets:** Today's XP tracker, MVL standings, Active Challenges.
-- **Photo Upload System:** Enforces a 1-photo-per-day limit (resets midnight CT) with enhanced error handling.
+- **Photo Upload System:** Uses Replit Object Storage with direct uploads via pre-signed URLs. Enforces a 1-photo-per-day limit (resets midnight CT) with enhanced error handling. Requires `PRIVATE_OBJECT_DIR` and `PUBLIC_OBJECT_SEARCH_PATHS` environment variables properly configured.
 - **Edit Weight Feature:** Allows correcting weight entries without awarding duplicate XP.
 - **Variable Challenge XP:** Daily challenges have configurable XP values (15, 20, or 25 XP).
 - **Admin Promotion System:** Admins can grant or revoke admin privileges.
