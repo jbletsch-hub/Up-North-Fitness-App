@@ -1619,10 +1619,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       // If userId is provided in URL, use it; otherwise use current user's ID
       const targetUserId = req.params.userId || req.user.id;
+      const currentUserId = req.user.id;
       
       const user = await storage.getUser(targetUserId);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
+      }
+
+      // Check privacy settings if viewing someone else's stats
+      if (targetUserId !== currentUserId) {
+        // Get current user's crew membership
+        const currentUserCrews = await storage.getUserCrews(currentUserId);
+        const currentUserCrewId = currentUserCrews.length > 0 ? currentUserCrews[0].id : null;
+
+        // Get target user's crew membership
+        const targetUserCrews = await storage.getUserCrews(targetUserId);
+        const targetUserCrewId = targetUserCrews.length > 0 ? targetUserCrews[0].id : null;
+
+        // Check if profile is private and if current user has access
+        const isPrivate = user.isPrivateProfile || false;
+        const isSameCrew = currentUserCrewId && targetUserCrewId && currentUserCrewId === targetUserCrewId;
+        const hasAccess = !isPrivate || isSameCrew;
+
+        if (!hasAccess) {
+          return res.status(403).json({ 
+            message: "This profile is private. Only crew members can view detailed stats.",
+            isRestricted: true 
+          });
+        }
       }
       
       const activities = await storage.getActivitiesByUser(targetUserId, 100);

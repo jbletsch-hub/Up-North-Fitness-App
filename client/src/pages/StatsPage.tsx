@@ -33,9 +33,16 @@ export default function StatsPage() {
   // Determine if viewing own stats or someone else's
   const isOwnStats = !userId || userId === user?.id;
 
-  const { data: stats, isLoading } = useQuery({
+  const { data: stats, isLoading, error } = useQuery({
     queryKey: ["/api/stats", targetUserId],
     enabled: !!targetUserId,
+    retry: (failureCount, error: any) => {
+      // Don't retry on 403 (forbidden) errors
+      if (error?.message?.includes("403") || error?.message?.includes("private")) {
+        return false;
+      }
+      return failureCount < 2;
+    },
   });
 
   // Fetch all users for browsing
@@ -134,113 +141,132 @@ export default function StatsPage() {
       />
 
       <main className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6 pb-20 md:pb-6 space-y-4 md:space-y-6">
-        <div className="text-center space-y-1 md:space-y-2">
-          <div className="flex items-center justify-center gap-2">
-            <TrendingUp className="h-6 w-6 md:h-8 md:w-8 text-primary" />
-            <h1 className="font-display text-3xl md:text-5xl font-bold">
-              {isOwnStats ? "Your Stats" : `${displayName}'s Stats`}
-            </h1>
-          </div>
-          <p className="text-sm md:text-base text-muted-foreground">
-            {isOwnStats ? "Track your progress and performance" : `View ${displayName}'s fitness journey`}
-          </p>
-        </div>
-
-        {/* Crew Actions - Show when viewing someone else's profile */}
-        {!isOwnStats && user && (
-          <div className="flex flex-wrap gap-2 justify-center">
-            {/* Crew Leader Invitation */}
-            {isCrewLeader && (
-              <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="default" size="default" data-testid="button-invite-to-crew">
-                    <UserPlus className="h-4 w-4 mr-2" />
-                    Invite to Crew
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Invite {displayName} to {(userCrew as any)?.crew?.name}</DialogTitle>
-                    <DialogDescription>
-                      Send an invitation for this user to join your crew.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="py-4">
-                    <p className="text-sm text-muted-foreground">
-                      {displayName} will receive an invitation to join <span className="font-semibold">{(userCrew as any)?.crew?.name}</span>. They can accept or decline the invitation.
-                    </p>
-                  </div>
-                  <DialogFooter>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => setInviteDialogOpen(false)}
-                      data-testid="button-cancel-invite"
-                    >
-                      Cancel
-                    </Button>
-                    <Button 
-                      onClick={handleInvite} 
-                      disabled={inviteMutation.isPending}
-                      data-testid="button-send-invite"
-                    >
-                      {inviteMutation.isPending ? "Sending..." : "Send Invitation"}
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            )}
-
-            {/* Admin Assignment */}
-            {user.isAdmin && allCrews && (
-              <Dialog open={assignDialogOpen} onOpenChange={setAssignDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="secondary" size="default" data-testid="button-admin-assign">
-                    <Shield className="h-4 w-4 mr-2" />
-                    Assign to Crew (Admin)
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Assign {displayName} to Crew</DialogTitle>
-                    <DialogDescription>
-                      Directly assign this user to a crew (bypasses invitation).
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="space-y-4 py-4">
-                    <Select value={selectedCrewId} onValueChange={setSelectedCrewId}>
-                      <SelectTrigger data-testid="select-admin-crew">
-                        <SelectValue placeholder="Select a crew" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {(allCrews as any[]).map((crew: any) => (
-                          <SelectItem key={crew.id} value={crew.id}>
-                            {crew.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <DialogFooter>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => setAssignDialogOpen(false)}
-                      data-testid="button-cancel-assign"
-                    >
-                      Cancel
-                    </Button>
-                    <Button 
-                      onClick={handleAssign} 
-                      disabled={!selectedCrewId || assignMutation.isPending}
-                      data-testid="button-confirm-assign"
-                    >
-                      {assignMutation.isPending ? "Assigning..." : "Assign to Crew"}
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            )}
-          </div>
+        {/* Show restricted access message if profile is private */}
+        {error && (error as Error).message?.includes("private") && (
+          <Card className="border-card-border">
+            <CardContent className="py-12 text-center space-y-4">
+              <div className="space-y-2">
+                <h2 className="font-display text-2xl tracking-wider">
+                  Private Profile
+                </h2>
+                <p className="text-muted-foreground">
+                  This profile is private. Only crew members can view detailed stats.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         )}
+
+        {/* Show stats content if not restricted */}
+        {(!error || !(error as Error).message?.includes("private")) && (
+          <>
+            <div className="text-center space-y-1 md:space-y-2">
+              <div className="flex items-center justify-center gap-2">
+                <TrendingUp className="h-6 w-6 md:h-8 md:w-8 text-primary" />
+                <h1 className="font-display text-3xl md:text-5xl font-bold">
+                  {isOwnStats ? "Your Stats" : `${displayName}'s Stats`}
+                </h1>
+              </div>
+              <p className="text-sm md:text-base text-muted-foreground">
+                {isOwnStats ? "Track your progress and performance" : `View ${displayName}'s fitness journey`}
+              </p>
+            </div>
+
+            {/* Crew Actions - Show when viewing someone else's profile */}
+            {!isOwnStats && user && (
+              <div className="flex flex-wrap gap-2 justify-center">
+                {/* Crew Leader Invitation */}
+                {isCrewLeader && (
+                  <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="default" size="default" data-testid="button-invite-to-crew">
+                        <UserPlus className="h-4 w-4 mr-2" />
+                        Invite to Crew
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Invite {displayName} to {(userCrew as any)?.crew?.name}</DialogTitle>
+                        <DialogDescription>
+                          Send an invitation for this user to join your crew.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="py-4">
+                        <p className="text-sm text-muted-foreground">
+                          {displayName} will receive an invitation to join <span className="font-semibold">{(userCrew as any)?.crew?.name}</span>. They can accept or decline the invitation.
+                        </p>
+                      </div>
+                      <DialogFooter>
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setInviteDialogOpen(false)}
+                          data-testid="button-cancel-invite"
+                        >
+                          Cancel
+                        </Button>
+                        <Button 
+                          onClick={handleInvite} 
+                          disabled={inviteMutation.isPending}
+                          data-testid="button-send-invite"
+                        >
+                          {inviteMutation.isPending ? "Sending..." : "Send Invitation"}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                )}
+
+                {/* Admin Assignment */}
+                {user.isAdmin && allCrews && (
+                  <Dialog open={assignDialogOpen} onOpenChange={setAssignDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="secondary" size="default" data-testid="button-admin-assign">
+                        <Shield className="h-4 w-4 mr-2" />
+                        Assign to Crew (Admin)
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Assign {displayName} to Crew</DialogTitle>
+                        <DialogDescription>
+                          Directly assign this user to a crew (bypasses invitation).
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4 py-4">
+                        <Select value={selectedCrewId} onValueChange={setSelectedCrewId}>
+                          <SelectTrigger data-testid="select-admin-crew">
+                            <SelectValue placeholder="Select a crew" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {(allCrews as any[]).map((crew: any) => (
+                              <SelectItem key={crew.id} value={crew.id}>
+                                {crew.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <DialogFooter>
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setAssignDialogOpen(false)}
+                          data-testid="button-cancel-assign"
+                        >
+                          Cancel
+                        </Button>
+                        <Button 
+                          onClick={handleAssign} 
+                          disabled={!selectedCrewId || assignMutation.isPending}
+                          data-testid="button-confirm-assign"
+                        >
+                          {assignMutation.isPending ? "Assigning..." : "Assign to Crew"}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                )}
+              </div>
+            )}
 
         {isLoading ? (
           <div className="text-center py-12">
@@ -697,6 +723,8 @@ export default function StatsPage() {
                 )}
               </CardContent>
             </Card>
+          </>
+        )}
           </>
         )}
       </main>
