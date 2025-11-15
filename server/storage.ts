@@ -380,11 +380,24 @@ export class DatabaseStorage implements IStorage {
   async updateUserPrivacySettings(id: string, settings: { showPRs?: boolean; showPhotos?: boolean; showActivities?: boolean; showStats?: boolean; showGoals?: boolean; showMetrics?: boolean }): Promise<User> {
     // Drizzle expects TypeScript property names (camelCase), not database column names
     // The schema handles the mapping to snake_case columns automatically
+    console.log('[PRIVACY] Updating privacy settings for user:', id);
+    console.log('[PRIVACY] Settings to save:', JSON.stringify(settings, null, 2));
+    
     const [user] = await db
       .update(users)
       .set(settings)
       .where(eq(users.id, id))
       .returning();
+    
+    console.log('[PRIVACY] Database returned user with privacy settings:', {
+      showPRs: user.showPRs,
+      showPhotos: user.showPhotos,
+      showActivities: user.showActivities,
+      showStats: user.showStats,
+      showGoals: user.showGoals,
+      showMetrics: user.showMetrics
+    });
+    
     return user;
   }
 

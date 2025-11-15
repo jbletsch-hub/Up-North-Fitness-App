@@ -236,6 +236,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.id;
       const settings = req.body;
+      
+      console.log('[PRIVACY POST] Received request from user:', userId);
+      console.log('[PRIVACY POST] Request body:', JSON.stringify(settings, null, 2));
 
       // Validate that at least one setting is provided and all are booleans
       const validFields = ['showPRs', 'showPhotos', 'showActivities', 'showStats', 'showGoals', 'showMetrics'];
@@ -255,6 +258,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const user = await storage.updateUserPrivacySettings(userId, settings);
+      console.log('[PRIVACY POST] Successfully updated, returning user');
       res.json({ success: true, user });
     } catch (error) {
       console.error("Error updating privacy settings:", error);

@@ -125,6 +125,8 @@ export function setupAuth(app: Express) {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     
     try {
+      console.log('[GET /api/user] Fetching fresh user data for:', req.user.id);
+      
       // Fetch fresh user data from database instead of session
       const user = await storage.getUser(req.user.id);
       if (!user) return res.sendStatus(404);
@@ -132,6 +134,15 @@ export function setupAuth(app: Express) {
       // Remove sensitive password field before sending to client
       // Drizzle ORM already returns privacy fields in camelCase format
       const { password, ...sanitizedUser } = user;
+      
+      console.log('[GET /api/user] Returning user with privacy settings:', {
+        showPRs: sanitizedUser.showPRs,
+        showPhotos: sanitizedUser.showPhotos,
+        showActivities: sanitizedUser.showActivities,
+        showStats: sanitizedUser.showStats,
+        showGoals: sanitizedUser.showGoals,
+        showMetrics: sanitizedUser.showMetrics
+      });
       
       res.json(sanitizedUser);
     } catch (error) {

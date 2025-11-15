@@ -20,9 +20,9 @@ export default function PrivacySettingsPage() {
     mutationFn: async (settings: Record<string, boolean>) => {
       return await apiRequest("POST", "/api/user/privacy-settings", settings);
     },
-    onSuccess: () => {
-      // Force immediate refetch to update UI
-      queryClient.refetchQueries({ queryKey: ['/api/user'] });
+    onSuccess: async () => {
+      // Force immediate refetch to update UI - await to ensure it completes
+      await queryClient.refetchQueries({ queryKey: ['/api/user'] });
       toast({
         title: "Privacy Updated",
         description: "Your privacy settings have been saved.",
