@@ -25,6 +25,7 @@ import { AvatarWithProgress } from "@/components/AvatarWithProgress";
 import { Card, CardContent } from "@/components/ui/card";
 import { CrewChallengeCard } from "@/components/CrewChallengeCard";
 import { TodayXPWidget, MVLCountdownWidget, ActiveChallengeWidget } from "@/components/DashboardWidgets";
+import { QuickStatsWidget } from "@/components/QuickStatsWidget";
 
 export default function Dashboard() {
   const { toast } = useToast();
@@ -507,6 +508,9 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+
+        {/* Quick Stats Overview */}
+        <QuickStatsWidget />
 
         {/* Dashboard Widgets - Quick Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

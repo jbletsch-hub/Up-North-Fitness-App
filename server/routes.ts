@@ -285,6 +285,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Quick stats for dashboard widget
+  app.get("/api/dashboard/quick-stats", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Get current streak
+      const currentStreak = user.streakCount || 0;
+
+      // Get monthly check-ins (check-ins in current month)
+      const now = new Date();
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      const activities = await storage.getUserActivities(userId);
+      const checkIns = activities.filter(a => 
+        a.type === "check-in" && new Date(a.createdAt) >= monthStart
+      );
+      const monthlyCheckIns = checkIns.length;
+
+      // Get weekly PRs (PR updates in current week, starting Monday)
+      const weekStart = getCentralTimeWeekStart();
+      const prHistory = await storage.getPRHistory(userId);
+      const weeklyPRs = prHistory.filter(pr => pr.date >= weekStart).length;
+
+      // Get MVL wins
+      const mvlWins = user.mvlWins || 0;
+
+      res.json({
+        currentStreak,
+        monthlyCheckIns,
+        weeklyPRs,
+        mvlWins,
+      });
+    } catch (error) {
+      console.error("Error fetching quick stats:", error);
+      res.status(500).json({ message: "Failed to fetch quick stats" });
+    }
+  });
+
   // Complete challenge
   app.post("/api/challenges/:id/complete", isAuthenticated, async (req: any, res) => {
     try {
