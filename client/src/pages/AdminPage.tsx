@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
-import { Trash2, Plus, Users, Trophy, Zap, RefreshCw, UserX, Edit2 } from "lucide-react";
+import { Trash2, Plus, Users, Trophy, Zap, RefreshCw, UserX, Edit2, Flame } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
 
@@ -27,6 +27,8 @@ export default function AdminPage() {
   const [newDisplayName, setNewDisplayName] = useState("");
   const [editingChallenge, setEditingChallenge] = useState<{ id: string; text: string; xpValue: number } | null>(null);
   const [editChallengeXP, setEditChallengeXP] = useState("20");
+  const [editingStreak, setEditingStreak] = useState<{ userId: string; currentStreak: number; username: string } | null>(null);
+  const [newStreak, setNewStreak] = useState("");
   
   // Crew challenge state
   const [newCrewChallenge, setNewCrewChallenge] = useState({
@@ -244,6 +246,22 @@ export default function AdminPage() {
       toast({
         title: variables.isAdmin ? "Admin granted!" : "Admin revoked",
         description: variables.isAdmin ? "User is now an admin." : "User is no longer an admin.",
+      });
+    },
+  });
+
+  const updateStreakMutation = useMutation({
+    mutationFn: async ({ userId, streakCount }: { userId: string; streakCount: number }) => {
+      const res = await apiRequest("POST", `/api/admin/users/${userId}/update-streak`, { streakCount });
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/home"] });
+      setEditingStreak(null);
+      setNewStreak("");
+      toast({
+        title: "Streak updated!",
+        description: "The user's check-in streak has been updated.",
       });
     },
   });
@@ -552,7 +570,7 @@ export default function AdminPage() {
                         )}
                       </div>
                       <div className="text-sm text-muted-foreground">
-                        Level {u.level} • {u.xp.toLocaleString()} XP
+                        Level {u.level} • {u.xp.toLocaleString()} XP • {u.streakCount} day streak
                       </div>
                       {u.displayName && (
                         <div className="text-xs text-muted-foreground">
@@ -623,6 +641,82 @@ export default function AdminPage() {
                               data-testid="button-save-displayname"
                             >
                               {updateDisplayNameMutation.isPending ? "Saving..." : "Save"}
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                      <Dialog open={editingStreak?.userId === u.id} onOpenChange={(open) => {
+                        if (!open) {
+                          setEditingStreak(null);
+                          setNewStreak("");
+                        }
+                      }}>
+                        <DialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              setEditingStreak({ userId: u.id, currentStreak: u.streakCount || 0, username: u.username });
+                              setNewStreak(String(u.streakCount || 0));
+                            }}
+                            data-testid={`button-edit-streak-${u.id}`}
+                            title="Edit Streak"
+                          >
+                            <Flame className="h-4 w-4" />
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Edit Streak for {u.username}</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="streak-input">Check-in Streak (days)</Label>
+                              <Input
+                                id="streak-input"
+                                type="text"
+                                inputMode="numeric"
+                                value={newStreak}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  if (val === '' || /^\d+$/.test(val)) {
+                                    setNewStreak(val);
+                                  }
+                                }}
+                                placeholder="Enter streak count..."
+                                data-testid="input-edit-streak"
+                              />
+                              <p className="text-xs text-muted-foreground">
+                                Current streak: {u.streakCount || 0} days
+                              </p>
+                            </div>
+                          </div>
+                          <DialogFooter>
+                            <Button
+                              variant="outline"
+                              onClick={() => {
+                                setEditingStreak(null);
+                                setNewStreak("");
+                              }}
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              onClick={() => {
+                                if (newStreak.trim() && editingStreak) {
+                                  const streakValue = parseInt(newStreak, 10);
+                                  if (!isNaN(streakValue) && streakValue >= 0) {
+                                    updateStreakMutation.mutate({
+                                      userId: editingStreak.userId,
+                                      streakCount: streakValue,
+                                    });
+                                  }
+                                }
+                              }}
+                              disabled={!newStreak.trim() || updateStreakMutation.isPending || isNaN(parseInt(newStreak, 10))}
+                              data-testid="button-save-streak"
+                            >
+                              {updateStreakMutation.isPending ? "Saving..." : "Save"}
                             </Button>
                           </DialogFooter>
                         </DialogContent>
