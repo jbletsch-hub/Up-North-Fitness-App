@@ -12,13 +12,15 @@ interface LeaderboardUser {
   level: number;
   xp: number;
   title: string;
+  crewName?: string | null;
 }
 
 interface LeaderboardCardProps {
   users: LeaderboardUser[];
+  showCrewNames?: boolean;
 }
 
-export function LeaderboardCard({ users }: LeaderboardCardProps) {
+export function LeaderboardCard({ users, showCrewNames = false }: LeaderboardCardProps) {
   const getRankColor = (index: number) => {
     if (index === 0) return "text-yellow-500";
     if (index === 1) return "text-gray-400";
@@ -51,6 +53,11 @@ export function LeaderboardCard({ users }: LeaderboardCardProps) {
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <div className="font-semibold">{user.displayName || user.username}</div>
+                    {showCrewNames && user.crewName && (
+                      <div className="text-xs text-muted-foreground" data-testid={`crew-name-${index}`}>
+                        {user.crewName}
+                      </div>
+                    )}
                   </div>
                   <div className="text-right flex-shrink-0">
                     <div className="font-display text-lg">{user.title}</div>

@@ -39,7 +39,7 @@ export default function HomePage() {
         <CrewGoalMeter current={total} goal={goal} />
 
         <div className="grid md:grid-cols-2 gap-6">
-          <LeaderboardCard users={leaderboard} />
+          <LeaderboardCard users={leaderboard} showCrewNames={true} />
           <ActivityFeed activities={activities} />
         </div>
 
