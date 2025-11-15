@@ -16,7 +16,7 @@ export function CrewGoalMeter({ current, goal, isAdmin, onAdvance }: CrewGoalMet
   return (
     <Card className="border-card-border">
       <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
-        <CardTitle className="text-2xl font-display tracking-wider">GYM COMBINED TOTAL</CardTitle>
+        <CardTitle className="text-2xl font-display tracking-wider">CREW GOAL</CardTitle>
         <div className="flex items-center gap-2">
           <Trophy className={`h-6 w-6 ${isComplete ? 'text-primary animate-pulse' : 'text-muted-foreground'}`} />
           {isAdmin && onAdvance && (
@@ -43,7 +43,7 @@ export function CrewGoalMeter({ current, goal, isAdmin, onAdvance }: CrewGoalMet
         <div className="flex items-center justify-between">
           <div className="text-sm text-muted-foreground">
             <span className="font-display text-3xl text-foreground">{current.toLocaleString()}</span>
-            <span className="ml-2">lbs combined</span>
+            <span className="ml-2">lbs lifted</span>
           </div>
           <div className="text-sm text-muted-foreground">
             Goal: <span className="font-display text-xl text-foreground">{goal.toLocaleString()}</span> lbs
@@ -51,7 +51,7 @@ export function CrewGoalMeter({ current, goal, isAdmin, onAdvance }: CrewGoalMet
         </div>
         {isComplete && (
           <p className="text-sm text-center text-primary font-semibold">
-            Goal achieved! The gym is unstoppable!
+            Goal achieved! The crew is unstoppable!
           </p>
         )}
       </CardContent>
