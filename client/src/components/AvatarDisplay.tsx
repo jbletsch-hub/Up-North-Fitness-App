@@ -199,45 +199,8 @@ export function AvatarDisplay({
   const outlineColor = "#1A1A1A";
   const outlineWidth = 2.5;
   
-  // Render back hair (for ponytail - renders behind head)
+  // Render back hair (no longer needed - ponytail is now a top bun)
   const renderBackHair = () => {
-    const darkerHair = `${hairColor}DD`;
-    
-    if (hairStyle === "ponytail") {
-      return (
-        <g>
-          {/* Ponytail base - gathered at back of head */}
-          <ellipse 
-            cx="100" 
-            cy="70" 
-            rx="10" 
-            ry="7" 
-            fill={hairColor} 
-            stroke={outlineColor} 
-            strokeWidth={2}
-          />
-          {/* Ponytail length - flowing down the back */}
-          <path
-            d="M 93 74 Q 94 84, 95 96 Q 96 106, 97 116 
-               L 103 116 Q 104 106, 105 96 Q 106 84, 107 74 Z"
-            fill={hairColor}
-            stroke={outlineColor}
-            strokeWidth={2}
-          />
-          {/* Ponytail tip - tapered end */}
-          <path
-            d="M 97 116 Q 98 122, 100 126 Q 102 122, 103 116 Z"
-            fill={hairColor}
-            stroke={outlineColor}
-            strokeWidth={2}
-          />
-          {/* Texture strands in ponytail */}
-          <path d="M 96 84 Q 97 96, 98 110" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.5" />
-          <path d="M 100 82 Q 100 94, 100 108" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.5" />
-          <path d="M 104 84 Q 103 96, 102 110" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.5" />
-        </g>
-      );
-    }
     return null;
   };
   
@@ -468,31 +431,33 @@ export function AvatarDisplay({
       case "ponytail":
         return (
           <g>
-            {/* Front hair only - parted with volume (back ponytail renders separately before head) */}
+            {/* Base hair coverage */}
             <path
-              d="M 72 48 Q 74 36, 80 30 Q 88 26, 100 25 Q 112 26, 120 30 Q 126 36, 128 48
-                 L 126 50 Q 120 46, 100 44 Q 80 46, 74 50 Z"
+              d="M 74 48 Q 76 36, 82 30 Q 90 27, 100 26 Q 110 27, 118 30 Q 124 36, 126 48
+                 L 124 50 Q 100 42, 76 50 Z"
               fill={hairColor}
               stroke={outlineColor}
               strokeWidth={2}
             />
-            {/* Side parts - close to face */}
-            <path 
-              d="M 72 48 Q 71 54, 70 60 L 74 60 Q 75 54, 75 50 Z" 
-              fill={hairColor} 
-              stroke={outlineColor} 
-              strokeWidth={2} 
+            {/* Small top bun - positioned on top of head */}
+            <circle
+              cx="100"
+              cy="30"
+              r="8"
+              fill={hairColor}
+              stroke={outlineColor}
+              strokeWidth={2}
             />
-            <path 
-              d="M 128 48 Q 129 54, 130 60 L 126 60 Q 125 54, 125 50 Z" 
-              fill={hairColor} 
-              stroke={outlineColor} 
-              strokeWidth={2} 
+            {/* Bun detail/texture */}
+            <circle
+              cx="100"
+              cy="30"
+              r="5"
+              fill="none"
+              stroke={darkerHair}
+              strokeWidth="0.8"
+              opacity="0.4"
             />
-            {/* Front texture */}
-            <path d="M 86 30 Q 88 36, 90 42" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.4" />
-            <path d="M 100 27 Q 100 33, 100 40" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.4" />
-            <path d="M 114 30 Q 112 36, 110 42" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.4" />
           </g>
         );
       
