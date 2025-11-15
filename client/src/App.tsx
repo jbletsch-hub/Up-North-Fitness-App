@@ -15,6 +15,7 @@ import ActivityFeedPage from "@/pages/ActivityFeedPage";
 import GoalsPage from "@/pages/GoalsPage";
 import StatsPage from "@/pages/StatsPage";
 import AvatarPage from "@/pages/AvatarPage";
+import CrewsPage from "@/pages/CrewsPage";
 import AuthPage from "@/pages/AuthPage";
 import ProfileSetup from "@/pages/ProfileSetup";
 import NotFound from "@/pages/not-found";
@@ -27,6 +28,7 @@ function Router() {
       <ProtectedRoute path="/leaderboards" component={LeaderboardsPage} />
       <ProtectedRoute path="/activity" component={ActivityFeedPage} />
       <ProtectedRoute path="/goals" component={GoalsPage} />
+      <ProtectedRoute path="/crews" component={CrewsPage} />
       <ProtectedRoute path="/stats/:userId?" component={StatsPage} />
       <ProtectedRoute path="/avatar" component={AvatarPage} />
       <ProtectedRoute path="/profile/:username" component={ProfilePage} />
