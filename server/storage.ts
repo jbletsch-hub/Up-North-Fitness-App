@@ -376,38 +376,13 @@ export class DatabaseStorage implements IStorage {
 
   async getCrewMVLLeaderboard(crewId: string, limit: number): Promise<User[]> {
     const leaderboard = await db
-      .select({
-        id: users.id,
-        username: users.username,
-        displayName: users.displayName,
-        email: users.email,
-        isAdmin: users.isAdmin,
-        level: users.level,
-        xp: users.xp,
-        dailyXp: users.dailyXp,
-        streakCount: users.streakCount,
-        title: users.title,
-        characterType: users.characterType,
-        shirtColor: users.shirtColor,
-        shortsColor: users.shortsColor,
-        headband: users.headband,
-        wristbands: users.wristbands,
-        hairStyle: users.hairStyle,
-        hairColor: users.hairColor,
-        facialHair: users.facialHair,
-        mvlWins: users.mvlWins,
-        lastCheckin: users.lastCheckin,
-        lastRerollDate: users.lastRerollDate,
-        lastDailyXpReset: users.lastDailyXpReset,
-        lastChallengeWeekStart: users.lastChallengeWeekStart,
-        challengesCompletedThisWeek: users.challengesCompletedThisWeek,
-      })
+      .select()
       .from(users)
       .innerJoin(crewMemberships, eq(users.id, crewMemberships.userId))
       .where(eq(crewMemberships.crewId, crewId))
       .orderBy(desc(users.dailyXp))
       .limit(limit);
-    return leaderboard;
+    return leaderboard.map(row => row.users);
   }
 
   async awardMVLWin(id: string): Promise<User> {
