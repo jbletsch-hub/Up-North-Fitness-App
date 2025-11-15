@@ -121,21 +121,22 @@ export function setupAuth(app: Express) {
     });
   });
 
-  app.get("/api/user", (req, res) => {
+  app.get("/api/user", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     
-    // Transform snake_case privacy fields to camelCase for frontend
-    const user = req.user as any;
-    const transformedUser = {
-      ...user,
-      showPRs: user.show_prs,
-      showPhotos: user.show_photos,
-      showActivities: user.show_activities,
-      showStats: user.show_stats,
-      showGoals: user.show_goals,
-      showMetrics: user.show_metrics,
-    };
-    
-    res.json(transformedUser);
+    try {
+      // Fetch fresh user data from database instead of session
+      const user = await storage.getUser(req.user.id);
+      if (!user) return res.sendStatus(404);
+      
+      // Remove sensitive password field before sending to client
+      // Drizzle ORM already returns privacy fields in camelCase format
+      const { password, ...sanitizedUser } = user;
+      
+      res.json(sanitizedUser);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.sendStatus(500);
+    }
   });
 }

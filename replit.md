@@ -32,6 +32,11 @@ The gamification system includes an XP curve (~200k XP for level 50) and an 11-t
   - **Fix Applied:** Removed manual transformation code in `updateUserPrivacySettings` - now passes settings object directly to Drizzle, which maps TypeScript property names (camelCase) to database column names (snake_case) automatically
   - **Impact:** Privacy toggle changes now save successfully to database and persist across page refreshes
 - **Privacy Settings UX Improvements**: Added clear "Private" (left/OFF) and "Public" (right/ON) labels to each toggle with color highlighting to indicate active state
+- **CRITICAL: Privacy Toggle Real-Time Updates Fixed (Nov 15, 2025)**
+  - **Root Cause:** `/api/user` endpoint returned stale session data instead of fresh database data, so privacy toggle changes weren't reflected in UI even though they saved to DB correctly
+  - **Fix Applied:** Modified `/api/user` endpoint in server/auth.ts to fetch fresh data using `await storage.getUser(req.user.id)` instead of reading from `req.user` session
+  - **Security Enhancement:** Added password sanitization - password field is explicitly removed before sending user data to client
+  - **Impact:** Privacy toggles now update immediately when clicked and persist correctly across page refreshes. Drizzle ORM automatically handles snake_case to camelCase transformation.
 - **Apple PWA Icon Optimization:** Reduced icon size from 1.8MB to 50KB using compass-icon.jpg, updated manifest.json and service worker to v1.0.6 for proper caching.
 - **Photo Upload Auto-Refresh Fix:** Added explicit event.preventDefault() to ObjectUploader button handler to prevent page refresh after photo upload in production builds.
 
