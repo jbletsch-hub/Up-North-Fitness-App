@@ -803,28 +803,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get user profile
-  app.get("/api/profile/:username", async (req, res) => {
+  app.get("/api/profile/:username", async (req: any, res) => {
     try {
       // Trim username to handle URL-encoded spaces and leading/trailing whitespace
       const username = decodeURIComponent(req.params.username).trim();
-      const user = await storage.getUserByUsername(username);
+      const profileUser = await storage.getUserByUsername(username);
 
-      if (!user) {
+      if (!profileUser) {
         return res.status(404).json({ message: "User not found" });
       }
 
-      const pr = (await storage.getPR(user.id)) || { squat: 0, bench: 0, deadlift: 0 };
-      const photos = await storage.getPhotosByUser(user.id);
-      const activities = await storage.getActivitiesByUser(user.id, 20);
+      // Get current user's crew membership (if logged in)
+      const currentUserId = req.user?.id;
+      let currentUserCrewId: string | null = null;
+      if (currentUserId) {
+        const currentUserCrews = await storage.getUserCrews(currentUserId);
+        currentUserCrewId = currentUserCrews.length > 0 ? currentUserCrews[0].id : null;
+      }
+
+      // Get profile user's crew membership
+      const profileUserCrews = await storage.getUserCrews(profileUser.id);
+      const profileUserCrewId = profileUserCrews.length > 0 ? profileUserCrews[0].id : null;
+      const profileUserCrewName = profileUserCrews.length > 0 ? profileUserCrews[0].name : null;
+
+      // Check if profile is private and if current user has access
+      const isPrivate = profileUser.isPrivateProfile || false;
+      const isSameCrew = currentUserCrewId && profileUserCrewId && currentUserCrewId === profileUserCrewId;
+      const isOwnProfile = currentUserId === profileUser.id;
+      const hasAccess = !isPrivate || isOwnProfile || isSameCrew;
+
+      // If no access, return limited data
+      if (!hasAccess) {
+        return res.json({
+          user: {
+            username: profileUser.username,
+            level: profileUser.level,
+            crewName: profileUserCrewName,
+            isPrivateProfile: true,
+          },
+          isRestricted: true,
+        });
+      }
+
+      // Full access - return all data
+      const pr = (await storage.getPR(profileUser.id)) || { squat: 0, bench: 0, deadlift: 0 };
+      const photos = await storage.getPhotosByUser(profileUser.id);
+      const activities = await storage.getActivitiesByUser(profileUser.id, 20);
       
       // Get daily challenges for today
       const today = getTodayDate();
-      await assignDailyChallenges(user.id, today);
-      const challenges = await storage.getUserDailyChallenges(user.id, today);
+      await assignDailyChallenges(profileUser.id, today);
+      const challenges = await storage.getUserDailyChallenges(profileUser.id, today);
       
       // Get goals
-      const weeklyGoals = await storage.getUserGoals(user.id, "weekly");
-      const lifetimeGoals = await storage.getUserGoals(user.id, "lifetime");
+      const weeklyGoals = await storage.getUserGoals(profileUser.id, "weekly");
+      const lifetimeGoals = await storage.getUserGoals(profileUser.id, "lifetime");
 
       const formattedActivities = activities.map((a) => ({
         ...a,
@@ -832,13 +865,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }));
 
       res.json({
-        user,
+        user: profileUser,
         pr,
         photos,
         activities: formattedActivities,
         challenges,
         weeklyGoals,
         lifetimeGoals,
+        crewName: profileUserCrewName,
       });
     } catch (error) {
       console.error("Error fetching profile:", error);

@@ -68,7 +68,45 @@ export default function ProfilePage() {
     return null;
   }
 
-  const { user: profileUser, pr, photos, activities, challenges = [], weeklyGoals = [], lifetimeGoals = [] } = profileData;
+  const { user: profileUser, isRestricted, crewName } = profileData;
+
+  // Show restricted view for private profiles
+  if (isRestricted) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation
+          isLoggedIn={!!user}
+          username={user?.username}
+          isAdmin={user?.isAdmin || false}
+          userLevel={user?.level}
+          userXP={user?.xp}
+          userTitle={user?.title}
+        />
+        <main className="max-w-7xl mx-auto px-4 md:px-6 py-6 pb-20 md:pb-6">
+          <Card className="border-card-border">
+            <CardContent className="py-12 text-center space-y-4">
+              <div className="space-y-2">
+                <h1 className="font-display text-3xl tracking-wider" data-testid="text-profile-username">
+                  {profileUser.username?.toUpperCase()}
+                </h1>
+                <p className="text-muted-foreground">Level {profileUser.level}</p>
+                {crewName && (
+                  <p className="text-sm text-muted-foreground">Member of {crewName}</p>
+                )}
+              </div>
+              <div className="pt-4 border-t border-border max-w-md mx-auto">
+                <p className="text-muted-foreground">
+                  This profile is private. Only crew members can view detailed stats.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </main>
+      </div>
+    );
+  }
+
+  const { pr, photos, activities, challenges = [], weeklyGoals = [], lifetimeGoals = [] } = profileData;
 
   return (
     <div className="min-h-screen bg-background">
