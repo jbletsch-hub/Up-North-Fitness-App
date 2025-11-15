@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
-import { Trash2, Plus, Users, Trophy, Zap, RefreshCw, UserX, Edit2, Flame } from "lucide-react";
+import { Trash2, Plus, Users, Trophy, Zap, RefreshCw, UserX, Edit2, Flame, UserPlus } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
 
@@ -29,6 +29,8 @@ export default function AdminPage() {
   const [editChallengeXP, setEditChallengeXP] = useState("20");
   const [editingStreak, setEditingStreak] = useState<{ userId: string; currentStreak: number; username: string } | null>(null);
   const [newStreak, setNewStreak] = useState("");
+  const [assigningCrew, setAssigningCrew] = useState<{ userId: string; username: string } | null>(null);
+  const [selectedCrewId, setSelectedCrewId] = useState("");
   
   // Crew challenge state
   const [newCrewChallenge, setNewCrewChallenge] = useState({
@@ -61,6 +63,10 @@ export default function AdminPage() {
 
   const { data: crewChallenges = [] } = useQuery<any[]>({
     queryKey: ["/api/admin/crew-challenges"],
+  });
+
+  const { data: allCrews = [] } = useQuery<any[]>({
+    queryKey: ["/api/crews"],
   });
 
   const addChallengeMutation = useMutation({
@@ -270,6 +276,30 @@ export default function AdminPage() {
       toast({
         title: "Streak updated!",
         description: "The user's check-in streak has been updated.",
+      });
+    },
+  });
+
+  const assignToCrewMutation = useMutation({
+    mutationFn: async ({ targetUserId, crewId }: { targetUserId: string; crewId: string }) => {
+      const res = await apiRequest("POST", "/api/admin/assign-to-crew", { targetUserId, crewId });
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/home"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/crews"] });
+      setAssigningCrew(null);
+      setSelectedCrewId("");
+      toast({
+        title: "User assigned to crew!",
+        description: "The user has been added to the selected crew.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Failed to assign user",
+        description: error.message || "An error occurred while assigning the user to the crew.",
+        variant: "destructive",
       });
     },
   });
@@ -725,6 +755,83 @@ export default function AdminPage() {
                               data-testid="button-save-streak"
                             >
                               {updateStreakMutation.isPending ? "Saving..." : "Save"}
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                      <Dialog open={assigningCrew?.userId === u.id} onOpenChange={(open) => {
+                        if (!open) {
+                          setAssigningCrew(null);
+                          setSelectedCrewId("");
+                        }
+                      }}>
+                        <DialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              setAssigningCrew({ userId: u.id, username: u.username });
+                              setSelectedCrewId("");
+                            }}
+                            data-testid={`button-assign-crew-${u.id}`}
+                            title="Assign to Crew"
+                          >
+                            <UserPlus className="h-4 w-4" />
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Assign {u.username} to Crew</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4 py-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="crew-select">Select Crew</Label>
+                              <Select value={selectedCrewId} onValueChange={setSelectedCrewId}>
+                                <SelectTrigger id="crew-select" data-testid="select-crew-admin">
+                                  <SelectValue placeholder="Choose a crew..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {allCrews.length > 0 ? (
+                                    allCrews.map((crew: any) => (
+                                      <SelectItem key={crew.id} value={crew.id}>
+                                        {crew.name}
+                                      </SelectItem>
+                                    ))
+                                  ) : (
+                                    <SelectItem value="no-crews" disabled>
+                                      No crews available
+                                    </SelectItem>
+                                  )}
+                                </SelectContent>
+                              </Select>
+                              <p className="text-xs text-muted-foreground">
+                                This will remove the user from their current crew (if any) and add them to the selected crew.
+                              </p>
+                            </div>
+                          </div>
+                          <DialogFooter>
+                            <Button
+                              variant="outline"
+                              onClick={() => {
+                                setAssigningCrew(null);
+                                setSelectedCrewId("");
+                              }}
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              onClick={() => {
+                                if (selectedCrewId && assigningCrew) {
+                                  assignToCrewMutation.mutate({
+                                    targetUserId: assigningCrew.userId,
+                                    crewId: selectedCrewId,
+                                  });
+                                }
+                              }}
+                              disabled={!selectedCrewId || assignToCrewMutation.isPending}
+                              data-testid="button-confirm-assign-crew"
+                            >
+                              {assignToCrewMutation.isPending ? "Assigning..." : "Assign to Crew"}
                             </Button>
                           </DialogFooter>
                         </DialogContent>
