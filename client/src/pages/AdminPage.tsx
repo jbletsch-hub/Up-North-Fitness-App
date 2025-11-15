@@ -401,7 +401,7 @@ export default function AdminPage() {
                 <Users className="h-5 w-5" />
                 Platform Stats
               </CardTitle>
-              <CardDescription>Overview of the Iron Crew platform</CardDescription>
+              <CardDescription>Overview of the Up North Fitness platform</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between items-center">

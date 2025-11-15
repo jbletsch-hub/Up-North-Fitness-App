@@ -54,7 +54,7 @@ export default function ProfileSetup() {
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       toast({
         title: "Profile complete!",
-        description: "Welcome to Iron Crew!",
+        description: "Welcome to Up North Fitness!",
       });
       setLocation("/");
     },
@@ -108,7 +108,7 @@ export default function ProfileSetup() {
             COMPLETE YOUR PROFILE
           </CardTitle>
           <p className="text-center text-muted-foreground">
-            Welcome to Iron Crew! Let's set up your profile.
+            Welcome to Up North Fitness! Let's set up your profile.
           </p>
         </CardHeader>
         <CardContent>

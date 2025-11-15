@@ -1,7 +1,6 @@
-const CACHE_NAME = 'up-north-fitness-v1.0.17';
+const CACHE_NAME = 'up-north-fitness-v1.0.18';
 const urlsToCache = [
   '/',
-  '/?v=1.0.7',
   '/manifest.json',
   '/icon-192.png',
   '/icon-512.png',
@@ -83,8 +82,10 @@ self.addEventListener('fetch', (event) => {
           return response;
         })
         .catch(() => {
-          // Fallback to cache when offline
-          return caches.match(event.request);
+          // Fallback to cache when offline - ignoreSearch for version-agnostic matching
+          return caches.match(event.request, { ignoreSearch: true }).then((response) => {
+            return response || caches.match('/');
+          });
         })
     );
   } else {

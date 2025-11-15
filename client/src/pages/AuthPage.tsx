@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Dumbbell } from "lucide-react";
+import { Compass } from "lucide-react";
 import { Redirect } from "wouter";
 
 export default function AuthPage() {
@@ -36,8 +36,8 @@ export default function AuthPage() {
         <Card className="w-full max-w-md border-card-border">
           <CardHeader className="space-y-1">
             <div className="flex items-center gap-2 mb-4">
-              <Dumbbell className="h-8 w-8 text-primary" />
-              <span className="font-display text-3xl tracking-wider">IRON CREW</span>
+              <Compass className="h-8 w-8 text-primary" />
+              <span className="font-display text-3xl tracking-wider">UP NORTH FITNESS</span>
             </div>
             <CardTitle className="text-2xl">
               {isLogin ? "Welcome back" : "Join the crew"}

@@ -11,7 +11,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
-    const stored = localStorage.getItem("iron-crew-theme");
+    const stored = localStorage.getItem("up-north-fitness-theme");
     return (stored as Theme) || "dark";
   });
 
@@ -19,7 +19,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const root = document.documentElement;
     root.classList.remove("light", "dark");
     root.classList.add(theme);
-    localStorage.setItem("iron-crew-theme", theme);
+    localStorage.setItem("up-north-fitness-theme", theme);
   }, [theme]);
 
   const toggleTheme = () => {
