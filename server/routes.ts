@@ -444,34 +444,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Challenge not found" });
       }
 
-      // Check weekly challenge limit (2 per week, resets Monday midnight CT)
-      const user = await storage.getUser(userId);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      const currentWeekStart = getChallengeWeekStart();
-      let challengesThisWeek = user.challengesCompletedThisWeek || 0;
-
-      // If it's a new week, reset the counter
-      if (user.lastChallengeWeekStart !== currentWeekStart) {
-        challengesThisWeek = 0;
-      }
-
-      // Check if user has already completed 2 challenges this week
-      if (challengesThisWeek >= 2) {
-        return res.status(400).json({ 
-          message: "You can only complete 2 challenges per week. Week resets Monday at midnight CT." 
-        });
-      }
-
       const xpValue = challenge.xpValue || 20; // Default to 20 if not set
 
       await storage.completeChallenge(challengeId);
       const result = await awardXP(userId, xpValue, "completed a daily challenge");
-
-      // Update weekly challenge tracking
-      await storage.updateWeeklyChallengeTracking(userId, challengesThisWeek + 1, currentWeekStart);
 
       // Log activity
       await storage.createActivity({
