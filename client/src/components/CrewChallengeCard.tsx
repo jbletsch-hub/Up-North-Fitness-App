@@ -27,6 +27,15 @@ interface LeaderboardEntry {
   contribution: number;
   characterType: string;
   level: number;
+  gender?: string;
+  skinColor?: string;
+  shirtColor?: string;
+  shortsColor?: string;
+  hairStyle?: string;
+  hairColor?: string;
+  headband?: boolean;
+  wristbands?: boolean;
+  facialHair?: string;
 }
 
 interface CrewChallengeCardProps {
@@ -152,6 +161,15 @@ export function CrewChallengeCard({
                     <AvatarDisplay
                       characterType={entry.characterType}
                       level={entry.level}
+                      gender={entry.gender || "male"}
+                      skinColor={entry.skinColor || "light"}
+                      shirtColor={entry.shirtColor}
+                      shortsColor={entry.shortsColor}
+                      hairStyle={entry.hairStyle}
+                      hairColor={entry.hairColor}
+                      headband={entry.headband}
+                      wristbands={entry.wristbands}
+                      facialHair={entry.facialHair}
                       size="sm"
                     />
                     <span className="font-medium">

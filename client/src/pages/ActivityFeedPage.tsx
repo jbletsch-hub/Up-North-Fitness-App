@@ -142,6 +142,8 @@ export default function ActivityFeedPage() {
                         <div className="cursor-pointer hover-elevate rounded-lg">
                           <AvatarDisplay 
                             level={activity.level || 1}
+                            gender={activity.gender || "male"}
+                            skinColor={activity.skinColor || "light"}
                             characterType={activity.characterType || "classic"}
                             shirtColor={activity.shirtColor || "#FF5722"}
                             shortsColor={activity.shortsColor || "#20B2AA"}

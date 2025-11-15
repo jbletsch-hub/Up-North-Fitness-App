@@ -4,6 +4,8 @@ import { getXPToNextLevel, getLevelProgress } from "@/lib/xpUtils";
 interface AvatarWithProgressProps {
   level: number;
   xp: number;
+  gender?: string;
+  skinColor?: string;
   characterType?: string;
   shirtColor?: string;
   shortsColor?: string;
@@ -19,6 +21,8 @@ interface AvatarWithProgressProps {
 export function AvatarWithProgress({
   level,
   xp,
+  gender = "male",
+  skinColor = "light",
   characterType = "classic",
   shirtColor = "#FF5722",
   shortsColor = "#20B2AA",
@@ -112,6 +116,8 @@ export function AvatarWithProgress({
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
         <AvatarDisplay
           level={level}
+          gender={gender}
+          skinColor={skinColor}
           characterType={characterType}
           shirtColor={shirtColor}
           shortsColor={shortsColor}

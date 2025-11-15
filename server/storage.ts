@@ -101,6 +101,8 @@ export interface IStorage {
     username: string; 
     characterType: string; 
     level: number;
+    gender: string | null;
+    skinColor: string | null;
     shirtColor: string | null;
     shortsColor: string | null;
     headband: boolean | null;
@@ -155,7 +157,7 @@ export interface IStorage {
   // User crew challenge progress operations
   getUserCrewProgress(userId: string, weekStart: string): Promise<UserCrewChallengeProgress | undefined>;
   updateUserCrewProgress(userId: string, weekStart: string, contribution: number): Promise<UserCrewChallengeProgress>;
-  getCrewLeaderboard(weekStart: string, limit?: number): Promise<Array<UserCrewChallengeProgress & { username: string; displayName: string | null; characterType: string; level: number }>>;
+  getCrewLeaderboard(weekStart: string, limit?: number): Promise<Array<UserCrewChallengeProgress & { username: string; displayName: string | null; characterType: string; level: number; gender: string | null; skinColor: string | null; shirtColor: string | null; shortsColor: string | null; hairStyle: string | null; hairColor: string | null; headband: boolean | null; wristbands: boolean | null; facialHair: string | null }>>;
   
   // Crew operations (multi-crew system)
   getAllCrews(): Promise<Crew[]>;
@@ -483,6 +485,8 @@ export class DatabaseStorage implements IStorage {
     username: string; 
     characterType: string; 
     level: number;
+    gender: string | null;
+    skinColor: string | null;
     shirtColor: string | null;
     shortsColor: string | null;
     headband: boolean | null;
@@ -502,6 +506,8 @@ export class DatabaseStorage implements IStorage {
         username: users.username,
         characterType: users.characterType,
         level: users.level,
+        gender: users.gender,
+        skinColor: users.skinColor,
         shirtColor: users.shirtColor,
         shortsColor: users.shortsColor,
         headband: users.headband,
@@ -907,7 +913,7 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async getCrewLeaderboard(weekStart: string, limit: number = 10): Promise<Array<UserCrewChallengeProgress & { username: string; displayName: string | null; characterType: string; level: number }>> {
+  async getCrewLeaderboard(weekStart: string, limit: number = 10): Promise<Array<UserCrewChallengeProgress & { username: string; displayName: string | null; characterType: string; level: number; gender: string | null; skinColor: string | null; shirtColor: string | null; shortsColor: string | null; hairStyle: string | null; hairColor: string | null; headband: boolean | null; wristbands: boolean | null; facialHair: string | null }>> {
     const results = await db
       .select({
         id: userCrewChallengeProgress.id,
@@ -919,6 +925,15 @@ export class DatabaseStorage implements IStorage {
         displayName: users.displayName,
         characterType: users.characterType,
         level: users.level,
+        gender: users.gender,
+        skinColor: users.skinColor,
+        shirtColor: users.shirtColor,
+        shortsColor: users.shortsColor,
+        hairStyle: users.hairStyle,
+        hairColor: users.hairColor,
+        headband: users.headband,
+        wristbands: users.wristbands,
+        facialHair: users.facialHair,
       })
       .from(userCrewChallengeProgress)
       .innerJoin(users, eq(userCrewChallengeProgress.userId, users.id))

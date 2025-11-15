@@ -486,6 +486,8 @@ export default function StatsPage() {
                             <AvatarDisplay
                               level={u.level}
                               size="sm"
+                              gender={u.gender || "male"}
+                              skinColor={u.skinColor || "light"}
                               characterType={u.characterType || "classic"}
                               shirtColor={u.shirtColor}
                               shortsColor={u.shortsColor}
