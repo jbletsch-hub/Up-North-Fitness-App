@@ -229,7 +229,11 @@
   /* Mobile touch optimization */
   button, a, [role="button"] {
     touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Provide accessible tap feedback on mobile */
+  button:active, a:active, [role="button"]:active {
+    opacity: 0.7;
   }
 
   /* Hide ugly search cancel button in Chrome until we can style it properly */

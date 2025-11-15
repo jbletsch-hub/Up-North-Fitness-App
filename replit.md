@@ -1,120 +1,35 @@
 # Up North Fitness - Fitness Tracking & Gamification Platform
 
 ## Overview
-Up North Fitness is a full-stack fitness tracking and gamification platform designed to engage users in their fitness journey. It offers workout logging, personal record tracking, daily challenges, and progress photo uploads. The platform gamifies fitness with an XP leveling system, streak tracking, collaborative crew goals, leaderboards (XP and PR), and a daily "Most Valuable Lifter" (MVL) badge system. Key features include yearly goals, calorie tracking, and a dynamic avatar system that visually progresses with user achievements. The platform aims to provide a comprehensive and motivating environment for fitness enthusiasts.
+Up North Fitness is a full-stack fitness tracking and gamification platform designed to motivate users through their fitness journey. It features workout logging, personal record tracking, daily challenges, and progress photo uploads. The platform incorporates gamification elements such as an XP leveling system, streak tracking, collaborative crew goals, competitive leaderboards (XP and PR), and a daily "Most Valuable Lifter" (MVL) badge system. It also includes yearly goals, calorie tracking, and a dynamic avatar system that visually evolves with user achievements, providing a comprehensive and engaging fitness experience.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
 ## System Architecture
 
-### Frontend Architecture
-The frontend is built with React 18, TypeScript, and Vite, using Wouter for routing and TanStack Query for data fetching. Styling is managed by Tailwind CSS, Radix UI primitives, and shadcn/ui components, adhering to a "New York" design aesthetic with light/dark modes. Typography uses Inter and Bebas Neue. State management combines TanStack Query for server state, a custom `useAuth` hook for authentication, and React hooks for local component state. The application is mobile-responsive with a mobile-first navigation.
+### UI/UX
+The frontend is built with React 18, TypeScript, and Vite, utilizing Wouter for routing. Styling is managed by Tailwind CSS, Radix UI primitives, and shadcn/ui components, adhering to a "New York" design aesthetic with light/dark modes. Typography uses Inter and Bebas Neue. The application supports PWA and is mobile-responsive with a mobile-first navigation. A custom compass navigation logo and optimized PWA icon are included. Public profiles are available for user stats, and a view context switcher allows toggling between crew-specific and gym-wide views. Dashboard sections are collapsible with `localStorage` persistence.
 
-### Backend Architecture
-The backend is an Express.js application written in TypeScript. It uses session-based authentication with `express-session`, `passport-local`, and PostgreSQL for session storage. Data is persisted using Drizzle ORM with Neon serverless PostgreSQL, following a schema-driven design and `drizzle-kit` for migrations. The API is RESTful with protected routes.
+### Technical Implementations
+The backend is an Express.js application in TypeScript, using session-based authentication with `express-session`, `passport-local`, and PostgreSQL for session storage. Data persistence is handled by Drizzle ORM with Neon serverless PostgreSQL, following a schema-driven design. TanStack Query manages data fetching on the frontend, with state managed by a custom `useAuth` hook for authentication and React hooks for local component state. Server-persisted data strictly relies on TanStack Query cache invalidation, with the server as the single source of truth, avoiding optimistic local state. Critical fixes for persistence, dashboard loading, and privacy settings have been implemented, along with mobile touch interaction improvements.
 
-The gamification system includes an XP curve (~200k XP for level 50) and an 11-tier title progression. XP is awarded for various daily activities and goal completions. A daily MVL competition tracks the highest XP earner from daily activities. Daily challenges are randomized using the Fisher-Yates shuffle. All time-based operations are anchored to Central Time (America/Chicago). Admin functionalities include XP management and user level recalculation.
-
-### Recent Fixes (Nov 15, 2025)
-- **CRITICAL: Check-in & Daily Challenge Persistence Bug Fixed**
-  - **Root Cause:** Components used optimistic local state (`useState`) that updated before API calls completed. On page refresh, local state was lost even though server had saved data correctly.
-  - **Fix Applied:** Removed all local state from CheckInCard and DailyChallenges components. Now rely entirely on server data via TanStack Query cache invalidation.
-  - **CheckInCard:** Added `hasCheckedInToday` field to `/api/dashboard` endpoint, component receives this from server instead of managing local state.
-  - **DailyChallenges:** Component reads `completed` field directly from server data in `user_daily_challenges` table.
-  - **Impact:** Check-ins and challenge completions now persist correctly across page refreshes.
-- **CRITICAL: Dashboard Black Screen Bug Fixed**
-  - **Root Cause:** Dashboard.tsx line 576 referenced undefined variable `dashboard` instead of `dashboardData`, causing JavaScript crash
-  - **Fix Applied:** Changed `dashboard?.hasCheckedInToday` to `dashboardData?.hasCheckedInToday`
-  - **Impact:** Dashboard now loads properly without crashing
-- **CRITICAL: Privacy Settings Save Failure Fixed**
-  - **Root Cause:** storage.ts manually transformed camelCase to snake_case, but Drizzle ORM handles this mapping automatically based on schema definitions
-  - **Fix Applied:** Removed manual transformation code in `updateUserPrivacySettings` - now passes settings object directly to Drizzle, which maps TypeScript property names (camelCase) to database column names (snake_case) automatically
-  - **Impact:** Privacy toggle changes now save successfully to database and persist across page refreshes
-- **Privacy Settings UX Improvements**: Added clear "Private" (left/OFF) and "Public" (right/ON) labels to each toggle with color highlighting to indicate active state
-- **CRITICAL: Privacy Toggle Real-Time Updates Fixed (Nov 15, 2025)**
-  - **Root Cause:** `/api/user` endpoint returned stale session data instead of fresh database data, so privacy toggle changes weren't reflected in UI even though they saved to DB correctly
-  - **Fix Applied:** Modified `/api/user` endpoint in server/auth.ts to fetch fresh data using `await storage.getUser(req.user.id)` instead of reading from `req.user` session
-  - **Security Enhancement:** Added password sanitization - password field is explicitly removed before sending user data to client
-  - **Impact:** Privacy toggles now update immediately when clicked and persist correctly across page refreshes. Drizzle ORM automatically handles snake_case to camelCase transformation.
-- **Apple PWA Icon Optimization:** Reduced icon size from 1.8MB to 50KB using compass-icon.jpg, updated manifest.json and service worker to v1.0.6 for proper caching.
-- **Photo Upload Auto-Refresh Fix:** Added explicit event.preventDefault() to ObjectUploader button handler to prevent page refresh after photo upload in production builds.
-
-## State Management Best Practices
-- **NEVER use optimistic local state** (useState) for server-persisted data in components
-- **ALWAYS rely on TanStack Query cache invalidation** after mutations
-- **Server as source of truth:** Components should read data from query results, not maintain their own state for persisted data
-- **Example pattern:** Mutation → invalidate queries → refetch → component re-renders with server data
-
-## System Design Choices
-- **Avatar System:** Features a 10-stage visual progression with dynamic facial expressions and muscle definition, evolving from "skinny" to "jacked." Users can select from four character types. Comprehensive diversity system includes:
-  - **Gender Options:** Male and female with distinct body proportions (females have wider hips at 140% of torso width, narrower waist at 75% of torso, and sloped shoulders)
-  - **Skin Tones:** 6 diverse skin tone options stored as hex values: Fair (#FFE0BD), Light (#FFCC99), Medium (#E0AC69), Tan (#C68642), Brown (#8D5524), Dark Brown (#6B3E2E)
-  - **Gender-Specific Hair Styles:** Males (bald, short, medium, spiky, faded), Females (short, medium, long straight, ponytail)
-  - **Improved Hair Rendering:** All hair styles redesigned with proper volume and realistic appearance; curly hair positioned higher to avoid covering eyes; long hair rendered as single continuous SVG path with no gaps; ponytail bun positioned high on head (cy=20)
-  - **Facial Hair (Males Only):** None, stubble, small beard, big beard options; section hidden for female avatars
-  - **Automatic Validation:** Hair style resets to valid option when switching genders
-  - **Avatar Customization Display:** All avatar props (facial hair, hair style, hair color, skin color, gender, character type, accessories) display correctly across all pages. Fixed by adding missing `skinColor` and `gender` fields to `/api/stats` and `/api/users` endpoints. Frontend fallback values use proper hex color codes.
-- **UI/UX:** Custom compass navigation logo, PWA support with optimized compass icon (50KB), public profiles for user stats.
-- **MVL Race Logic:** MVL calculation focuses on XP from daily activities to emphasize consistent daily effort.
-- **PR Tracking:** Separate `prHistory` table tracks all PR updates for historical analysis, displayed on stats page.
-- **Goal Completion Animations:** Celebratory popups with particle effects for goal completions.
-- **Activity Feed Enhancements:** Filter buttons, user avatars via AvatarDisplay component, Lucide icons.
-- **Dashboard Widgets:** Today's XP tracker, MVL standings, Active Challenges.
-- **Photo Upload System:** Uses Replit Object Storage with direct uploads via pre-signed URLs. Enforces a 1-photo-per-day limit (resets midnight CT) with enhanced error handling. Requires `PRIVATE_OBJECT_DIR` and `PUBLIC_OBJECT_SEARCH_PATHS` environment variables properly configured.
-- **Edit Weight Feature:** Allows correcting weight entries without awarding duplicate XP.
-- **Variable Challenge XP:** Daily challenges have configurable XP values (15, 20, or 25 XP).
-- **Admin Promotion System:** Admins can grant or revoke admin privileges.
-- **Weekly Goals & Challenge Limits:** Users are limited to 2 active weekly goals and can complete a maximum of 2 daily challenges per week.
-- **Streak Management:** Admins can edit user check-in streaks. Stats page displays a 90-day check-in calendar. Achievement badges are awarded for streak milestones (7, 30, 100, 365 days).
-- **Quick Stats Dashboard Widget:** Displays current streak, monthly check-ins, weekly PRs, and MVL wins.
-- **PR Comparison Tool:** Compares user's lifts to gym averages and percentile rankings.
-- **Dashboard Decluttering:** Consolidated dashboard widgets and moved goals management to a dedicated page.
-- **Collapsible Dashboard Sections:** Major dashboard sections are collapsible with `localStorage` persistence.
-- **Top Lifts Widget:** Displays top 3 users for squat, bench press, and deadlift.
-- **Multi-Crew System:** Supports multiple crews with membership management, invitations, and roles. Users can only join one crew.
-- **View Context Switcher:** Toggles between crew-specific and gym-wide views. Gym-wide view hides personal sections (Quick Stats, Daily Actions, Tracking, Crew Challenge) and shows only competitive content (MVL Race, Weekly MVM, Crew Competitions, Leaderboards). Implemented using React Context API (ViewContextProvider) for instant reactivity across all components.
-- **Crew-Specific MVL:** Daily MVL race can be filtered by crew membership.
-- **Crew vs Crew Competitions:** Dashboard displays four competitive categories: Weekly Check-In Battle, Monthly XP War, Challenge Completion %, and Total Lift Showdown. Backend queries fixed for proper date handling and SQL syntax.
-- **Weekly MVM System:** Tracks and awards the top weekly XP earner across the entire gym.
-- **Crew Name Display:** Leaderboards show crew membership under usernames in gym-wide view. HomePage always displays crew names as it's the public landing page.
-- **Gym Combined Total:** HomePage prominently displays the combined total of all users' PRs (squat + bench + deadlift) regardless of crew membership, showing the collective strength of the entire gym via GymTotalCard component. Additionally, the GymTotalCard appears on the dashboard when users toggle to gym-wide view by clicking the "Up North Fitness" button.
-- **Separate Crew Goals:** Crew-specific goals and progress are tracked separately in crew view via CrewGoalMeter component. Gym-wide statistics display when in gym-wide view mode.
-- **Simplified Privacy System (Nov 15, 2025):** Complete redesign from 6 individual toggles to a single "Private Profile" toggle:
-  - **Single Toggle:** `isProfilePrivate` boolean field (default `false` = public)
-  - **Public Profile (OFF):** Everyone sees full profile including PRs, photos, activities, stats, goals, and body metrics
-  - **Private Profile (ON):** Non-crew members see limited data; crew members always see full profile
-  - **Crew Member Override:** Crew members ALWAYS bypass privacy restrictions on profile/stats pages regardless of toggle state
-  - **Backend Implementation:** 
-    - Database field: `is_profile_private` (snake_case)
-    - TypeScript/Frontend: `isProfilePrivate` (camelCase via Drizzle ORM auto-mapping)
-    - POST `/api/user/privacy-settings` endpoint accepts `{ isProfilePrivate: boolean }`
-  - **Privacy Enforcement:**
-    - **Profile/Stats Pages:** 
-      - `/api/profile/:username` - Private profiles return only user.name, crew, level to non-crew viewers
-      - `/api/stats/:userId` - Returns 403 Forbidden for private profiles viewed by non-crew members
-      - Crew members always bypass and see full data
-    - **Activity Feed:** `/api/activity-feed` filters out activities from private users unless viewer is crew member
-    - **Leaderboards (Public/Competitive Views):** All leaderboard endpoints apply `sanitizeUserForLeaderboard()` helper:
-      - Private profiles show: id, username, displayName, level, xp, title, crewName, mvlWins, dailyXp, avatar data
-      - Private profiles hide: PRs, weight, calories, photos, goals, streak, detailed stats
-      - Public profiles show: All user data unchanged
-      - Endpoints: `/api/home`, `/api/leaderboards/mvl`, `/api/leaderboards/crew-mvl/:crewId`, `/api/users`
-      - Note: Leaderboards show competitive info even for private users; crew override only applies to profile/stats pages
-  - **UI:** Clean single-toggle interface at `/settings/privacy` with clear explanations of public vs private visibility
-  - **Security Audit:** Passed comprehensive architect review (Nov 15, 2025) - no privacy leaks or data exposure detected
+### Feature Specifications
+The gamification system includes an XP curve (approx. 200k XP for level 50), an 11-tier title progression, and XP awards for daily activities and goal completions. A daily MVL competition tracks the highest XP earner from daily activities, and daily challenges are randomized. All time-based operations are anchored to Central Time (America/Chicago). An advanced avatar system offers a 10-stage visual progression with dynamic facial expressions, muscle definition, and diverse customization options including gender-specific body proportions, 6 skin tones, gender-specific hair styles, and facial hair (males only). The platform supports PR tracking with historical data, goal completion animations, and an enhanced activity feed. A photo upload system uses Replit Object Storage with direct uploads and a 1-photo-per-day limit. Features include weight entry correction, variable challenge XP, admin promotion, weekly goals (limit 2 active), daily challenge limits (max 2 per week), and admin tools for streak management. The dashboard includes widgets for XP tracking, MVL standings, and active challenges, along with a Quick Stats widget and a Top Lifts widget. A multi-crew system supports membership management, invitations, and roles, with users limited to one crew. Crew-specific MVL and various "Crew vs Crew" competitions (Weekly Check-In Battle, Monthly XP War, Challenge Completion %, Total Lift Showdown) are implemented. A Weekly MVM system tracks the top weekly XP earner gym-wide. A simplified privacy system uses a single `isProfilePrivate` toggle: public profiles show all data, while private profiles restrict data for non-crew members, with crew members always bypassing restrictions. Leaderboards sanitize private user data to show only competitive info.
 
 ## External Dependencies
 
 ### Third-Party Services
-- **Neon Serverless PostgreSQL:** Database service.
-- **Replit Object Storage:** Stores user-uploaded progress photos.
+- **Neon Serverless PostgreSQL:** Database
+- **Replit Object Storage:** For user-uploaded photos
 
 ### Key NPM Packages
-- **Frontend:** `@radix-ui/*`, `tailwindcss`, `lucide-react`, `cmdk`, `@uppy/react`, `@tanstack/react-query`.
-- **Backend:** `express`, `passport`, `passport-local`, `bcrypt`, `drizzle-orm`, `drizzle-kit`, `zod`, `multer`, `connect-pg-simple`.
+- **Frontend:** `@radix-ui/*`, `tailwindcss`, `lucide-react`, `cmdk`, `@uppy/react`, `@tanstack/react-query`
+- **Backend:** `express`, `passport`, `passport-local`, `bcrypt`, `drizzle-orm`, `drizzle-kit`, `zod`, `multer`, `connect-pg-simple`
 
 ### Environment Variables
 - `DATABASE_URL`
 - `SESSION_SECRET`
 - `NODE_ENV`
+- `PRIVATE_OBJECT_DIR`
+- `PUBLIC_OBJECT_SEARCH_PATHS`
