@@ -4,6 +4,9 @@ import "./index.css";
 
 createRoot(document.getElementById("root")!).render(<App />);
 
+// TEMPORARILY DISABLED: Service Worker was caching old JavaScript bundles
+// preventing fixes from reaching the browser. Will re-enable with network-first strategy.
+/*
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
@@ -15,3 +18,4 @@ if ('serviceWorker' in navigator) {
       });
   });
 }
+*/
