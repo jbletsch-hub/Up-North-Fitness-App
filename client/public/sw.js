@@ -1,4 +1,4 @@
-const CACHE_NAME = 'up-north-fitness-v1.0.13';
+const CACHE_NAME = 'up-north-fitness-v1.0.14';
 const urlsToCache = [
   '/manifest.json',
   '/icon-192.png',
@@ -8,25 +8,50 @@ const urlsToCache = [
 ];
 
 self.addEventListener('install', (event) => {
+  console.log('[Service Worker] Installing version', CACHE_NAME);
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => {
-        return cache.addAll(urlsToCache);
+      .then(async (cache) => {
+        console.log('[Service Worker] Opened cache:', CACHE_NAME);
+        const cachePromises = urlsToCache.map(async (url) => {
+          try {
+            const response = await fetch(url);
+            if (response.ok) {
+              await cache.put(url, response);
+              console.log('[Service Worker] Cached:', url);
+            } else {
+              console.warn('[Service Worker] Failed to cache (non-200):', url, response.status);
+            }
+          } catch (error) {
+            console.warn('[Service Worker] Failed to cache:', url, error);
+          }
+        });
+        await Promise.all(cachePromises);
+        console.log('[Service Worker] Pre-caching complete');
+      })
+      .catch((error) => {
+        console.error('[Service Worker] Cache open failed:', error);
+        throw error;
       })
   );
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
+  console.log('[Service Worker] Activating version', CACHE_NAME);
   event.waitUntil(
     caches.keys().then((cacheNames) => {
+      console.log('[Service Worker] Existing caches:', cacheNames);
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_NAME) {
+            console.log('[Service Worker] Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
+    }).then(() => {
+      console.log('[Service Worker] Activation complete');
     })
   );
   self.clients.claim();
