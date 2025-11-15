@@ -273,6 +273,57 @@ export const userGoalsRelations = relations(userGoals, ({ one }) => ({
   }),
 }));
 
+// Crews table - Up North Fitness multi-crew system
+export const crews = pgTable("crews", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name").notNull(),
+  description: text("description"),
+  color: varchar("color").default("#FF5722").notNull(), // Crew theme color
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertCrewSchema = createInsertSchema(crews).omit({ 
+  id: true, 
+  createdAt: true, 
+  updatedAt: true,
+});
+export type InsertCrew = z.infer<typeof insertCrewSchema>;
+export type Crew = typeof crews.$inferSelect;
+
+// Crew Memberships table - tracks which users belong to which crews
+export const crewMemberships = pgTable("crew_memberships", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  crewId: varchar("crew_id").references(() => crews.id, { onDelete: "cascade" }).notNull(),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  role: varchar("role").default("member").notNull(), // "leader" or "member"
+  joinedAt: timestamp("joined_at").defaultNow().notNull(),
+});
+
+export const insertCrewMembershipSchema = createInsertSchema(crewMemberships).omit({ 
+  id: true, 
+  joinedAt: true,
+});
+export type InsertCrewMembership = z.infer<typeof insertCrewMembershipSchema>;
+export type CrewMembership = typeof crewMemberships.$inferSelect;
+
+// Crew Invites table - pending invitations to join crews
+export const crewInvites = pgTable("crew_invites", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  crewId: varchar("crew_id").references(() => crews.id, { onDelete: "cascade" }).notNull(),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  invitedBy: varchar("invited_by").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  status: varchar("status").default("pending").notNull(), // "pending", "accepted", "declined"
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertCrewInviteSchema = createInsertSchema(crewInvites).omit({ 
+  id: true, 
+  createdAt: true,
+});
+export type InsertCrewInvite = z.infer<typeof insertCrewInviteSchema>;
+export type CrewInvite = typeof crewInvites.$inferSelect;
+
 export const prsRelations = relations(prs, ({ one }) => ({
   user: one(users, {
     fields: [prs.userId],
@@ -308,6 +359,32 @@ export const userDailyChallengesRelations = relations(userDailyChallenges, ({ on
 export const progressPhotosRelations = relations(progressPhotos, ({ one }) => ({
   user: one(users, {
     fields: [progressPhotos.userId],
+    references: [users.id],
+  }),
+}));
+
+export const crewMembershipsRelations = relations(crewMemberships, ({ one }) => ({
+  crew: one(crews, {
+    fields: [crewMemberships.crewId],
+    references: [crews.id],
+  }),
+  user: one(users, {
+    fields: [crewMemberships.userId],
+    references: [users.id],
+  }),
+}));
+
+export const crewInvitesRelations = relations(crewInvites, ({ one }) => ({
+  crew: one(crews, {
+    fields: [crewInvites.crewId],
+    references: [crews.id],
+  }),
+  user: one(users, {
+    fields: [crewInvites.userId],
+    references: [users.id],
+  }),
+  inviter: one(users, {
+    fields: [crewInvites.invitedBy],
     references: [users.id],
   }),
 }));

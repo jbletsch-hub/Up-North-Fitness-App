@@ -11,6 +11,9 @@ import {
   crewChallengePool,
   activeCrewChallenge,
   userCrewChallengeProgress,
+  crews,
+  crewMemberships,
+  crewInvites,
   type User,
   type UpsertUser,
   type InsertUser,
@@ -36,6 +39,12 @@ import {
   type InsertActiveCrewChallenge,
   type UserCrewChallengeProgress,
   type InsertUserCrewChallengeProgress,
+  type Crew,
+  type InsertCrew,
+  type CrewMembership,
+  type InsertCrewMembership,
+  type CrewInvite,
+  type InsertCrewInvite,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, sql } from "drizzle-orm";
@@ -141,6 +150,28 @@ export interface IStorage {
   getUserCrewProgress(userId: string, weekStart: string): Promise<UserCrewChallengeProgress | undefined>;
   updateUserCrewProgress(userId: string, weekStart: string, contribution: number): Promise<UserCrewChallengeProgress>;
   getCrewLeaderboard(weekStart: string, limit?: number): Promise<Array<UserCrewChallengeProgress & { username: string; displayName: string | null; characterType: string; level: number }>>;
+  
+  // Crew operations (multi-crew system)
+  getAllCrews(): Promise<Crew[]>;
+  getCrew(id: string): Promise<Crew | undefined>;
+  getCrewByName(name: string): Promise<Crew | undefined>;
+  createCrew(crew: InsertCrew): Promise<Crew>;
+  updateCrew(id: string, crew: Partial<InsertCrew>): Promise<Crew>;
+  deleteCrew(id: string): Promise<void>;
+  
+  // Crew membership operations
+  getCrewMembers(crewId: string): Promise<Array<CrewMembership & { username: string; displayName: string | null; level: number; characterType: string }>>;
+  getUserCrew(userId: string): Promise<(CrewMembership & { crew: Crew }) | null>;
+  addCrewMember(membership: InsertCrewMembership): Promise<CrewMembership>;
+  removeCrewMember(crewId: string, userId: string): Promise<void>;
+  updateMemberRole(crewId: string, userId: string, role: string): Promise<CrewMembership>;
+  
+  // Crew invite operations
+  createCrewInvite(invite: InsertCrewInvite): Promise<CrewInvite>;
+  getUserInvites(userId: string): Promise<Array<CrewInvite & { crew: Crew; inviter: { username: string; displayName: string | null } }>>;
+  getCrewInvites(crewId: string): Promise<Array<CrewInvite & { user: { username: string; displayName: string | null } }>>;
+  updateInviteStatus(id: string, status: string): Promise<CrewInvite>;
+  deleteInvite(id: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -862,6 +893,177 @@ export class DatabaseStorage implements IStorage {
       .limit(limit);
 
     return results;
+  }
+
+  // Crew operations (multi-crew system)
+  async getAllCrews(): Promise<Crew[]> {
+    const allCrews = await db.select().from(crews).orderBy(crews.name);
+    return allCrews;
+  }
+
+  async getCrew(id: string): Promise<Crew | undefined> {
+    const [crew] = await db.select().from(crews).where(eq(crews.id, id));
+    return crew;
+  }
+
+  async getCrewByName(name: string): Promise<Crew | undefined> {
+    const [crew] = await db.select().from(crews).where(eq(crews.name, name));
+    return crew;
+  }
+
+  async createCrew(crew: InsertCrew): Promise<Crew> {
+    const [newCrew] = await db.insert(crews).values(crew).returning();
+    return newCrew;
+  }
+
+  async updateCrew(id: string, crew: Partial<InsertCrew>): Promise<Crew> {
+    const [updated] = await db
+      .update(crews)
+      .set({ ...crew, updatedAt: new Date() })
+      .where(eq(crews.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteCrew(id: string): Promise<void> {
+    await db.delete(crews).where(eq(crews.id, id));
+  }
+
+  // Crew membership operations
+  async getCrewMembers(crewId: string): Promise<Array<CrewMembership & { username: string; displayName: string | null; level: number; characterType: string }>> {
+    const members = await db
+      .select({
+        id: crewMemberships.id,
+        crewId: crewMemberships.crewId,
+        userId: crewMemberships.userId,
+        role: crewMemberships.role,
+        joinedAt: crewMemberships.joinedAt,
+        username: users.username,
+        displayName: users.displayName,
+        level: users.level,
+        characterType: users.characterType,
+      })
+      .from(crewMemberships)
+      .innerJoin(users, eq(crewMemberships.userId, users.id))
+      .where(eq(crewMemberships.crewId, crewId))
+      .orderBy(desc(users.level));
+    return members;
+  }
+
+  async getUserCrew(userId: string): Promise<(CrewMembership & { crew: Crew }) | null> {
+    const results = await db
+      .select({
+        id: crewMemberships.id,
+        crewId: crewMemberships.crewId,
+        userId: crewMemberships.userId,
+        role: crewMemberships.role,
+        joinedAt: crewMemberships.joinedAt,
+        crew: crews,
+      })
+      .from(crewMemberships)
+      .innerJoin(crews, eq(crewMemberships.crewId, crews.id))
+      .where(eq(crewMemberships.userId, userId))
+      .limit(1);
+    
+    return results[0] || null;
+  }
+
+  async addCrewMember(membership: InsertCrewMembership): Promise<CrewMembership> {
+    const [member] = await db.insert(crewMemberships).values(membership).returning();
+    return member;
+  }
+
+  async removeCrewMember(crewId: string, userId: string): Promise<void> {
+    await db
+      .delete(crewMemberships)
+      .where(
+        and(
+          eq(crewMemberships.crewId, crewId),
+          eq(crewMemberships.userId, userId)
+        )
+      );
+  }
+
+  async updateMemberRole(crewId: string, userId: string, role: string): Promise<CrewMembership> {
+    const [updated] = await db
+      .update(crewMemberships)
+      .set({ role })
+      .where(
+        and(
+          eq(crewMemberships.crewId, crewId),
+          eq(crewMemberships.userId, userId)
+        )
+      )
+      .returning();
+    return updated;
+  }
+
+  // Crew invite operations
+  async createCrewInvite(invite: InsertCrewInvite): Promise<CrewInvite> {
+    const [newInvite] = await db.insert(crewInvites).values(invite).returning();
+    return newInvite;
+  }
+
+  async getUserInvites(userId: string): Promise<Array<CrewInvite & { crew: Crew; inviter: { username: string; displayName: string | null } }>> {
+    const invites = await db
+      .select({
+        id: crewInvites.id,
+        crewId: crewInvites.crewId,
+        userId: crewInvites.userId,
+        invitedBy: crewInvites.invitedBy,
+        status: crewInvites.status,
+        createdAt: crewInvites.createdAt,
+        crew: crews,
+        inviter: {
+          username: users.username,
+          displayName: users.displayName,
+        },
+      })
+      .from(crewInvites)
+      .innerJoin(crews, eq(crewInvites.crewId, crews.id))
+      .innerJoin(users, eq(crewInvites.invitedBy, users.id))
+      .where(
+        and(
+          eq(crewInvites.userId, userId),
+          eq(crewInvites.status, "pending")
+        )
+      )
+      .orderBy(desc(crewInvites.createdAt));
+    return invites;
+  }
+
+  async getCrewInvites(crewId: string): Promise<Array<CrewInvite & { user: { username: string; displayName: string | null } }>> {
+    const invites = await db
+      .select({
+        id: crewInvites.id,
+        crewId: crewInvites.crewId,
+        userId: crewInvites.userId,
+        invitedBy: crewInvites.invitedBy,
+        status: crewInvites.status,
+        createdAt: crewInvites.createdAt,
+        user: {
+          username: users.username,
+          displayName: users.displayName,
+        },
+      })
+      .from(crewInvites)
+      .innerJoin(users, eq(crewInvites.userId, users.id))
+      .where(eq(crewInvites.crewId, crewId))
+      .orderBy(desc(crewInvites.createdAt));
+    return invites;
+  }
+
+  async updateInviteStatus(id: string, status: string): Promise<CrewInvite> {
+    const [updated] = await db
+      .update(crewInvites)
+      .set({ status })
+      .where(eq(crewInvites.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteInvite(id: string): Promise<void> {
+    await db.delete(crewInvites).where(eq(crewInvites.id, id));
   }
 }
 
