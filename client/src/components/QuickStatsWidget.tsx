@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Flame, Activity, Trophy, Award } from "lucide-react";
+import { Flame, Activity, Trophy, Award, Star, CheckCircle } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 export function QuickStatsWidget() {
@@ -9,11 +9,25 @@ export function QuickStatsWidget() {
 
   const stats = [
     {
+      label: "Today's XP",
+      value: (quickStats as any)?.todayXP || 0,
+      icon: Star,
+      color: "text-chart-3",
+      suffix: "XP"
+    },
+    {
       label: "Current Streak",
       value: (quickStats as any)?.currentStreak || 0,
       icon: Flame,
       color: "text-orange-500",
       suffix: "days"
+    },
+    {
+      label: "Active Challenges",
+      value: `${(quickStats as any)?.completedChallenges || 0}/${(quickStats as any)?.totalChallenges || 0}`,
+      icon: CheckCircle,
+      color: "text-green-500",
+      suffix: ""
     },
     {
       label: "Monthly Workouts",
@@ -44,7 +58,7 @@ export function QuickStatsWidget() {
         <CardTitle className="text-lg">Quick Stats</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {stats.map((stat) => {
             const Icon = stat.icon;
             return (

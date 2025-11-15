@@ -14,7 +14,6 @@ import { PhotoUpload } from "@/components/PhotoUpload";
 import { ObjectUploader } from "@/components/ObjectUploader";
 import type { UploadResult } from "@uppy/core";
 import { LeaderboardCard } from "@/components/LeaderboardCard";
-import { GoalsCard } from "@/components/GoalsCard";
 import { DailyMVLCard } from "@/components/DailyMVLCard";
 import { DisplayNameEditor } from "@/components/DisplayNameEditor";
 import { useXPPopup } from "@/components/XPPopup";
@@ -24,7 +23,6 @@ import { AvatarDisplay } from "@/components/AvatarDisplay";
 import { AvatarWithProgress } from "@/components/AvatarWithProgress";
 import { Card, CardContent } from "@/components/ui/card";
 import { CrewChallengeCard } from "@/components/CrewChallengeCard";
-import { TodayXPWidget, MVLCountdownWidget, ActiveChallengeWidget } from "@/components/DashboardWidgets";
 import { QuickStatsWidget } from "@/components/QuickStatsWidget";
 
 export default function Dashboard() {
@@ -512,13 +510,6 @@ export default function Dashboard() {
         {/* Quick Stats Overview */}
         <QuickStatsWidget />
 
-        {/* Dashboard Widgets - Quick Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <TodayXPWidget dailyXp={dashboardUser.dailyXp || 0} />
-          <MVLCountdownWidget currentUserId={dashboardUser.id} />
-          <ActiveChallengeWidget challenges={challenges} />
-        </div>
-
         <CrewGoalMeter 
           current={total} 
           goal={goal} 
@@ -641,8 +632,6 @@ export default function Dashboard() {
         />
 
         <LeaderboardCard users={leaderboard} />
-
-        <GoalsCard />
       </main>
 
       {popup}

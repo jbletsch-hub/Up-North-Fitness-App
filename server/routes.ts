@@ -294,8 +294,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "User not found" });
       }
 
+      // Get today's XP
+      const todayXP = user.dailyXp || 0;
+
       // Get current streak
       const currentStreak = user.streakCount || 0;
+
+      // Get today's challenges
+      const today = getTodayDate();
+      const challenges = await storage.getUserDailyChallenges(userId, today);
+      const completedChallenges = challenges.filter(c => c.completed).length;
+      const totalChallenges = challenges.length;
 
       // Get monthly check-ins (check-ins in current month)
       const now = new Date();
@@ -318,7 +327,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const mvlWins = user.mvlWins || 0;
 
       res.json({
+        todayXP,
         currentStreak,
+        completedChallenges,
+        totalChallenges,
         monthlyCheckIns,
         weeklyPRs,
         mvlWins,
