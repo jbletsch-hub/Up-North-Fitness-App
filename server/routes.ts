@@ -832,14 +832,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const currentUserId = req.user?.id;
       let currentUserCrewId: string | null = null;
       if (currentUserId) {
-        const currentUserCrews = await storage.getUserCrews(currentUserId);
-        currentUserCrewId = currentUserCrews.length > 0 ? currentUserCrews[0].id : null;
+        const currentUserCrew = await storage.getUserCrew(currentUserId);
+        currentUserCrewId = currentUserCrew?.crewId || null;
       }
 
       // Get profile user's crew membership
-      const profileUserCrews = await storage.getUserCrews(profileUser.id);
-      const profileUserCrewId = profileUserCrews.length > 0 ? profileUserCrews[0].id : null;
-      const profileUserCrewName = profileUserCrews.length > 0 ? profileUserCrews[0].name : null;
+      const profileUserCrew = await storage.getUserCrew(profileUser.id);
+      const profileUserCrewId = profileUserCrew?.crewId || null;
+      const profileUserCrewName = profileUserCrew?.crew?.name || null;
 
       // Determine access level
       const isSameCrew = currentUserCrewId && profileUserCrewId && currentUserCrewId === profileUserCrewId;
@@ -1630,12 +1630,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const allActivities = await storage.getRecentActivities(limit * 2); // Get more to account for filtering
       
       // Get current user's crew membership
-      const currentUserCrews = await storage.getUserCrews(currentUserId);
-      const currentUserCrewId = currentUserCrews.length > 0 ? currentUserCrews[0].id : null;
+      const currentUserCrew = await storage.getUserCrew(currentUserId);
+      const currentUserCrewId = currentUserCrew?.crewId || null;
       
       // Filter activities based on privacy settings
       const filteredActivities = [];
       for (const activity of allActivities) {
+        if (!activity.userId) continue;
+        
         const activityUser = await storage.getUser(activity.userId);
         
         if (!activityUser) continue;
@@ -1648,8 +1650,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // If user has private profile, only show to crew members
         if (activityUser.isProfilePrivate) {
-          const activityUserCrews = await storage.getUserCrews(activity.userId);
-          const activityUserCrewId = activityUserCrews.length > 0 ? activityUserCrews[0].id : null;
+          const activityUserCrew = await storage.getUserCrew(activity.userId);
+          const activityUserCrewId = activityUserCrew?.crewId || null;
           
           const isSameCrew = currentUserCrewId && activityUserCrewId && currentUserCrewId === activityUserCrewId;
           
@@ -1693,16 +1695,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (!hasFullAccess) {
         // Get current user's crew membership
-        const currentUserCrews = await storage.getUserCrews(currentUserId);
-        const currentUserCrewId = currentUserCrews.length > 0 ? currentUserCrews[0].id : null;
+        const currentUserCrew = await storage.getUserCrew(currentUserId);
+        const currentUserCrewId = currentUserCrew?.crewId || null;
 
         // Get target user's crew membership
-        const targetUserCrews = await storage.getUserCrews(targetUserId);
-        const targetUserCrewId = targetUserCrews.length > 0 ? targetUserCrews[0].id : null;
+        const targetUserCrew = await storage.getUserCrew(targetUserId);
+        const targetUserCrewId = targetUserCrew?.crewId || null;
 
         // Crew members have full access
         const isSameCrew = currentUserCrewId && targetUserCrewId && currentUserCrewId === targetUserCrewId;
-        hasFullAccess = isSameCrew;
+        hasFullAccess = !!isSameCrew;
 
         // If not crew member and profile is private, deny access to stats
         if (!isSameCrew && user.isProfilePrivate) {
