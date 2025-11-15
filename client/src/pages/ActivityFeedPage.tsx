@@ -143,7 +143,7 @@ export default function ActivityFeedPage() {
                           <AvatarDisplay 
                             level={activity.level || 1}
                             gender={activity.gender || "male"}
-                            skinColor={activity.skinColor || "light"}
+                            skinColor={activity.skinColor || "#FFCC99"}
                             characterType={activity.characterType || "classic"}
                             shirtColor={activity.shirtColor || "#FF5722"}
                             shortsColor={activity.shortsColor || "#20B2AA"}

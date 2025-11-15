@@ -666,7 +666,7 @@ export default function StatsPage() {
                               level={u.level}
                               size="sm"
                               gender={u.gender || "male"}
-                              skinColor={u.skinColor || "light"}
+                              skinColor={u.skinColor || "#FFCC99"}
                               characterType={u.characterType || "classic"}
                               shirtColor={u.shirtColor}
                               shortsColor={u.shortsColor}

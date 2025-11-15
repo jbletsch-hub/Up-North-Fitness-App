@@ -483,7 +483,7 @@ export default function Dashboard() {
                 level={dashboardUser.level}
                 xp={dashboardUser.xp}
                 gender={dashboardUser.gender || "male"}
-                skinColor={dashboardUser.skinColor || "light"}
+                skinColor={dashboardUser.skinColor || "#FFCC99"}
                 characterType={dashboardUser.characterType || "classic"}
                 shirtColor={dashboardUser.shirtColor || "#FF5722"}
                 shortsColor={dashboardUser.shortsColor || "#20B2AA"}

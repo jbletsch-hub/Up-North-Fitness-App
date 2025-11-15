@@ -162,7 +162,7 @@ export function CrewChallengeCard({
                       characterType={entry.characterType}
                       level={entry.level}
                       gender={entry.gender || "male"}
-                      skinColor={entry.skinColor || "light"}
+                      skinColor={entry.skinColor || "#FFCC99"}
                       shirtColor={entry.shirtColor}
                       shortsColor={entry.shortsColor}
                       hairStyle={entry.hairStyle}
