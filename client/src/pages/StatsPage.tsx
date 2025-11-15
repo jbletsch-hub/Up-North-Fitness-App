@@ -10,6 +10,7 @@ import { MVLBadge } from "@/components/MVLBadge";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { StreakCalendar } from "@/components/StreakCalendar";
+import { StreakMilestones } from "@/components/StreakMilestones";
 
 export default function StatsPage() {
   const { user } = useAuth();
@@ -137,6 +138,9 @@ export default function StatsPage() {
                 currentStreak={(stats as any)?.currentStreak || 0}
               />
             )}
+
+            {/* Streak Milestones */}
+            <StreakMilestones currentStreak={(stats as any)?.currentStreak || 0} />
 
             {/* XP Trend Chart */}
             <Card>

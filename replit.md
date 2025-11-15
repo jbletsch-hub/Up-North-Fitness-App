@@ -35,6 +35,8 @@ The gamification system features an XP curve (1.125 multiplier, ~200k XP for lev
 - **Weekly Goals Limit:** Changed from 3 to 2 active weekly goals per week. Storage layer checks for 2 existing goals before allowing new weekly goal creation. Error message updated to reflect new limit (November 14, 2025).
 - **Weekly Challenge Limit:** Users can complete maximum 2 daily challenges per week, resetting Monday at midnight CT. Database tracks lastChallengeWeekStart and challengesCompletedThisWeek. Challenge completion endpoint checks weekly limit before awarding XP. Clear error message when limit reached (November 15, 2025).
 - **Admin Streak Editor:** Admins can manually adjust user check-in streaks via admin panel. User Management section displays each user's current streak count. Flame icon button opens dialog for editing streak value. Backend endpoint POST /api/admin/users/:id/update-streak validates and updates streakCount (November 15, 2025).
+- **Streak Calendar Visualization:** Stats page displays 90-day check-in calendar with visual grid showing days user checked in (green squares) vs. missed days (muted squares). Today is highlighted with ring. Month labels and legend included. Backend extracts check-in history from activities table (November 15, 2025).
+- **Streak Milestones:** Achievement badges for streak milestones: Week Warrior (7 days), Monthly Master (30 days), Century Crusher (100 days), Yearly Legend (365 days). Unlocked badges display in color with "Unlocked!" badge. Shows progress to next milestone. All milestones unlocked message at 365+ days (November 15, 2025).
 
 ## External Dependencies
 
