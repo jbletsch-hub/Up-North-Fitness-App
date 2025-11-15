@@ -1,9 +1,8 @@
-const CACHE_NAME = 'up-north-fitness-v1.0.14';
+const CACHE_NAME = 'up-north-fitness-v1.0.15';
 const urlsToCache = [
   '/manifest.json',
   '/icon-192.png',
   '/icon-512.png',
-  '/compass-icon.jpg',
   '/apple-touch-icon.png'
 ];
 
