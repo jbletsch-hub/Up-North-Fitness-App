@@ -17,6 +17,7 @@ import GoalsPage from "@/pages/GoalsPage";
 import StatsPage from "@/pages/StatsPage";
 import AvatarPage from "@/pages/AvatarPage";
 import CrewsPage from "@/pages/CrewsPage";
+import PrivacySettingsPage from "@/pages/PrivacySettingsPage";
 import AuthPage from "@/pages/AuthPage";
 import ProfileSetup from "@/pages/ProfileSetup";
 import NotFound from "@/pages/not-found";
@@ -32,6 +33,7 @@ function Router() {
       <ProtectedRoute path="/crews" component={CrewsPage} />
       <ProtectedRoute path="/stats/:userId?" component={StatsPage} />
       <ProtectedRoute path="/avatar" component={AvatarPage} />
+      <ProtectedRoute path="/settings/privacy" component={PrivacySettingsPage} />
       <ProtectedRoute path="/profile/:username" component={ProfilePage} />
       <ProtectedRoute path="/admin" component={AdminPage} />
       <ProtectedRoute path="/profile-setup" component={ProfileSetup} skipProfileCheck={true} />

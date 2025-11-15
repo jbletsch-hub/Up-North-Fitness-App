@@ -73,8 +73,13 @@ export const users = pgTable("users", {
   hairColor: varchar("hair_color").default("#4A3728"),
   facialHair: varchar("facial_hair").default("none"),
   
-  // Privacy settings
-  isPrivateProfile: boolean("is_private_profile").default(false).notNull(),
+  // Granular privacy settings (default true = public)
+  showPRs: boolean("show_prs").default(true).notNull(),
+  showPhotos: boolean("show_photos").default(true).notNull(),
+  showActivities: boolean("show_activities").default(true).notNull(),
+  showStats: boolean("show_stats").default(true).notNull(),
+  showGoals: boolean("show_goals").default(true).notNull(),
+  showMetrics: boolean("show_metrics").default(true).notNull(),
 });
 
 export const insertUserSchema = createInsertSchema(users).omit({ 

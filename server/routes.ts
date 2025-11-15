@@ -231,21 +231,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Toggle privacy setting
-  app.post("/api/user/privacy", isAuthenticated, async (req: any, res) => {
+  // Update granular privacy settings
+  app.post("/api/user/privacy-settings", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.id;
-      const { isPrivate } = req.body;
+      const settings = req.body;
 
-      if (typeof isPrivate !== "boolean") {
-        return res.status(400).json({ message: "isPrivate must be a boolean" });
+      // Validate that at least one setting is provided and all are booleans
+      const validFields = ['showPRs', 'showPhotos', 'showActivities', 'showStats', 'showGoals', 'showMetrics'];
+      const providedFields = Object.keys(settings);
+      
+      if (providedFields.length === 0) {
+        return res.status(400).json({ message: "At least one privacy setting must be provided" });
       }
 
-      const user = await storage.updateUserPrivacy(userId, isPrivate);
+      for (const field of providedFields) {
+        if (!validFields.includes(field)) {
+          return res.status(400).json({ message: `Invalid privacy field: ${field}` });
+        }
+        if (typeof settings[field] !== "boolean") {
+          return res.status(400).json({ message: `${field} must be a boolean` });
+        }
+      }
+
+      const user = await storage.updateUserPrivacySettings(userId, settings);
       res.json({ success: true, user });
     } catch (error) {
-      console.error("Error updating privacy:", error);
-      res.status(500).json({ message: "Failed to update privacy setting" });
+      console.error("Error updating privacy settings:", error);
+      res.status(500).json({ message: "Failed to update privacy settings" });
     }
   });
 
