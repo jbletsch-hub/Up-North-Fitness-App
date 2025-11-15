@@ -1627,6 +1627,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get current PRs
       const currentPR = await storage.getPR(targetUserId);
 
+      // Get PR-related activities for the Recent PR Updates section
+      const prActivities = activities.filter((a: any) => 
+        a.type === "pr_update" || a.detail?.includes("New PR")
+      ).slice(0, 10); // Get the 10 most recent PR updates
+
       res.json({
         userId: user.id,
         username: user.username,
@@ -1634,6 +1639,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         totalActivities: activities.length,
         xpTrend,
         prProgression, // PR history for chart
+        prHistory: prActivities, // Recent PR update activities
         currentPR: currentPR || { squat: 0, bench: 0, deadlift: 0 }, // Current PR values
         currentStreak: user?.streakCount || 0,
         totalXP: user?.xp || 0,
