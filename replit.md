@@ -17,7 +17,13 @@ The backend is an Express.js application written in TypeScript. It uses session-
 The gamification system includes an XP curve (~200k XP for level 50) and an 11-tier title progression. XP is awarded for various daily activities and goal completions. A daily MVL competition tracks the highest XP earner from daily activities. Daily challenges are randomized using the Fisher-Yates shuffle. All time-based operations are anchored to Central Time (America/Chicago). Admin functionalities include XP management and user level recalculation.
 
 ### System Design Choices
-- **Avatar System:** Features a 10-stage visual progression with dynamic facial expressions and muscle definition, evolving from "skinny" to "jacked." Users can select from four character types.
+- **Avatar System:** Features a 10-stage visual progression with dynamic facial expressions and muscle definition, evolving from "skinny" to "jacked." Users can select from four character types. Comprehensive diversity system includes:
+  - **Gender Options:** Male and female with distinct body proportions (females have wider hips at 140% of torso width, narrower waist at 75% of torso, and sloped shoulders)
+  - **Skin Tones:** 5 diverse skin tone options
+  - **Gender-Specific Hair Styles:** Males (bald, short, medium, spiky, faded), Females (short, medium, long straight, ponytail)
+  - **Improved Hair Rendering:** All hair styles redesigned with proper volume and realistic appearance; curly hair positioned higher to avoid covering eyes
+  - **Facial Hair (Males Only):** None, stubble, small beard, big beard options; section hidden for female avatars
+  - **Automatic Validation:** Hair style resets to valid option when switching genders
 - **UI/UX:** Custom golden dumbbell app icon, PWA support, public profiles for user stats.
 - **MVL Race Logic:** MVL calculation focuses on XP from daily activities to emphasize consistent daily effort.
 - **PR Tracking:** Separate `prHistory` table tracks all PR updates for historical analysis, displayed on stats page.
