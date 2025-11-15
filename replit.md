@@ -24,7 +24,7 @@ The gamification system includes an XP curve (~200k XP for level 50) and an 11-t
   - **Improved Hair Rendering:** All hair styles redesigned with proper volume and realistic appearance; curly hair positioned higher to avoid covering eyes; long hair rendered as single continuous SVG path with no gaps; ponytail bun positioned high on head (cy=20)
   - **Facial Hair (Males Only):** None, stubble, small beard, big beard options; section hidden for female avatars
   - **Automatic Validation:** Hair style resets to valid option when switching genders
-- **UI/UX:** Custom golden dumbbell app icon, PWA support, public profiles for user stats.
+- **UI/UX:** Custom compass navigation logo, PWA support with compass icon, public profiles for user stats.
 - **MVL Race Logic:** MVL calculation focuses on XP from daily activities to emphasize consistent daily effort.
 - **PR Tracking:** Separate `prHistory` table tracks all PR updates for historical analysis, displayed on stats page.
 - **Goal Completion Animations:** Celebratory popups with particle effects for goal completions.
@@ -47,7 +47,8 @@ The gamification system includes an XP curve (~200k XP for level 50) and an 11-t
 - **Crew vs Crew Competitions:** Dashboard displays four competitive categories: Weekly Check-In Battle, Monthly XP War, Challenge Completion %, and Total Lift Showdown. Backend queries fixed for proper date handling and SQL syntax.
 - **Weekly MVM System:** Tracks and awards the top weekly XP earner across the entire gym.
 - **Crew Name Display:** Leaderboards show crew membership under usernames in gym-wide view. HomePage always displays crew names as it's the public landing page.
-- **Gym Combined Total:** HomePage prominently displays the combined total of all users' PRs (squat + bench + deadlift) regardless of crew membership, showing the collective strength of the entire gym with progress toward goals.
+- **Gym Combined Total:** HomePage prominently displays the combined total of all users' PRs (squat + bench + deadlift) regardless of crew membership, showing the collective strength of the entire gym via GymTotalCard component.
+- **Separate Crew Goals:** Crew-specific goals and progress are tracked separately on the crews page via CrewGoalMeter component, while the homepage shows gym-wide statistics.
 
 ## External Dependencies
 
