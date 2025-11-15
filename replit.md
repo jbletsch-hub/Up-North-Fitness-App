@@ -23,6 +23,15 @@ The gamification system includes an XP curve (~200k XP for level 50) and an 11-t
   - **CheckInCard:** Added `hasCheckedInToday` field to `/api/dashboard` endpoint, component receives this from server instead of managing local state.
   - **DailyChallenges:** Component reads `completed` field directly from server data in `user_daily_challenges` table.
   - **Impact:** Check-ins and challenge completions now persist correctly across page refreshes.
+- **CRITICAL: Dashboard Black Screen Bug Fixed**
+  - **Root Cause:** Dashboard.tsx line 576 referenced undefined variable `dashboard` instead of `dashboardData`, causing JavaScript crash
+  - **Fix Applied:** Changed `dashboard?.hasCheckedInToday` to `dashboardData?.hasCheckedInToday`
+  - **Impact:** Dashboard now loads properly without crashing
+- **CRITICAL: Privacy Settings Save Failure Fixed**
+  - **Root Cause:** storage.ts manually transformed camelCase to snake_case, but Drizzle ORM handles this mapping automatically based on schema definitions
+  - **Fix Applied:** Removed manual transformation code in `updateUserPrivacySettings` - now passes settings object directly to Drizzle, which maps TypeScript property names (camelCase) to database column names (snake_case) automatically
+  - **Impact:** Privacy toggle changes now save successfully to database and persist across page refreshes
+- **Privacy Settings UX Improvements**: Added clear "Private" (left/OFF) and "Public" (right/ON) labels to each toggle with color highlighting to indicate active state
 - **Apple PWA Icon Optimization:** Reduced icon size from 1.8MB to 50KB using compass-icon.jpg, updated manifest.json and service worker to v1.0.6 for proper caching.
 - **Photo Upload Auto-Refresh Fix:** Added explicit event.preventDefault() to ObjectUploader button handler to prevent page refresh after photo upload in production builds.
 
