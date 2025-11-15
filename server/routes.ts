@@ -1526,6 +1526,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .slice(-30)
         .map(([date, xp]) => ({ date, xp }));
 
+      // Extract check-in history for streak calendar (last 90 days)
+      const checkinActivities = activities.filter((a: any) => a.type === "checkin");
+      const checkinDates = checkinActivities.map((a: any) => {
+        const date = new Date(a.createdAt);
+        // Convert to YYYY-MM-DD in Central Time
+        const centralTime = new Date(date.toLocaleString("en-US", { timeZone: "America/Chicago" }));
+        const year = centralTime.getFullYear();
+        const month = String(centralTime.getMonth() + 1).padStart(2, '0');
+        const day = String(centralTime.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      });
+      
+      // Remove duplicates and sort
+      const uniqueCheckinDates = Array.from(new Set(checkinDates)).sort();
+
       res.json({
         userId: user.id,
         username: user.username,
@@ -1549,6 +1564,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         headband: user?.headband,
         wristbands: user?.wristbands,
         facialHair: user?.facialHair,
+        checkinHistory: uniqueCheckinDates, // Array of YYYY-MM-DD dates
       });
     } catch (error) {
       console.error("Error fetching stats:", error);

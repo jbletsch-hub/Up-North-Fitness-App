@@ -9,6 +9,7 @@ import { AvatarDisplay } from "@/components/AvatarDisplay";
 import { MVLBadge } from "@/components/MVLBadge";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { StreakCalendar } from "@/components/StreakCalendar";
 
 export default function StatsPage() {
   const { user } = useAuth();
@@ -128,6 +129,14 @@ export default function StatsPage() {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Streak Calendar */}
+            {(stats as any)?.checkinHistory && (
+              <StreakCalendar 
+                checkinDates={(stats as any).checkinHistory} 
+                currentStreak={(stats as any)?.currentStreak || 0}
+              />
+            )}
 
             {/* XP Trend Chart */}
             <Card>
