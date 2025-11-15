@@ -153,7 +153,7 @@ export function AvatarDisplay({
     const baseAttrs = progressionStages[stage];
     
     // Apply character type multipliers
-    return {
+    let attrs = {
       shoulderWidth: Math.round(baseAttrs.shoulderWidth * multipliers.shoulder),
       armWidth: Math.round(baseAttrs.armWidth * multipliers.arm),
       legWidth: Math.round(baseAttrs.legWidth * multipliers.leg),
@@ -167,6 +167,21 @@ export function AvatarDisplay({
       posture: baseAttrs.posture,
       armAngle: baseAttrs.armAngle,
     };
+    
+    // Apply gender-based adjustments for female body type
+    if (gender === "female") {
+      attrs = {
+        ...attrs,
+        shoulderWidth: Math.round(attrs.shoulderWidth * 0.85), // Narrower shoulders
+        armWidth: Math.round(attrs.armWidth * 0.9), // Slightly slimmer arms
+        chestWidth: Math.round(attrs.chestWidth * 0.82), // More feminine chest/upper body
+        chestHeight: Math.round(attrs.chestHeight * 0.85),
+        torsoWidth: Math.round(attrs.torsoWidth * 0.92), // Slightly narrower waist
+        neckWidth: Math.round(attrs.neckWidth * 0.85), // More slender neck
+      };
+    }
+    
+    return attrs;
   };
   
   const attrs = getStageAttributes();
