@@ -24,6 +24,7 @@ import { AvatarWithProgress } from "@/components/AvatarWithProgress";
 import { Card, CardContent } from "@/components/ui/card";
 import { CrewChallengeCard } from "@/components/CrewChallengeCard";
 import { CrewCompetitionsCard } from "@/components/CrewCompetitionsCard";
+import { WeeklyMVMCard } from "@/components/WeeklyMVMCard";
 import { QuickStatsWidget } from "@/components/QuickStatsWidget";
 import { CollapsibleSection } from "@/components/CollapsibleSection";
 import { ViewContextSwitcher } from "@/components/ViewContextSwitcher";
@@ -654,6 +655,10 @@ export default function Dashboard() {
             crewName={userCrew?.crew?.name}
             isCrewView={isCrewView && !!userCrew}
           />
+        </CollapsibleSection>
+
+        <CollapsibleSection id="weekly-mvm" title="Weekly MVM">
+          <WeeklyMVMCard />
         </CollapsibleSection>
 
         <CollapsibleSection id="crew-challenge" title="Crew Challenge">

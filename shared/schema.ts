@@ -324,6 +324,22 @@ export const insertCrewInviteSchema = createInsertSchema(crewInvites).omit({
 export type InsertCrewInvite = z.infer<typeof insertCrewInviteSchema>;
 export type CrewInvite = typeof crewInvites.$inferSelect;
 
+// Weekly MVM (Most Valuable Member) Winners - tracks weekly gym-wide XP champions
+export const weeklyMvmWinners = pgTable("weekly_mvm_winners", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  weekStart: varchar("week_start").notNull(), // Monday date (YYYY-MM-DD format) in Central Time
+  weeklyXP: integer("weekly_xp").notNull(), // Total XP earned during that week
+  awardedAt: timestamp("awarded_at").defaultNow().notNull(),
+});
+
+export const insertWeeklyMvmWinnerSchema = createInsertSchema(weeklyMvmWinners).omit({ 
+  id: true, 
+  awardedAt: true,
+});
+export type InsertWeeklyMvmWinner = z.infer<typeof insertWeeklyMvmWinnerSchema>;
+export type WeeklyMvmWinner = typeof weeklyMvmWinners.$inferSelect;
+
 export const prsRelations = relations(prs, ({ one }) => ({
   user: one(users, {
     fields: [prs.userId],

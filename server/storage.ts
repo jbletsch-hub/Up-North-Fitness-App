@@ -14,6 +14,7 @@ import {
   crews,
   crewMemberships,
   crewInvites,
+  weeklyMvmWinners,
   type User,
   type UpsertUser,
   type InsertUser,
@@ -45,9 +46,11 @@ import {
   type InsertCrewMembership,
   type CrewInvite,
   type InsertCrewInvite,
+  type WeeklyMvmWinner,
+  type InsertWeeklyMvmWinner,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, sql } from "drizzle-orm";
+import { eq, desc, and, sql, gte } from "drizzle-orm";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 
@@ -1199,6 +1202,69 @@ export class DatabaseStorage implements IStorage {
       ...c,
       avgLifts: c.memberCount > 0 ? Math.round(c.totalLifts / c.memberCount) : 0,
     }));
+  }
+
+  // Weekly MVM Methods
+  async getWeeklyMVMLeaderboard(limit: number): Promise<Array<User & { weeklyXP: number }>> {
+    const { weekStart } = getWeekBounds();
+    
+    const topEarners = await db
+      .select({
+        user: users,
+        weeklyXP: sql<number>`COALESCE(SUM(${activities.xpAwarded}), 0)`.as('weeklyXP'),
+      })
+      .from(users)
+      .leftJoin(
+        activities,
+        and(
+          eq(activities.userId, users.id),
+          sql`${activities.createdAt} >= ${weekStart}`
+        )
+      )
+      .groupBy(users.id)
+      .orderBy(desc(sql`COALESCE(SUM(${activities.xpAwarded}), 0)`))
+      .limit(limit);
+    
+    return topEarners
+      .map(row => ({ ...row.user, weeklyXP: row.weeklyXP }))
+      .filter(user => user.weeklyXP > 0);
+  }
+
+  async awardWeeklyMVM(userId: string, weekStart: string, weeklyXP: number): Promise<WeeklyMvmWinner> {
+    const [winner] = await db
+      .insert(weeklyMvmWinners)
+      .values({ userId, weekStart, weeklyXP })
+      .returning();
+    return winner;
+  }
+
+  async getWeeklyMVMWinners(limit: number = 10): Promise<Array<WeeklyMvmWinner & { user: { username: string; displayName: string | null } }>> {
+    const winners = await db
+      .select({
+        id: weeklyMvmWinners.id,
+        userId: weeklyMvmWinners.userId,
+        weekStart: weeklyMvmWinners.weekStart,
+        weeklyXP: weeklyMvmWinners.weeklyXP,
+        awardedAt: weeklyMvmWinners.awardedAt,
+        user: {
+          username: users.username,
+          displayName: users.displayName,
+        },
+      })
+      .from(weeklyMvmWinners)
+      .innerJoin(users, eq(weeklyMvmWinners.userId, users.id))
+      .orderBy(desc(weeklyMvmWinners.awardedAt))
+      .limit(limit);
+    return winners;
+  }
+
+  async getWeeklyMVMWinnerForWeek(weekStart: string): Promise<WeeklyMvmWinner | undefined> {
+    const [winner] = await db
+      .select()
+      .from(weeklyMvmWinners)
+      .where(eq(weeklyMvmWinners.weekStart, weekStart))
+      .limit(1);
+    return winner;
   }
 }
 

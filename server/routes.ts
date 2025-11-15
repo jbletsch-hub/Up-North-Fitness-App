@@ -2214,6 +2214,75 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Weekly MVM Endpoints
+  app.get("/api/mvm/leaderboard", isAuthenticated, async (req, res) => {
+    try {
+      const leaderboard = await storage.getWeeklyMVMLeaderboard(10);
+      res.json(leaderboard);
+    } catch (error) {
+      console.error("Error fetching MVM leaderboard:", error);
+      res.status(500).json({ message: "Failed to fetch MVM leaderboard" });
+    }
+  });
+
+  app.get("/api/mvm/winners", isAuthenticated, async (req, res) => {
+    try {
+      const winners = await storage.getWeeklyMVMWinners(10);
+      res.json(winners);
+    } catch (error) {
+      console.error("Error fetching MVM winners:", error);
+      res.status(500).json({ message: "Failed to fetch MVM winners" });
+    }
+  });
+
+  app.post("/api/admin/award-mvm", isAuthenticated, async (req: any, res) => {
+    try {
+      const adminUser = await storage.getUser(req.user.id);
+      if (!adminUser?.isAdmin) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+
+      const { weekStart } = getWeekBounds();
+      
+      // Check if MVM already awarded for this week
+      const existingWinner = await storage.getWeeklyMVMWinnerForWeek(weekStart);
+      if (existingWinner) {
+        return res.status(400).json({ message: "MVM already awarded for this week" });
+      }
+
+      // Get top weekly earner
+      const leaderboard = await storage.getWeeklyMVMLeaderboard(1);
+      if (!leaderboard || leaderboard.length === 0 || leaderboard[0].weeklyXP === 0) {
+        return res.status(400).json({ message: "No eligible MVM winner this week" });
+      }
+
+      const winner = leaderboard[0];
+      
+      // Award MVM
+      await storage.awardWeeklyMVM(winner.id, weekStart, winner.weeklyXP);
+      
+      // Create activity for the win
+      await storage.createActivity({
+        userId: winner.id,
+        type: "achievement",
+        detail: "🏆 Awarded Most Valuable Member (MVM) badge for the week!",
+        xpAwarded: 0,
+      });
+
+      res.json({ 
+        success: true, 
+        winner: {
+          username: winner.username,
+          displayName: winner.displayName,
+          weeklyXP: winner.weeklyXP,
+        }
+      });
+    } catch (error) {
+      console.error("Error awarding MVM:", error);
+      res.status(500).json({ message: "Failed to award MVM" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
