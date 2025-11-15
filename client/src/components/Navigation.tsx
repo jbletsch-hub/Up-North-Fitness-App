@@ -41,6 +41,15 @@ export function Navigation({ isLoggedIn, username, isAdmin, userLevel, userXP, u
           <nav className="flex items-center gap-2">
             {isLoggedIn ? (
               <>
+                {/* Mobile Hamburger Menu */}
+                <MobileNav 
+                  username={username}
+                  isAdmin={isAdmin}
+                  userLevel={userLevel}
+                  userXP={userXP}
+                  userTitle={userTitle}
+                />
+                
                 {/* Mobile Logout Button */}
                 <Button
                   variant="ghost"
