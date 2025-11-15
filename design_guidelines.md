@@ -1,4 +1,4 @@
-# Iron Crew - Fullstack JavaScript Design Guidelines
+# Up North Fitness - Fullstack JavaScript Design Guidelines
 
 ## Design Approach
 

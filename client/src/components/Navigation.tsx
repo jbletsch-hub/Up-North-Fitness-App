@@ -35,7 +35,7 @@ export function Navigation({ isLoggedIn, username, isAdmin, userLevel, userXP, u
         <div className="flex h-16 items-center justify-between px-4 md:px-6 max-w-7xl mx-auto">
           <Link href="/" className="flex items-center gap-2 hover-elevate active-elevate-2 px-3 py-2 rounded-md">
             <Dumbbell className="h-6 w-6 text-primary" />
-            <span className="font-display text-2xl tracking-wider">IRON CREW</span>
+            <span className="font-display text-2xl tracking-wider">UP NORTH FITNESS</span>
           </Link>
 
           <nav className="flex items-center gap-2">

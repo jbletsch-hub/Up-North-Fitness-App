@@ -49,7 +49,7 @@ export function MobileNav({ username, isAdmin, userLevel, userXP, userTitle }: M
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <Dumbbell className="h-5 w-5 text-primary" />
-            <span className="font-display text-xl tracking-wider">IRON CREW</span>
+            <span className="font-display text-xl tracking-wider">UP NORTH FITNESS</span>
           </SheetTitle>
         </SheetHeader>
         
