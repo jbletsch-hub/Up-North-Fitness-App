@@ -243,9 +243,17 @@ export default function AdminPage() {
     },
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/home"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
       toast({
         title: variables.isAdmin ? "Admin granted!" : "Admin revoked",
         description: variables.isAdmin ? "User is now an admin." : "User is no longer an admin.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Failed to update admin status",
+        description: error.message || "An error occurred while updating admin privileges.",
+        variant: "destructive",
       });
     },
   });
