@@ -34,14 +34,14 @@ export function LeaderboardCard({ users, showCrewNames = false }: LeaderboardCar
         <CardTitle className="text-xl font-display tracking-wider">LEADERBOARD</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-2">
+        <div className="space-y-3">
           {users.length === 0 ? (
             <p className="text-muted-foreground text-center py-8">No members yet. Be the first to join!</p>
           ) : (
             users.map((user, index) => (
               <Link key={user.id} href={`/profile/${user.username}`}>
                 <div
-                  className="flex items-center gap-3 p-3 rounded-lg border border-border hover-elevate active-elevate-2"
+                  className="flex items-center gap-4 p-4 rounded-lg border border-border hover-elevate active-elevate-2"
                   data-testid={`leaderboard-item-${index}`}
                 >
                   <div className={`flex-shrink-0 w-6 text-center font-display text-lg ${getRankColor(index)}`}>
