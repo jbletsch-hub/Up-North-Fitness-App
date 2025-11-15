@@ -570,6 +570,7 @@ export default function Dashboard() {
             />
             <CheckInCard
               streak={dashboardUser.streakCount}
+              hasCheckedInToday={dashboard?.hasCheckedInToday || false}
               onCheckIn={(event) => {
                 const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
                 const position = {

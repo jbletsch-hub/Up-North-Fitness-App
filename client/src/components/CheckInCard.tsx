@@ -1,24 +1,14 @@
-import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Flame } from "lucide-react";
 
 interface CheckInCardProps {
   streak: number;
+  hasCheckedInToday: boolean;
   onCheckIn?: (event: React.MouseEvent) => void;
 }
 
-export function CheckInCard({ streak: initialStreak, onCheckIn }: CheckInCardProps) {
-  const [streak, setStreak] = useState(initialStreak);
-  const [checkedIn, setCheckedIn] = useState(false);
-
-  const handleCheckIn = (event: React.MouseEvent) => {
-    setStreak((prev) => prev + 1);
-    setCheckedIn(true);
-    onCheckIn?.(event);
-    console.log("Checked in! New streak:", streak + 1);
-  };
-
+export function CheckInCard({ streak, hasCheckedInToday, onCheckIn }: CheckInCardProps) {
   return (
     <Card className="border-card-border">
       <CardHeader>
@@ -36,11 +26,11 @@ export function CheckInCard({ streak: initialStreak, onCheckIn }: CheckInCardPro
         </div>
         <Button
           className="w-full"
-          onClick={handleCheckIn}
-          disabled={checkedIn}
+          onClick={onCheckIn}
+          disabled={hasCheckedInToday}
           data-testid="button-checkin"
         >
-          {checkedIn ? "Checked In Today!" : "Check In (+15 XP)"}
+          {hasCheckedInToday ? "Checked In Today!" : "Check In (+15 XP)"}
         </Button>
       </CardContent>
     </Card>
