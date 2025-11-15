@@ -1708,6 +1708,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Top Lifts endpoint - Get top 3 users for each lift
+  app.get("/api/top-lifts", isAuthenticated, async (req, res) => {
+    try {
+      const allUsers = await storage.getAllUsers();
+      
+      // Get all PRs with user info
+      const usersWithPRs = await Promise.all(
+        allUsers.map(async (user: any) => {
+          const pr = await storage.getPR(user.id);
+          return {
+            userId: user.id,
+            username: user.username,
+            displayName: user.displayName,
+            squat: pr?.squat || 0,
+            bench: pr?.bench || 0,
+            deadlift: pr?.deadlift || 0,
+          };
+        })
+      );
+
+      // Get top 3 for each lift type
+      const topSquat = usersWithPRs
+        .filter(u => u.squat > 0)
+        .sort((a, b) => b.squat - a.squat)
+        .slice(0, 3)
+        .map(u => ({ userId: u.userId, username: u.username, displayName: u.displayName, value: u.squat }));
+
+      const topBench = usersWithPRs
+        .filter(u => u.bench > 0)
+        .sort((a, b) => b.bench - a.bench)
+        .slice(0, 3)
+        .map(u => ({ userId: u.userId, username: u.username, displayName: u.displayName, value: u.bench }));
+
+      const topDeadlift = usersWithPRs
+        .filter(u => u.deadlift > 0)
+        .sort((a, b) => b.deadlift - a.deadlift)
+        .slice(0, 3)
+        .map(u => ({ userId: u.userId, username: u.username, displayName: u.displayName, value: u.deadlift }));
+
+      res.json({
+        squat: topSquat,
+        bench: topBench,
+        deadlift: topDeadlift,
+      });
+    } catch (error) {
+      console.error("Error fetching top lifts:", error);
+      res.status(500).json({ message: "Failed to fetch top lifts" });
+    }
+  });
+
   // Get all users (public endpoint for browsing)
   app.get("/api/users", isAuthenticated, async (req, res) => {
     try {

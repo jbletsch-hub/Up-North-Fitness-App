@@ -24,6 +24,7 @@ import { AvatarWithProgress } from "@/components/AvatarWithProgress";
 import { Card, CardContent } from "@/components/ui/card";
 import { CrewChallengeCard } from "@/components/CrewChallengeCard";
 import { QuickStatsWidget } from "@/components/QuickStatsWidget";
+import { CollapsibleSection } from "@/components/CollapsibleSection";
 
 export default function Dashboard() {
   const { toast } = useToast();
@@ -510,128 +511,140 @@ export default function Dashboard() {
         {/* Quick Stats Overview */}
         <QuickStatsWidget />
 
-        <CrewGoalMeter 
-          current={total} 
-          goal={goal} 
-          isAdmin={user?.isAdmin || false}
-          onAdvance={() => advanceCrewGoalMutation.mutate()}
-        />
+        <CollapsibleSection id="crew-goal" title="Crew Goal">
+          <CrewGoalMeter 
+            current={total} 
+            goal={goal} 
+            isAdmin={user?.isAdmin || false}
+            onAdvance={() => advanceCrewGoalMutation.mutate()}
+          />
+        </CollapsibleSection>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          <DailyChallenges
-            challenges={challenges}
-            onComplete={(id, event) => {
-              const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
-              const position = {
-                x: rect.left + rect.width / 2,
-                y: rect.top,
-              };
-              completeMutation.mutate({ challengeId: id, position });
-            }}
-            canReroll={canReroll}
-            onReroll={() => rerollMutation.mutate()}
-            isRerolling={rerollMutation.isPending}
-          />
-          <CheckInCard
-            streak={dashboardUser.streakCount}
-            onCheckIn={(event) => {
-              const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
-              const position = {
-                x: rect.left + rect.width / 2,
-                y: rect.top,
-              };
-              checkinMutation.mutate(position);
-            }}
-          />
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-6">
-          <PRTracker
-            initialPRs={pr}
-            onUpdate={(prs, event) => {
-              const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
-              const position = {
-                x: rect.left + rect.width / 2,
-                y: rect.top,
-              };
-              prMutation.mutate({ prs, position });
-            }}
-          />
-          <div className="space-y-6">
-            <WeighInCard
-              currentWeight={dashboardUser.weight}
-              hasWeighedInToday={hasWeighedInToday}
-              onWeighIn={(weight, event) => {
+        <CollapsibleSection id="daily-actions" title="Daily Actions">
+          <div className="grid md:grid-cols-2 gap-6">
+            <DailyChallenges
+              challenges={challenges}
+              onComplete={(id, event) => {
                 const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
                 const position = {
                   x: rect.left + rect.width / 2,
                   y: rect.top,
                 };
-                weighinMutation.mutate({ weight, position });
+                completeMutation.mutate({ challengeId: id, position });
               }}
-              onEditWeight={(weight) => {
-                editWeighinMutation.mutate({ weight });
+              canReroll={canReroll}
+              onReroll={() => rerollMutation.mutate()}
+              isRerolling={rerollMutation.isPending}
+            />
+            <CheckInCard
+              streak={dashboardUser.streakCount}
+              onCheckIn={(event) => {
+                const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+                const position = {
+                  x: rect.left + rect.width / 2,
+                  y: rect.top,
+                };
+                checkinMutation.mutate(position);
               }}
             />
-            <CalorieTrackerCard
-              hasLoggedToday={hasLoggedCaloriesToday}
-              isPending={calorieMutation.isPending}
-              onLogCalories={(calories) => {
-                calorieMutation.mutate({ calories });
-              }}
-            />
-            {!hasUploadedToday ? (
-              <ObjectUploader
-                maxNumberOfFiles={1}
-                maxFileSize={10485760}
-                onGetUploadParameters={async () => {
-                  console.log("[PHOTO] Getting upload URL...");
-                  const response = await apiRequest("POST", "/api/photos/upload-url");
-                  const { uploadURL } = await response.json();
-                  console.log("[PHOTO] Got upload URL:", uploadURL);
-                  return {
-                    method: "PUT" as const,
-                    url: uploadURL,
-                  };
-                }}
-                onComplete={(result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
-                  console.log("[PHOTO] Upload complete:", result);
-                  if (result.successful && result.successful.length > 0) {
-                    const uploadedFile = result.successful[0];
-                    const uploadURL = uploadedFile.uploadURL;
-                    console.log("[PHOTO] Calling mutation with uploadURL:", uploadURL);
-                    if (uploadURL) {
-                      photoMutation.mutate(uploadURL);
-                    }
-                  }
-                }}
-              >
-                <span>📸 Upload Photo</span>
-              </ObjectUploader>
-            ) : (
-              <Card>
-                <CardContent className="flex items-center justify-center p-6">
-                  <div className="text-center space-y-2">
-                    <div className="text-4xl">✅</div>
-                    <div className="font-medium">Photo Uploaded Today!</div>
-                    <div className="text-sm text-muted-foreground">Come back tomorrow to upload another</div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
           </div>
-        </div>
+        </CollapsibleSection>
 
-        <DailyMVLCard />
+        <CollapsibleSection id="tracking" title="Tracking">
+          <div className="grid md:grid-cols-2 gap-6">
+            <PRTracker
+              initialPRs={pr}
+              onUpdate={(prs, event) => {
+                const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+                const position = {
+                  x: rect.left + rect.width / 2,
+                  y: rect.top,
+                };
+                prMutation.mutate({ prs, position });
+              }}
+            />
+            <div className="space-y-6">
+              <WeighInCard
+                currentWeight={dashboardUser.weight}
+                hasWeighedInToday={hasWeighedInToday}
+                onWeighIn={(weight, event) => {
+                  const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+                  const position = {
+                    x: rect.left + rect.width / 2,
+                    y: rect.top,
+                  };
+                  weighinMutation.mutate({ weight, position });
+                }}
+                onEditWeight={(weight) => {
+                  editWeighinMutation.mutate({ weight });
+                }}
+              />
+              <CalorieTrackerCard
+                hasLoggedToday={hasLoggedCaloriesToday}
+                isPending={calorieMutation.isPending}
+                onLogCalories={(calories) => {
+                  calorieMutation.mutate({ calories });
+                }}
+              />
+              {!hasUploadedToday ? (
+                <ObjectUploader
+                  maxNumberOfFiles={1}
+                  maxFileSize={10485760}
+                  onGetUploadParameters={async () => {
+                    console.log("[PHOTO] Getting upload URL...");
+                    const response = await apiRequest("POST", "/api/photos/upload-url");
+                    const { uploadURL } = await response.json();
+                    console.log("[PHOTO] Got upload URL:", uploadURL);
+                    return {
+                      method: "PUT" as const,
+                      url: uploadURL,
+                    };
+                  }}
+                  onComplete={(result: UploadResult<Record<string, unknown>, Record<string, unknown>>) => {
+                    console.log("[PHOTO] Upload complete:", result);
+                    if (result.successful && result.successful.length > 0) {
+                      const uploadedFile = result.successful[0];
+                      const uploadURL = uploadedFile.uploadURL;
+                      console.log("[PHOTO] Calling mutation with uploadURL:", uploadURL);
+                      if (uploadURL) {
+                        photoMutation.mutate(uploadURL);
+                      }
+                    }
+                  }}
+                >
+                  <span>📸 Upload Photo</span>
+                </ObjectUploader>
+              ) : (
+                <Card>
+                  <CardContent className="flex items-center justify-center p-6">
+                    <div className="text-center space-y-2">
+                      <div className="text-4xl">✅</div>
+                      <div className="font-medium">Photo Uploaded Today!</div>
+                      <div className="text-sm text-muted-foreground">Come back tomorrow to upload another</div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          </div>
+        </CollapsibleSection>
 
-        <CrewChallengeCard
-          challengeData={crewChallengeData}
-          leaderboard={crewLeaderboard}
-          onContribute={(contribution) => crewContributionMutation.mutate(contribution)}
-          isSubmitting={crewContributionMutation.isPending}
-        />
+        <CollapsibleSection id="mvl-race" title="MVL Race">
+          <DailyMVLCard />
+        </CollapsibleSection>
 
-        <LeaderboardCard users={leaderboard} />
+        <CollapsibleSection id="crew-challenge" title="Crew Challenge">
+          <CrewChallengeCard
+            challengeData={crewChallengeData}
+            leaderboard={crewLeaderboard}
+            onContribute={(contribution) => crewContributionMutation.mutate(contribution)}
+            isSubmitting={crewContributionMutation.isPending}
+          />
+        </CollapsibleSection>
+
+        <CollapsibleSection id="leaderboards" title="Leaderboards">
+          <LeaderboardCard users={leaderboard} />
+        </CollapsibleSection>
       </main>
 
       {popup}
