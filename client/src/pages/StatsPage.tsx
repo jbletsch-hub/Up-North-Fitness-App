@@ -674,6 +674,7 @@ export default function StatsPage() {
                               hairColor={u.hairColor}
                               headband={u.headband}
                               wristbands={u.wristbands}
+                              facialHair={u.facialHair || "none"}
                             />
                             <div className="text-center w-full">
                               <p className="font-semibold text-sm truncate">
