@@ -135,14 +135,7 @@ export function setupAuth(app: Express) {
       // Drizzle ORM already returns privacy fields in camelCase format
       const { password, ...sanitizedUser } = user;
       
-      console.log('[GET /api/user] Returning user with privacy settings:', {
-        showPRs: sanitizedUser.showPRs,
-        showPhotos: sanitizedUser.showPhotos,
-        showActivities: sanitizedUser.showActivities,
-        showStats: sanitizedUser.showStats,
-        showGoals: sanitizedUser.showGoals,
-        showMetrics: sanitizedUser.showMetrics
-      });
+      console.log('[GET /api/user] Returning user with isProfilePrivate:', sanitizedUser.isProfilePrivate);
       
       res.json(sanitizedUser);
     } catch (error) {
