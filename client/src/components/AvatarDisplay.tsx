@@ -199,6 +199,48 @@ export function AvatarDisplay({
   const outlineColor = "#1A1A1A";
   const outlineWidth = 2.5;
   
+  // Render back hair (for ponytail - renders behind head)
+  const renderBackHair = () => {
+    const darkerHair = `${hairColor}DD`;
+    
+    if (hairStyle === "ponytail") {
+      return (
+        <g>
+          {/* Ponytail base - gathered at back of head */}
+          <ellipse 
+            cx="100" 
+            cy="70" 
+            rx="10" 
+            ry="7" 
+            fill={hairColor} 
+            stroke={outlineColor} 
+            strokeWidth={2}
+          />
+          {/* Ponytail length - flowing down the back */}
+          <path
+            d="M 93 74 Q 94 84, 95 96 Q 96 106, 97 116 
+               L 103 116 Q 104 106, 105 96 Q 106 84, 107 74 Z"
+            fill={hairColor}
+            stroke={outlineColor}
+            strokeWidth={2}
+          />
+          {/* Ponytail tip - tapered end */}
+          <path
+            d="M 97 116 Q 98 122, 100 126 Q 102 122, 103 116 Z"
+            fill={hairColor}
+            stroke={outlineColor}
+            strokeWidth={2}
+          />
+          {/* Texture strands in ponytail */}
+          <path d="M 96 84 Q 97 96, 98 110" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.5" />
+          <path d="M 100 82 Q 100 94, 100 108" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.5" />
+          <path d="M 104 84 Q 103 96, 102 110" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.5" />
+        </g>
+      );
+    }
+    return null;
+  };
+  
   // Render hair with realistic detail
   const renderHair = () => {
     // Slightly darker color for shadows/depth
@@ -250,93 +292,53 @@ export function AvatarDisplay({
       case "medium":
         return (
           <g>
-            {/* Full head coverage - solid base */}
+            {/* Continuous head and shoulder-length hair - no gaps */}
             <path
-              d="M 68 50 Q 70 35, 78 29 Q 88 25, 100 24 Q 112 25, 122 29 Q 130 35, 132 50 
-                 L 132 65 Q 130 60, 126 56 Q 120 50, 115 48 
-                 L 115 48 Q 107 46, 100 46 Q 93 46, 85 48 
-                 Q 80 50, 74 56 Q 70 60, 68 65 Z"
+              d="M 70 50 Q 72 36, 80 30 Q 89 26, 100 25 Q 111 26, 120 30 Q 128 36, 130 50
+                 Q 130 56, 128 64 Q 127 70, 126 76
+                 L 120 76 Q 121 70, 122 64 Q 123 56, 123 50
+                 Q 115 46, 100 44 Q 85 46, 77 50
+                 Q 77 56, 78 64 Q 79 70, 80 76
+                 L 74 76 Q 73 70, 72 64 Q 70 56, 70 50 Z"
               fill={hairColor}
               stroke={outlineColor}
               strokeWidth={2}
             />
-            {/* Left side volume and flow */}
-            <path 
-              d="M 68 50 Q 65 58, 63 68 Q 62 74, 64 78 L 70 76 Q 69 70, 70 64 Q 71 56, 72 50 Z" 
-              fill={hairColor} 
-              stroke={outlineColor} 
-              strokeWidth={2} 
-            />
-            {/* Right side volume and flow */}
-            <path 
-              d="M 132 50 Q 135 58, 137 68 Q 138 74, 136 78 L 130 76 Q 131 70, 130 64 Q 129 56, 128 50 Z" 
-              fill={hairColor} 
-              stroke={outlineColor} 
-              strokeWidth={2} 
-            />
             {/* Layered texture for depth */}
-            <path d="M 78 32 Q 82 38, 84 46" stroke={darkerHair} strokeWidth="1.5" fill="none" opacity="0.4" />
-            <path d="M 88 28 Q 92 36, 94 44" stroke={darkerHair} strokeWidth="1.5" fill="none" opacity="0.4" />
-            <path d="M 100 26 Q 100 34, 100 42" stroke={darkerHair} strokeWidth="1.5" fill="none" opacity="0.4" />
-            <path d="M 112 28 Q 108 36, 106 44" stroke={darkerHair} strokeWidth="1.5" fill="none" opacity="0.4" />
-            <path d="M 122 32 Q 118 38, 116 46" stroke={darkerHair} strokeWidth="1.5" fill="none" opacity="0.4" />
-            {/* Side flow texture */}
-            <path d="M 66 58 Q 67 65, 68 72" stroke={darkerHair} strokeWidth="1.3" fill="none" opacity="0.5" />
-            <path d="M 134 58 Q 133 65, 132 72" stroke={darkerHair} strokeWidth="1.3" fill="none" opacity="0.5" />
+            <path d="M 80 32 Q 83 40, 85 50" stroke={darkerHair} strokeWidth="1.3" fill="none" opacity="0.4" />
+            <path d="M 90 28 Q 92 38, 94 48" stroke={darkerHair} strokeWidth="1.3" fill="none" opacity="0.4" />
+            <path d="M 100 27 Q 100 36, 100 46" stroke={darkerHair} strokeWidth="1.3" fill="none" opacity="0.4" />
+            <path d="M 110 28 Q 108 38, 106 48" stroke={darkerHair} strokeWidth="1.3" fill="none" opacity="0.4" />
+            <path d="M 120 32 Q 117 40, 115 50" stroke={darkerHair} strokeWidth="1.3" fill="none" opacity="0.4" />
+            {/* Side flow texture - close to body */}
+            <path d="M 76 58 Q 77 66, 78 72" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.5" />
+            <path d="M 124 58 Q 123 66, 122 72" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.5" />
           </g>
         );
       
       case "long":
         return (
           <g>
-            {/* Full top volume - solid coverage */}
+            {/* Continuous flowing hair from head to waist - no gaps */}
             <path
-              d="M 66 52 Q 68 36, 76 29 Q 86 24, 100 23 Q 114 24, 124 29 Q 132 36, 134 52
-                 L 134 68 Q 132 62, 128 57 Q 122 52, 116 50
-                 Q 108 48, 100 48 Q 92 48, 84 50
-                 Q 78 52, 72 57 Q 68 62, 66 68 Z"
+              d="M 68 52 Q 70 36, 78 29 Q 88 24, 100 23 Q 112 24, 122 29 Q 130 36, 132 52
+                 Q 132 60, 130 72 Q 129 82, 128 92 Q 127 98, 126 102
+                 L 120 100 Q 121 92, 122 82 Q 123 70, 124 58 Q 124 52, 116 48
+                 Q 108 46, 100 46 Q 92 46, 84 48
+                 Q 76 52, 76 58 Q 76 70, 77 82 Q 78 92, 79 100
+                 L 74 102 Q 73 98, 72 92 Q 71 82, 70 72 Q 68 60, 68 52 Z"
               fill={hairColor}
               stroke={outlineColor}
               strokeWidth={2}
             />
-            {/* Left side - full flowing volume */}
-            <path 
-              d="M 66 52 Q 62 64, 58 78 Q 56 86, 57 94 Q 58 98, 61 100
-                 L 68 97 Q 67 92, 68 86 Q 69 78, 70 70 Q 71 60, 72 52 Z" 
-              fill={hairColor} 
-              stroke={outlineColor} 
-              strokeWidth={2} 
-            />
-            {/* Right side - full flowing volume */}
-            <path 
-              d="M 134 52 Q 138 64, 142 78 Q 144 86, 143 94 Q 142 98, 139 100
-                 L 132 97 Q 133 92, 132 86 Q 131 78, 130 70 Q 129 60, 128 52 Z" 
-              fill={hairColor} 
-              stroke={outlineColor} 
-              strokeWidth={2} 
-            />
-            {/* Additional middle layers for fuller look */}
-            <path 
-              d="M 75 50 Q 72 62, 70 76 Q 69 84, 70 90 L 74 88 Q 74 82, 75 75 Q 76 64, 77 52 Z" 
-              fill={hairColor} 
-              stroke={outlineColor} 
-              strokeWidth={1.8} 
-              opacity="0.9"
-            />
-            <path 
-              d="M 125 50 Q 128 62, 130 76 Q 131 84, 130 90 L 126 88 Q 126 82, 125 75 Q 124 64, 123 52 Z" 
-              fill={hairColor} 
-              stroke={outlineColor} 
-              strokeWidth={1.8} 
-              opacity="0.9"
-            />
-            {/* Flowing texture lines */}
-            <path d="M 64 60 Q 62 72, 61 86" stroke={darkerHair} strokeWidth="1.6" fill="none" opacity="0.5" />
-            <path d="M 70 54 Q 68 68, 67 82" stroke={darkerHair} strokeWidth="1.4" fill="none" opacity="0.5" />
-            <path d="M 136 60 Q 138 72, 139 86" stroke={darkerHair} strokeWidth="1.6" fill="none" opacity="0.5" />
-            <path d="M 130 54 Q 132 68, 133 82" stroke={darkerHair} strokeWidth="1.4" fill="none" opacity="0.5" />
-            <path d="M 90 26 Q 92 42, 94 58" stroke={darkerHair} strokeWidth="1.3" fill="none" opacity="0.4" />
-            <path d="M 110 26 Q 108 42, 106 58" stroke={darkerHair} strokeWidth="1.3" fill="none" opacity="0.4" />
+            {/* Flowing texture lines - straight down close to body */}
+            <path d="M 76 58 Q 75 72, 75 88" stroke={darkerHair} strokeWidth="1.4" fill="none" opacity="0.5" />
+            <path d="M 82 50 Q 81 66, 80 84" stroke={darkerHair} strokeWidth="1.3" fill="none" opacity="0.5" />
+            <path d="M 90 28 Q 90 46, 90 68" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.4" />
+            <path d="M 100 26 Q 100 44, 100 66" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.4" />
+            <path d="M 110 28 Q 110 46, 110 68" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.4" />
+            <path d="M 118 50 Q 119 66, 120 84" stroke={darkerHair} strokeWidth="1.3" fill="none" opacity="0.5" />
+            <path d="M 124 58 Q 125 72, 125 88" stroke={darkerHair} strokeWidth="1.4" fill="none" opacity="0.5" />
           </g>
         );
       
@@ -466,7 +468,7 @@ export function AvatarDisplay({
       case "ponytail":
         return (
           <g>
-            {/* Front hair - parted with volume */}
+            {/* Front hair only - parted with volume (back ponytail renders separately before head) */}
             <path
               d="M 72 48 Q 74 36, 80 30 Q 88 26, 100 25 Q 112 26, 120 30 Q 126 36, 128 48
                  L 126 50 Q 120 46, 100 44 Q 80 46, 74 50 Z"
@@ -474,52 +476,23 @@ export function AvatarDisplay({
               stroke={outlineColor}
               strokeWidth={2}
             />
-            {/* Side parts */}
+            {/* Side parts - close to face */}
             <path 
-              d="M 72 48 Q 70 54, 69 62 L 73 62 Q 74 56, 75 50 Z" 
+              d="M 72 48 Q 71 54, 70 60 L 74 60 Q 75 54, 75 50 Z" 
               fill={hairColor} 
               stroke={outlineColor} 
               strokeWidth={2} 
             />
             <path 
-              d="M 128 48 Q 130 54, 131 62 L 127 62 Q 126 56, 125 50 Z" 
+              d="M 128 48 Q 129 54, 130 60 L 126 60 Q 125 54, 125 50 Z" 
               fill={hairColor} 
               stroke={outlineColor} 
               strokeWidth={2} 
             />
-            {/* Ponytail base - gathered at back */}
-            <ellipse 
-              cx="100" 
-              cy="78" 
-              rx="12" 
-              ry="8" 
-              fill={hairColor} 
-              stroke={outlineColor} 
-              strokeWidth={2}
-            />
-            {/* Ponytail length - flowing down */}
-            <path
-              d="M 92 82 Q 94 90, 95 100 Q 96 108, 97 116 
-                 L 103 116 Q 104 108, 105 100 Q 106 90, 108 82 Z"
-              fill={hairColor}
-              stroke={outlineColor}
-              strokeWidth={2}
-            />
-            {/* Ponytail tip - tapered end */}
-            <path
-              d="M 97 116 Q 98 122, 100 126 Q 102 122, 103 116 Z"
-              fill={hairColor}
-              stroke={outlineColor}
-              strokeWidth={2}
-            />
-            {/* Texture strands in ponytail */}
-            <path d="M 96 90 Q 97 100, 98 110" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.5" />
-            <path d="M 100 88 Q 100 98, 100 108" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.5" />
-            <path d="M 104 90 Q 103 100, 102 110" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.5" />
             {/* Front texture */}
-            <path d="M 86 30 Q 88 34, 90 40" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.4" />
-            <path d="M 100 27 Q 100 32, 100 38" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.4" />
-            <path d="M 114 30 Q 112 34, 110 40" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.4" />
+            <path d="M 86 30 Q 88 36, 90 42" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.4" />
+            <path d="M 100 27 Q 100 33, 100 40" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.4" />
+            <path d="M 114 30 Q 112 36, 110 42" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.4" />
           </g>
         );
       
@@ -1262,6 +1235,9 @@ export function AvatarDisplay({
           fill={skinTone}
           stroke="none"
         />
+
+        {/* === BACK HAIR (for ponytail - renders behind head) === */}
+        {renderBackHair()}
 
         {/* === HEAD === */}
         <g className="head-group">
