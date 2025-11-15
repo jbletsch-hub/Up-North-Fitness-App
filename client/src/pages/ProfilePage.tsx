@@ -143,35 +143,37 @@ export default function ProfilePage() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
-          {/* Personal Records */}
-          <Card className="border-card-border">
-            <CardHeader>
-              <CardTitle className="text-xl font-display tracking-wider flex items-center gap-2">
-                <Trophy className="h-5 w-5 text-primary" />
-                PERSONAL RECORDS
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Squat:</span>
-                <span className="font-semibold">{pr.squat || 0} lbs</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Bench:</span>
-                <span className="font-semibold">{pr.bench || 0} lbs</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Deadlift:</span>
-                <span className="font-semibold">{pr.deadlift || 0} lbs</span>
-              </div>
-              <div className="flex justify-between pt-3 border-t border-border">
-                <span className="font-semibold">Total:</span>
-                <span className="font-semibold text-primary">
-                  {(pr.squat || 0) + (pr.bench || 0) + (pr.deadlift || 0)} lbs
-                </span>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Personal Records - only show if data is present */}
+          {pr && (
+            <Card className="border-card-border">
+              <CardHeader>
+                <CardTitle className="text-xl font-display tracking-wider flex items-center gap-2">
+                  <Trophy className="h-5 w-5 text-primary" />
+                  PERSONAL RECORDS
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Squat:</span>
+                  <span className="font-semibold">{pr.squat || 0} lbs</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Bench:</span>
+                  <span className="font-semibold">{pr.bench || 0} lbs</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Deadlift:</span>
+                  <span className="font-semibold">{pr.deadlift || 0} lbs</span>
+                </div>
+                <div className="flex justify-between pt-3 border-t border-border">
+                  <span className="font-semibold">Total:</span>
+                  <span className="font-semibold text-primary">
+                    {(pr.squat || 0) + (pr.bench || 0) + (pr.deadlift || 0)} lbs
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Stats */}
           <Card className="border-card-border">
@@ -190,36 +192,40 @@ export default function ProfilePage() {
                 <span className="text-muted-foreground">Current Weight:</span>
                 <span className="font-semibold">{profileUser.weight || "—"} lbs</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Progress Photos:</span>
-                <span className="font-semibold">{photos.length}</span>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Recent Activity */}
-          <Card className="border-card-border">
-            <CardHeader>
-              <CardTitle className="text-xl font-display tracking-wider flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-chart-3" />
-                RECENT ACTIVITY
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 max-h-64 overflow-y-auto">
-              {activities.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No recent activity</p>
-              ) : (
-                activities.slice(0, 10).map((activity: any) => (
-                  <div key={activity.id} className="text-sm border-b border-border pb-2 last:border-0">
-                    <p className="font-medium">{activity.activityDetail}</p>
-                    <p className="text-xs text-muted-foreground">
-                      +{activity.xpAwarded} XP · {activity.createdAt}
-                    </p>
-                  </div>
-                ))
+              {photos && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Progress Photos:</span>
+                  <span className="font-semibold">{photos.length}</span>
+                </div>
               )}
             </CardContent>
           </Card>
+
+          {/* Recent Activity - only show if data is present */}
+          {activities && (
+            <Card className="border-card-border">
+              <CardHeader>
+                <CardTitle className="text-xl font-display tracking-wider flex items-center gap-2">
+                  <Calendar className="h-5 w-5 text-chart-3" />
+                  RECENT ACTIVITY
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 max-h-64 overflow-y-auto">
+                {activities.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">No recent activity</p>
+                ) : (
+                  activities.slice(0, 10).map((activity: any) => (
+                    <div key={activity.id} className="text-sm border-b border-border pb-2 last:border-0">
+                      <p className="font-medium">{activity.activityDetail}</p>
+                      <p className="text-xs text-muted-foreground">
+                        +{activity.xpAwarded} XP · {activity.createdAt}
+                      </p>
+                    </div>
+                  ))
+                )}
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* Daily Challenges */}
@@ -258,8 +264,8 @@ export default function ProfilePage() {
           </Card>
         )}
 
-        {/* Goals Section */}
-        {(weeklyGoals.length > 0 || lifetimeGoals.length > 0) && (
+        {/* Goals Section - only show if data is present */}
+        {(weeklyGoals || lifetimeGoals) && (weeklyGoals.length > 0 || lifetimeGoals.length > 0) && (
           <div className="grid md:grid-cols-2 gap-6">
             {/* Weekly Goals */}
             {weeklyGoals.length > 0 && (
@@ -345,8 +351,8 @@ export default function ProfilePage() {
           </div>
         )}
 
-        {/* Progress Photos */}
-        {photos.length > 0 && (
+        {/* Progress Photos - only show if data is present */}
+        {photos && photos.length > 0 && (
           <Card className="border-card-border">
             <CardHeader>
               <CardTitle className="text-xl font-display tracking-wider">
