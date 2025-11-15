@@ -5,7 +5,7 @@ import { useTheme } from "./ThemeProvider";
 import { apiRequest } from "@/lib/queryClient";
 import { MobileNav } from "./MobileNav";
 import { BottomNav } from "./BottomNav";
-import compassLogo from "@assets/Screenshot_20251114_232454_Chrome_1763184328691.jpg";
+import compassLogo from "@assets/file_00000000ef5871f5ac9f7b89c34fae02_1763184908950.png";
 
 interface NavigationProps {
   isLoggedIn: boolean;
