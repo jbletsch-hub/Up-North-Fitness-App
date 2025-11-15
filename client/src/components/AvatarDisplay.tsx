@@ -282,28 +282,15 @@ export function AvatarDisplay({
       case "long":
         return (
           <g>
-            {/* Top/crown coverage - covers head but keeps forehead clear */}
+            {/* Continuous smooth hair - top crown flowing down to waist with no gaps */}
             <path
-              d="M 76 48 Q 78 36, 84 30 Q 92 26, 100 25 Q 108 26, 116 30 Q 122 36, 124 48
-                 L 122 50 Q 100 44, 78 50 Z"
-              fill={hairColor}
-              stroke={outlineColor}
-              strokeWidth={2}
-            />
-            {/* Left side - flowing hair from crown down to waist */}
-            <path
-              d="M 76 48 Q 74 50, 72 54
-                 Q 72 62, 71 72 Q 70 82, 69 92 Q 68 98, 68 102
-                 L 74 100 Q 75 92, 76 82 Q 77 70, 78 58 Q 78 54, 78 50 Z"
-              fill={hairColor}
-              stroke={outlineColor}
-              strokeWidth={2}
-            />
-            {/* Right side - flowing hair from crown down to waist */}
-            <path
-              d="M 124 48 Q 126 50, 128 54
-                 Q 128 62, 129 72 Q 130 82, 131 92 Q 132 98, 132 102
-                 L 126 100 Q 125 92, 124 82 Q 123 70, 122 58 Q 122 54, 122 50 Z"
+              d="M 68 102 Q 68 98, 69 92 Q 70 82, 71 72 Q 72 62, 72 54 Q 74 50, 76 48
+                 Q 78 36, 84 30 Q 92 26, 100 25 Q 108 26, 116 30 Q 122 36, 124 48
+                 Q 126 50, 128 54 Q 128 62, 129 72 Q 130 82, 131 92 Q 132 98, 132 102
+                 L 126 100 Q 125 92, 124 82 Q 123 70, 122 58 Q 122 54, 122 50
+                 Q 100 44, 78 50
+                 Q 78 54, 77 58 Q 77 70, 76 82 Q 75 92, 74 100
+                 L 68 102 Z"
               fill={hairColor}
               stroke={outlineColor}
               strokeWidth={2}
