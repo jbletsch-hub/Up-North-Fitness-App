@@ -1,9 +1,9 @@
 {
   "name": "Up North Fitness",
   "short_name": "Up North",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Fitness tracking with gamification - Track workouts, earn XP, complete challenges, and level up!",
-  "start_url": "/?v=1.0.6",
+  "start_url": "/?v=1.0.7",
   "display": "standalone",
   "background_color": "#1A1F2E",
   "theme_color": "#E8B500",
@@ -11,15 +11,15 @@
   "icons": [
     {
       "src": "/icon-192.png",
-      "sizes": "192x192",
+      "sizes": "any",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "/icon-512.png",
-      "sizes": "512x512",
+      "sizes": "any",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'up-north-fitness-v1.0.15';
+const CACHE_NAME = 'up-north-fitness-v1.0.16';
 const urlsToCache = [
   '/manifest.json',
   '/icon-192.png',
