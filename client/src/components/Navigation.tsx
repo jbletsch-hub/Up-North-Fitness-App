@@ -32,24 +32,28 @@ export function Navigation({ isLoggedIn, username, isAdmin, userLevel, userXP, u
   return (
     <>
       <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
-        <div className="flex h-16 items-center justify-between px-4 md:px-6 max-w-7xl mx-auto">
+        <div className="flex h-16 items-center gap-3 px-4 md:px-6 max-w-7xl mx-auto">
+          {/* Mobile Menu - Far Left */}
+          {isLoggedIn && (
+            <MobileNav 
+              username={username}
+              isAdmin={isAdmin}
+              userLevel={userLevel}
+              userXP={userXP}
+              userTitle={userTitle}
+            />
+          )}
+
+          {/* Logo and Title */}
           <Link href="/" className="flex items-center gap-2 hover-elevate active-elevate-2 px-3 py-2 rounded-md">
-            <Dumbbell className="h-6 w-6 text-primary" />
-            <span className="font-display text-2xl tracking-wider">UP NORTH FITNESS</span>
+            <Dumbbell className="h-5 w-5 md:h-6 md:w-6 text-primary" />
+            <span className="font-display text-lg md:text-xl lg:text-2xl tracking-wider whitespace-nowrap">UP NORTH FITNESS</span>
           </Link>
 
-          <nav className="flex items-center gap-2">
+          {/* Right side navigation */}
+          <nav className="flex items-center gap-2 ml-auto">
             {isLoggedIn ? (
               <>
-                {/* Mobile Hamburger Menu */}
-                <MobileNav 
-                  username={username}
-                  isAdmin={isAdmin}
-                  userLevel={userLevel}
-                  userXP={userXP}
-                  userTitle={userTitle}
-                />
-                
                 {/* Mobile Logout Button */}
                 <Button
                   variant="ghost"

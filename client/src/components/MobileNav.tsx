@@ -48,8 +48,8 @@ export function MobileNav({ username, isAdmin, userLevel, userXP, userTitle }: M
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden" data-testid="button-mobile-menu">
-          <Menu className="h-5 w-5" />
+        <Button variant="ghost" size="default" className="md:hidden px-3" data-testid="button-mobile-menu">
+          <Menu className="h-6 w-6" />
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="w-[280px] sm:w-[320px]">
