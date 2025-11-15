@@ -1807,6 +1807,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         xp: u.xp,
         title: u.title,
         mvlWins: u.mvlWins || 0,
+        gender: u.gender || "male",
+        skinColor: u.skinColor || "#FFCC99",
         characterType: u.characterType || "classic",
         shirtColor: u.shirtColor,
         shortsColor: u.shortsColor,
