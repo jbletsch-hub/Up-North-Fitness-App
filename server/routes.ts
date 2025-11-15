@@ -24,7 +24,7 @@ function getTodayDate(): string {
 }
 
 // Get Monday of current week in Central Time
-export function getWeekBounds(): { weekStart: string; weekEnd: string } {
+export function getWeekBounds(): { weekStart: Date; weekEnd: Date } {
   const now = new Date();
   const centralTime = new Date(now.toLocaleString("en-US", { timeZone: "America/Chicago" }));
   
@@ -44,17 +44,9 @@ export function getWeekBounds(): { weekStart: string; weekEnd: string } {
   sunday.setDate(monday.getDate() + 6);
   sunday.setHours(23, 59, 59, 999);
   
-  // Format as YYYY-MM-DD
-  const formatDate = (date: Date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-  
   return {
-    weekStart: formatDate(monday),
-    weekEnd: formatDate(sunday)
+    weekStart: monday,
+    weekEnd: sunday
   };
 }
 
@@ -2279,8 +2271,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const { weekStart } = getWeekBounds();
       
+      // Format weekStart as YYYY-MM-DD for storage
+      const formatDate = (date: Date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+      const weekStartStr = formatDate(weekStart);
+      
       // Check if MVM already awarded for this week
-      const existingWinner = await storage.getWeeklyMVMWinnerForWeek(weekStart);
+      const existingWinner = await storage.getWeeklyMVMWinnerForWeek(weekStartStr);
       if (existingWinner) {
         return res.status(400).json({ message: "MVM already awarded for this week" });
       }
@@ -2294,7 +2295,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const winner = leaderboard[0];
       
       // Award MVM
-      await storage.awardWeeklyMVM(winner.id, weekStart, winner.weeklyXP);
+      await storage.awardWeeklyMVM(winner.id, weekStartStr, winner.weeklyXP);
       
       // Create activity for the win
       await storage.createActivity({

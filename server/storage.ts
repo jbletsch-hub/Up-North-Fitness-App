@@ -1168,7 +1168,7 @@ export class DatabaseStorage implements IStorage {
       .select({
         crewId: crewMemberships.crewId,
         crewName: crews.name,
-        completedCount: sql<number>`COUNT(DISTINCT CASE WHEN ${userDailyChallenges.completedAt} >= ${weekStart} THEN ${userDailyChallenges.userId} END)`.as('completedCount'),
+        completedCount: sql<number>`COUNT(DISTINCT CASE WHEN ${userDailyChallenges.completed} = true AND ${userDailyChallenges.date} >= ${weekStart.toISOString()} THEN ${userDailyChallenges.userId} END)`.as('completedCount'),
         memberCount: sql<number>`COUNT(DISTINCT ${crewMemberships.userId})`.as('memberCount'),
       })
       .from(crewMemberships)
@@ -1219,7 +1219,7 @@ export class DatabaseStorage implements IStorage {
         activities,
         and(
           eq(activities.userId, users.id),
-          sql`${activities.createdAt} >= ${weekStart}`
+          gte(activities.createdAt, weekStart)
         )
       )
       .groupBy(users.id)
