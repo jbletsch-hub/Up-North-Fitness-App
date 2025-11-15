@@ -282,18 +282,26 @@ export function AvatarDisplay({
       case "long":
         return (
           <g>
-            {/* Left side - flowing hair from ear down to waist */}
+            {/* Top/crown coverage - covers head but keeps forehead clear */}
             <path
-              d="M 72 50 Q 72 52, 72 54
+              d="M 76 48 Q 78 36, 84 30 Q 92 26, 100 25 Q 108 26, 116 30 Q 122 36, 124 48
+                 L 122 50 Q 100 44, 78 50 Z"
+              fill={hairColor}
+              stroke={outlineColor}
+              strokeWidth={2}
+            />
+            {/* Left side - flowing hair from crown down to waist */}
+            <path
+              d="M 76 48 Q 74 50, 72 54
                  Q 72 62, 71 72 Q 70 82, 69 92 Q 68 98, 68 102
                  L 74 100 Q 75 92, 76 82 Q 77 70, 78 58 Q 78 54, 78 50 Z"
               fill={hairColor}
               stroke={outlineColor}
               strokeWidth={2}
             />
-            {/* Right side - flowing hair from ear down to waist */}
+            {/* Right side - flowing hair from crown down to waist */}
             <path
-              d="M 128 50 Q 128 52, 128 54
+              d="M 124 48 Q 126 50, 128 54
                  Q 128 62, 129 72 Q 130 82, 131 92 Q 132 98, 132 102
                  L 126 100 Q 125 92, 124 82 Q 123 70, 122 58 Q 122 54, 122 50 Z"
               fill={hairColor}
@@ -302,10 +310,10 @@ export function AvatarDisplay({
             />
             {/* Flowing texture lines - left side */}
             <path d="M 74 56 Q 73 72, 72 88" stroke={darkerHair} strokeWidth="1.3" fill="none" opacity="0.5" />
-            <path d="M 76 54 Q 75 68, 74 84" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.4" />
+            <path d="M 78 52 Q 77 68, 76 84" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.4" />
             {/* Flowing texture lines - right side */}
             <path d="M 126 56 Q 127 72, 128 88" stroke={darkerHair} strokeWidth="1.3" fill="none" opacity="0.5" />
-            <path d="M 124 54 Q 125 68, 126 84" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.4" />
+            <path d="M 122 52 Q 123 68, 124 84" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.4" />
           </g>
         );
       
@@ -443,10 +451,10 @@ export function AvatarDisplay({
               stroke={outlineColor}
               strokeWidth={2}
             />
-            {/* Small top bun - positioned on top of head */}
+            {/* Small top bun - positioned higher on top of head */}
             <circle
               cx="100"
-              cy="30"
+              cy="20"
               r="8"
               fill={hairColor}
               stroke={outlineColor}
@@ -455,7 +463,7 @@ export function AvatarDisplay({
             {/* Bun detail/texture */}
             <circle
               cx="100"
-              cy="30"
+              cy="20"
               r="5"
               fill="none"
               stroke={darkerHair}
