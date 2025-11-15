@@ -2208,6 +2208,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin: Directly assign user to crew (bypasses invitation system)
+  app.post("/api/admin/assign-to-crew", isAuthenticated, async (req: any, res) => {
+    try {
+      const adminUserId = req.user.id;
+      const { targetUserId, crewId } = req.body;
+
+      // Check if user is admin
+      const admin = await storage.getUser(adminUserId);
+      if (!admin || !admin.isAdmin) {
+        return res.status(403).json({ message: "Only admins can assign users to crews" });
+      }
+
+      // Remove user from current crew if they're in one
+      const currentCrew = await storage.getUserCrew(targetUserId);
+      if (currentCrew) {
+        await storage.removeCrewMember(currentCrew.crewId, targetUserId);
+      }
+
+      // Add user to new crew as member
+      await storage.addCrewMember({
+        crewId,
+        userId: targetUserId,
+        role: "member",
+      });
+
+      res.json({ success: true, message: "User assigned to crew" });
+    } catch (error) {
+      console.error("Error assigning user to crew:", error);
+      res.status(500).json({ message: "Failed to assign user to crew" });
+    }
+  });
+
   // Crew Competitions Endpoints
   app.get("/api/crew-competitions/check-ins", isAuthenticated, async (req, res) => {
     try {
