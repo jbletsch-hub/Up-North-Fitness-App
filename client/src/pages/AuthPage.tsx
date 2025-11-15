@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Compass } from "lucide-react";
 import { Redirect } from "wouter";
 
 export default function AuthPage() {
@@ -35,8 +34,12 @@ export default function AuthPage() {
       <div className="flex items-center justify-center p-8">
         <Card className="w-full max-w-md border-card-border">
           <CardHeader className="space-y-1">
-            <div className="flex items-center gap-2 mb-4">
-              <Compass className="h-8 w-8 text-primary" />
+            <div className="flex items-center gap-3 mb-4">
+              <img 
+                src="/compass-logo.png" 
+                alt="Up North Fitness Logo" 
+                className="h-12 w-12 object-contain"
+              />
               <span className="font-display text-3xl tracking-wider">UP NORTH FITNESS</span>
             </div>
             <CardTitle className="text-2xl">
