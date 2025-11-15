@@ -23,7 +23,8 @@ The gamification system includes an XP curve (~200k XP for level 50) and an 11-t
   - **CheckInCard:** Added `hasCheckedInToday` field to `/api/dashboard` endpoint, component receives this from server instead of managing local state.
   - **DailyChallenges:** Component reads `completed` field directly from server data in `user_daily_challenges` table.
   - **Impact:** Check-ins and challenge completions now persist correctly across page refreshes.
-- **Apple PWA Icon Optimization:** Reduced icon size from 1.8MB to 50KB using compass-icon.jpg, updated manifest.json and service worker to v1.0.5 for proper caching.
+- **Apple PWA Icon Optimization:** Reduced icon size from 1.8MB to 50KB using compass-icon.jpg, updated manifest.json and service worker to v1.0.6 for proper caching.
+- **Photo Upload Auto-Refresh Fix:** Added explicit event.preventDefault() to ObjectUploader button handler to prevent page refresh after photo upload in production builds.
 
 ## State Management Best Practices
 - **NEVER use optimistic local state** (useState) for server-persisted data in components
