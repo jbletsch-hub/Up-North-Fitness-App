@@ -23,6 +23,41 @@ function getTodayDate(): string {
   return getCentralTimeDate();
 }
 
+// Get Monday of current week in Central Time
+export function getWeekBounds(): { weekStart: string; weekEnd: string } {
+  const now = new Date();
+  const centralTime = new Date(now.toLocaleString("en-US", { timeZone: "America/Chicago" }));
+  
+  // Get day of week (0 = Sunday, 6 = Saturday)
+  const dayOfWeek = centralTime.getDay();
+  
+  // Calculate days to subtract to get to Monday
+  const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+  
+  // Create new date for Monday
+  const monday = new Date(centralTime);
+  monday.setDate(centralTime.getDate() - daysToMonday);
+  monday.setHours(0, 0, 0, 0);
+  
+  // Create new date for Sunday (end of week)
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  sunday.setHours(23, 59, 59, 999);
+  
+  // Format as YYYY-MM-DD
+  const formatDate = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+  
+  return {
+    weekStart: formatDate(monday),
+    weekEnd: formatDate(sunday)
+  };
+}
+
 function getRelativeTime(date: Date): string {
   const now = new Date();
   const diff = now.getTime() - date.getTime();
