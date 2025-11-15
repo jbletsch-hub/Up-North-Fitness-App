@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Navigation } from "@/components/Navigation";
 import { CrewGoalMeter } from "@/components/CrewGoalMeter";
+import { GymTotalCard } from "@/components/GymTotalCard";
 import { DailyChallenges } from "@/components/DailyChallenges";
 import { CheckInCard } from "@/components/CheckInCard";
 import { PRTracker } from "@/components/PRTracker";
@@ -529,6 +530,9 @@ export default function Dashboard() {
             />
           </div>
         )}
+
+        {/* Gym Combined Total - Only show in gym-wide view */}
+        {!isCrewView && <GymTotalCard total={total} />}
 
         {/* Quick Stats Overview - Only show in crew view */}
         {isCrewView && <QuickStatsWidget />}
