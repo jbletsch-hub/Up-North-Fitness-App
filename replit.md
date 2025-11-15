@@ -24,7 +24,7 @@ The gamification system includes an XP curve (~200k XP for level 50) and an 11-t
   - **Improved Hair Rendering:** All hair styles redesigned with proper volume and realistic appearance; curly hair positioned higher to avoid covering eyes; long hair rendered as single continuous SVG path with no gaps; ponytail bun positioned high on head (cy=20)
   - **Facial Hair (Males Only):** None, stubble, small beard, big beard options; section hidden for female avatars
   - **Automatic Validation:** Hair style resets to valid option when switching genders
-  - **Avatar Customization Display:** All avatar props (facial hair, hair style, hair color, skin color, gender, character type, accessories) now display correctly across all pages (Dashboard, Stats, Activity Feed, Crew Challenges). Fixed fallback values to use proper hex color codes instead of string literals.
+  - **Avatar Customization Display:** All avatar props (facial hair, hair style, hair color, skin color, gender, character type, accessories) display correctly across all pages. Fixed by adding missing `skinColor` and `gender` fields to `/api/stats` and `/api/users` endpoints. Frontend fallback values use proper hex color codes.
 - **UI/UX:** Custom compass navigation logo, PWA support with compass icon, public profiles for user stats.
 - **MVL Race Logic:** MVL calculation focuses on XP from daily activities to emphasize consistent daily effort.
 - **PR Tracking:** Separate `prHistory` table tracks all PR updates for historical analysis, displayed on stats page.
