@@ -50,6 +50,7 @@ export function CollapsibleSection({
             {title}
           </CardTitle>
           <Button
+            type="button"
             variant="ghost"
             size="icon"
             onClick={toggleExpanded}
