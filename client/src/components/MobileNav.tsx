@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, Dumbbell, Home, Trophy, User, Settings, LogOut, Users } from "lucide-react";
+import { Menu, Dumbbell, Home, Trophy, User, Settings, LogOut, Users, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -9,8 +9,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { apiRequest } from "@/lib/queryClient";
-import { useQuery } from "@tanstack/react-query";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 
 interface MobileNavProps {
   username?: string;
@@ -23,11 +26,42 @@ interface MobileNavProps {
 export function MobileNav({ username, isAdmin, userLevel, userXP, userTitle }: MobileNavProps) {
   const [open, setOpen] = useState(false);
   const [, setLocation] = useLocation();
+  const { toast } = useToast();
 
   // Fetch user's crew
   const { data: crewData } = useQuery({
     queryKey: ['/api/crews/my-crew'],
     enabled: open, // Only fetch when menu is open
+  });
+
+  // Fetch user's privacy setting
+  const { data: userData } = useQuery({
+    queryKey: ['/api/user'],
+    enabled: open, // Only fetch when menu is open
+  });
+
+  // Toggle privacy mutation
+  const togglePrivacyMutation = useMutation({
+    mutationFn: async (isPrivate: boolean) => {
+      const result = await apiRequest("POST", "/api/user/privacy", { isPrivate });
+      return result;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/user'] });
+      toast({
+        title: "Privacy Updated",
+        description: userData?.isPrivateProfile 
+          ? "Your profile is now visible to the entire gym" 
+          : "Your profile is now visible to crew members only",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update privacy settings",
+        variant: "destructive",
+      });
+    },
   });
 
   const handleLogout = async () => {
@@ -117,6 +151,28 @@ export function MobileNav({ username, isAdmin, userLevel, userXP, userTitle }: M
                 Profile
               </Link>
             </Button>
+
+            {/* Privacy Settings */}
+            <div className="flex items-center justify-between p-3 rounded-md border border-border">
+              <div className="flex items-center gap-3">
+                <Lock className="h-5 w-5 text-muted-foreground" />
+                <div className="flex flex-col">
+                  <Label htmlFor="private-profile" className="text-sm font-medium cursor-pointer">
+                    Private Profile
+                  </Label>
+                  <span className="text-xs text-muted-foreground">
+                    Crew members only
+                  </span>
+                </div>
+              </div>
+              <Switch
+                id="private-profile"
+                checked={userData?.isPrivateProfile || false}
+                onCheckedChange={(checked) => togglePrivacyMutation.mutate(checked)}
+                disabled={togglePrivacyMutation.isPending}
+                data-testid="switch-private-profile"
+              />
+            </div>
             
             <Button
               variant="ghost"
