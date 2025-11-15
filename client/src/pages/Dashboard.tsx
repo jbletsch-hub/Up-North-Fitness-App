@@ -648,7 +648,11 @@ export default function Dashboard() {
         </CollapsibleSection>
 
         <CollapsibleSection id="mvl-race" title="MVL Race">
-          <DailyMVLCard />
+          <DailyMVLCard 
+            crewId={userCrew?.crewId}
+            crewName={userCrew?.crew?.name}
+            isCrewView={isCrewView && !!userCrew}
+          />
         </CollapsibleSection>
 
         <CollapsibleSection id="crew-challenge" title="Crew Challenge">

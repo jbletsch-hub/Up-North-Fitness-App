@@ -4,10 +4,25 @@ import { Trophy, Flame } from "lucide-react";
 import { Link } from "wouter";
 import type { User } from "../../../shared/schema";
 
-export function DailyMVLCard() {
+interface DailyMVLCardProps {
+  crewId?: string;
+  crewName?: string;
+  isCrewView?: boolean;
+}
+
+export function DailyMVLCard({ crewId, crewName, isCrewView = false }: DailyMVLCardProps) {
+  const queryKey = isCrewView && crewId 
+    ? [`/api/leaderboards/crew-mvl/${crewId}`]
+    : ["/api/leaderboards/mvl"];
+
   const { data: leaderboard, isLoading } = useQuery<User[]>({
-    queryKey: ["/api/leaderboards/mvl"],
+    queryKey,
   });
+
+  const title = isCrewView && crewName ? `${crewName.toUpperCase()} MVL RACE` : "TODAY'S MVL RACE";
+  const description = isCrewView && crewName 
+    ? `${crewName} Most Valuable Lifter - Daily XP Leaders`
+    : "Most Valuable Lifter - Daily XP Leaders";
 
   if (isLoading) {
     return (
@@ -15,9 +30,9 @@ export function DailyMVLCard() {
         <CardHeader>
           <CardTitle className="text-xl font-display tracking-wider flex items-center gap-2">
             <Flame className="h-5 w-5 text-primary" />
-            TODAY'S MVL RACE
+            {title}
           </CardTitle>
-          <CardDescription>Most Valuable Lifter - Daily XP Leaders</CardDescription>
+          <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-center py-4 text-muted-foreground">Loading...</div>
@@ -32,9 +47,9 @@ export function DailyMVLCard() {
         <CardHeader>
           <CardTitle className="text-xl font-display tracking-wider flex items-center gap-2">
             <Flame className="h-5 w-5 text-primary" />
-            TODAY'S MVL RACE
+            {title}
           </CardTitle>
-          <CardDescription>Most Valuable Lifter - Daily XP Leaders</CardDescription>
+          <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-center py-4 text-muted-foreground">
@@ -54,9 +69,9 @@ export function DailyMVLCard() {
         <CardHeader>
           <CardTitle className="text-xl font-display tracking-wider flex items-center gap-2">
             <Flame className="h-5 w-5 text-primary" />
-            TODAY'S MVL RACE
+            {title}
           </CardTitle>
-          <CardDescription>Most Valuable Lifter - Daily XP Leaders</CardDescription>
+          <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-center py-4 text-muted-foreground">
@@ -72,9 +87,9 @@ export function DailyMVLCard() {
       <CardHeader>
         <CardTitle className="text-xl font-display tracking-wider flex items-center gap-2">
           <Flame className="h-5 w-5 text-primary" />
-          TODAY'S MVL RACE
+          {title}
         </CardTitle>
-        <CardDescription>Most Valuable Lifter - Daily XP Leaders</CardDescription>
+        <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
         {activeUsers.slice(0, 5).map((user, index) => (

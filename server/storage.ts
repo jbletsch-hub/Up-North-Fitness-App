@@ -76,6 +76,7 @@ export interface IStorage {
   toggleUserAdmin(id: string, isAdmin: boolean): Promise<User>;
   updateUserAvatar(id: string, avatar: { characterType?: string; shirtColor?: string; shortsColor?: string; headband?: boolean; wristbands?: boolean; hairStyle?: string; hairColor?: string; facialHair?: string }): Promise<User>;
   getTodayMVLLeaderboard(limit: number): Promise<User[]>;
+  getCrewMVLLeaderboard(crewId: string, limit: number): Promise<User[]>;
   awardMVLWin(id: string): Promise<User>;
   resetAllDailyXP(date: string): Promise<void>;
   
@@ -364,6 +365,42 @@ export class DatabaseStorage implements IStorage {
     const leaderboard = await db
       .select()
       .from(users)
+      .orderBy(desc(users.dailyXp))
+      .limit(limit);
+    return leaderboard;
+  }
+
+  async getCrewMVLLeaderboard(crewId: string, limit: number): Promise<User[]> {
+    const leaderboard = await db
+      .select({
+        id: users.id,
+        username: users.username,
+        displayName: users.displayName,
+        email: users.email,
+        isAdmin: users.isAdmin,
+        level: users.level,
+        xp: users.xp,
+        dailyXp: users.dailyXp,
+        streakCount: users.streakCount,
+        title: users.title,
+        characterType: users.characterType,
+        shirtColor: users.shirtColor,
+        shortsColor: users.shortsColor,
+        headband: users.headband,
+        wristbands: users.wristbands,
+        hairStyle: users.hairStyle,
+        hairColor: users.hairColor,
+        facialHair: users.facialHair,
+        mvlWins: users.mvlWins,
+        lastCheckin: users.lastCheckin,
+        lastRerollDate: users.lastRerollDate,
+        lastDailyXpReset: users.lastDailyXpReset,
+        lastChallengeWeekStart: users.lastChallengeWeekStart,
+        challengesCompletedThisWeek: users.challengesCompletedThisWeek,
+      })
+      .from(users)
+      .innerJoin(crewMemberships, eq(users.id, crewMemberships.userId))
+      .where(eq(crewMemberships.crewId, crewId))
       .orderBy(desc(users.dailyXp))
       .limit(limit);
     return leaderboard;

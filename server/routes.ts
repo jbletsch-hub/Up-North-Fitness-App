@@ -1800,6 +1800,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Crew-specific MVL leaderboard endpoint
+  app.get("/api/leaderboards/crew-mvl/:crewId", async (req, res) => {
+    try {
+      const { crewId } = req.params;
+      const leaderboard = await storage.getCrewMVLLeaderboard(crewId, 10);
+      res.json(leaderboard);
+    } catch (error) {
+      console.error("Error fetching crew MVL leaderboard:", error);
+      res.status(500).json({ message: "Failed to fetch crew MVL leaderboard" });
+    }
+  });
+
   // Admin endpoint to award MVL to yesterday's top earner
   app.post("/api/admin/award-mvl", isAuthenticated, async (req: any, res) => {
     try {
