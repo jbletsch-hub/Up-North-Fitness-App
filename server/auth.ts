@@ -123,6 +123,19 @@ export function setupAuth(app: Express) {
 
   app.get("/api/user", (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    res.json(req.user);
+    
+    // Transform snake_case privacy fields to camelCase for frontend
+    const user = req.user;
+    const transformedUser = {
+      ...user,
+      showPRs: user.show_prs,
+      showPhotos: user.show_photos,
+      showActivities: user.show_activities,
+      showStats: user.show_stats,
+      showGoals: user.show_goals,
+      showMetrics: user.show_metrics,
+    };
+    
+    res.json(transformedUser);
   });
 }
