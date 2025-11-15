@@ -25,11 +25,19 @@ import { Card, CardContent } from "@/components/ui/card";
 import { CrewChallengeCard } from "@/components/CrewChallengeCard";
 import { QuickStatsWidget } from "@/components/QuickStatsWidget";
 import { CollapsibleSection } from "@/components/CollapsibleSection";
+import { ViewContextSwitcher } from "@/components/ViewContextSwitcher";
+import { useViewContext } from "@/hooks/use-view-context";
 
 export default function Dashboard() {
   const { toast } = useToast();
   const { user, isLoading } = useAuth();
   const { showXP, popup } = useXPPopup();
+  const { viewContext, isCrewView } = useViewContext();
+
+  const { data: userCrew } = useQuery({
+    queryKey: ["/api/crews/my-crew"],
+    enabled: !!user,
+  });
 
   const { data: dashboardData } = useQuery({
     queryKey: ["/api/dashboard"],
@@ -507,6 +515,16 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+
+        {/* View Context Switcher */}
+        {userCrew?.crew && (
+          <div className="flex justify-center">
+            <ViewContextSwitcher 
+              crewName={userCrew.crew.name}
+              gymName="Up North Fitness"
+            />
+          </div>
+        )}
 
         {/* Quick Stats Overview */}
         <QuickStatsWidget />
