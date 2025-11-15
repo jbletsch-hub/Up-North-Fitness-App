@@ -1,6 +1,7 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/use-auth";
+import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -105,14 +106,33 @@ export default function CrewsPage() {
 
   if (isLoadingUserCrew || isLoadingAllCrews) {
     return (
-      <div className="container mx-auto p-4 max-w-6xl">
-        <div className="text-muted-foreground">Loading crews...</div>
+      <div className="min-h-screen bg-background">
+        <Navigation
+          isLoggedIn={true}
+          username={user?.username}
+          isAdmin={user?.isAdmin || false}
+          userLevel={user?.level}
+          userXP={user?.xp}
+          userTitle={user?.title}
+        />
+        <main className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6 pb-20 md:pb-6">
+          <div className="text-muted-foreground">Loading crews...</div>
+        </main>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-4 max-w-6xl space-y-6">
+    <div className="min-h-screen bg-background">
+      <Navigation
+        isLoggedIn={true}
+        username={user?.username}
+        isAdmin={user?.isAdmin || false}
+        userLevel={user?.level}
+        userXP={user?.xp}
+        userTitle={user?.title}
+      />
+      <main className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-6 pb-20 md:pb-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Crews</h1>
@@ -314,6 +334,7 @@ export default function CrewsPage() {
           </div>
         </div>
       )}
+      </main>
     </div>
   );
 }
