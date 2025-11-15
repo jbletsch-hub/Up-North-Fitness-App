@@ -23,7 +23,12 @@ const createCrewSchema = z.object({
   color: z.string().regex(/^#[0-9A-Fa-f]{6}$/, "Must be a valid hex color"),
 });
 
+const inviteUserSchema = z.object({
+  username: z.string().min(1, "Username is required"),
+});
+
 type CreateCrewForm = z.infer<typeof createCrewSchema>;
+type InviteUserForm = z.infer<typeof inviteUserSchema>;
 
 type MemberWithDetails = CrewMembership & {
   username: string;
@@ -34,10 +39,22 @@ type MemberWithDetails = CrewMembership & {
 
 type UserCrewResponse = (CrewMembership & { crew: Crew }) | null;
 
+type CrewInvite = {
+  id: string;
+  crewId: string;
+  userId: string;
+  invitedBy: string;
+  status: string;
+  createdAt: string;
+  crew: Crew;
+  inviterUsername: string;
+};
+
 export default function CrewsPage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
 
   const { data: userCrew, isLoading: isLoadingUserCrew } = useQuery<UserCrewResponse>({
     queryKey: ["/api/crews/my-crew"],
@@ -50,6 +67,10 @@ export default function CrewsPage() {
   const { data: crewMembers, isLoading: isLoadingMembers } = useQuery<MemberWithDetails[]>({
     queryKey: ["/api/crews", userCrew?.crewId, "members"],
     enabled: !!userCrew?.crewId,
+  });
+
+  const { data: myInvites, isLoading: isLoadingInvites } = useQuery<CrewInvite[]>({
+    queryKey: ["/api/crews/invites/my-invites"],
   });
 
   const createCrewMutation = useMutation({
@@ -89,6 +110,46 @@ export default function CrewsPage() {
     },
   });
 
+  const inviteUserMutation = useMutation({
+    mutationFn: async (data: InviteUserForm) => {
+      return await apiRequest("POST", `/api/crews/${userCrew?.crewId}/invite`, data);
+    },
+    onSuccess: () => {
+      setInviteDialogOpen(false);
+      inviteForm.reset();
+      toast({ title: "Invite sent!", description: "The user has been invited to your crew." });
+    },
+    onError: (error: any) => {
+      toast({ 
+        title: "Failed to send invite", 
+        description: error.message || "Something went wrong",
+        variant: "destructive" 
+      });
+    },
+  });
+
+  const respondToInviteMutation = useMutation({
+    mutationFn: async ({ inviteId, action }: { inviteId: string; action: 'accept' | 'decline' }) => {
+      return await apiRequest("POST", `/api/crews/invites/${inviteId}/${action}`);
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/crews/invites/my-invites"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/crews/my-crew"] });
+      if (variables.action === 'accept') {
+        toast({ title: "Joined crew!", description: "You've joined the crew." });
+      } else {
+        toast({ title: "Invite declined", description: "You've declined the invite." });
+      }
+    },
+    onError: (error: any) => {
+      toast({ 
+        title: "Failed to respond to invite", 
+        description: error.message || "Something went wrong",
+        variant: "destructive" 
+      });
+    },
+  });
+
   const form = useForm<CreateCrewForm>({
     resolver: zodResolver(createCrewSchema),
     defaultValues: {
@@ -98,8 +159,19 @@ export default function CrewsPage() {
     },
   });
 
+  const inviteForm = useForm<InviteUserForm>({
+    resolver: zodResolver(inviteUserSchema),
+    defaultValues: {
+      username: "",
+    },
+  });
+
   const onSubmit = (data: CreateCrewForm) => {
     createCrewMutation.mutate(data);
+  };
+
+  const onInviteSubmit = (data: InviteUserForm) => {
+    inviteUserMutation.mutate(data);
   };
 
   const isLeader = userCrew?.role === "leader";
@@ -219,6 +291,59 @@ export default function CrewsPage() {
         )}
       </div>
 
+      {/* Pending Invites */}
+      {!userCrew && myInvites && myInvites.length > 0 && (
+        <Card data-testid="card-pending-invites">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <UserPlus className="w-5 h-5" />
+              Crew Invitations
+            </CardTitle>
+            <CardDescription>You have pending crew invitations</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {myInvites.map((invite) => (
+                <div 
+                  key={invite.id} 
+                  className="flex items-center justify-between p-4 rounded-lg bg-muted/50 border"
+                  data-testid={`invite-${invite.id}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: invite.crew.color }} />
+                    <div>
+                      <div className="font-medium">{invite.crew.name}</div>
+                      <div className="text-sm text-muted-foreground">
+                        Invited by {invite.inviterUsername}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      onClick={() => respondToInviteMutation.mutate({ inviteId: invite.id, action: 'accept' })}
+                      disabled={respondToInviteMutation.isPending}
+                      data-testid={`button-accept-${invite.id}`}
+                    >
+                      Accept
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => respondToInviteMutation.mutate({ inviteId: invite.id, action: 'decline' })}
+                      disabled={respondToInviteMutation.isPending}
+                      data-testid={`button-decline-${invite.id}`}
+                    >
+                      Decline
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {userCrew && (
         <Card data-testid="card-my-crew">
           <CardHeader>
@@ -294,14 +419,50 @@ export default function CrewsPage() {
 
               {isLeader && (
                 <div className="flex gap-2 pt-4 border-t">
-                  <Button variant="outline" size="sm" data-testid="button-invite-members">
-                    <UserPlus className="w-4 h-4 mr-2" />
-                    Invite Members
-                  </Button>
-                  <Button variant="outline" size="sm" data-testid="button-manage-crew">
-                    <Shield className="w-4 h-4 mr-2" />
-                    Manage Crew
-                  </Button>
+                  <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm" data-testid="button-invite-members">
+                        <UserPlus className="w-4 h-4 mr-2" />
+                        Invite Members
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Invite Member to {userCrew?.crew.name}</DialogTitle>
+                        <DialogDescription>
+                          Enter the username of the person you want to invite to your crew.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <Form {...inviteForm}>
+                        <form onSubmit={inviteForm.handleSubmit(onInviteSubmit)} className="space-y-4">
+                          <FormField
+                            control={inviteForm.control}
+                            name="username"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Username</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="Enter username" {...field} data-testid="input-invite-username" />
+                                </FormControl>
+                                <FormDescription>
+                                  The user will receive an invitation to join your crew
+                                </FormDescription>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <div className="flex justify-end gap-2">
+                            <Button type="button" variant="outline" onClick={() => setInviteDialogOpen(false)} data-testid="button-cancel-invite">
+                              Cancel
+                            </Button>
+                            <Button type="submit" disabled={inviteUserMutation.isPending} data-testid="button-submit-invite">
+                              {inviteUserMutation.isPending ? "Sending..." : "Send Invite"}
+                            </Button>
+                          </div>
+                        </form>
+                      </Form>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               )}
             </div>
