@@ -231,34 +231,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Update granular privacy settings
+  // Update privacy setting (single toggle)
   app.post("/api/user/privacy-settings", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.id;
-      const settings = req.body;
+      const { isProfilePrivate } = req.body;
       
-      console.log('[PRIVACY POST] Received request from user:', userId);
-      console.log('[PRIVACY POST] Request body:', JSON.stringify(settings, null, 2));
-
-      // Validate that at least one setting is provided and all are booleans
-      const validFields = ['showPRs', 'showPhotos', 'showActivities', 'showStats', 'showGoals', 'showMetrics'];
-      const providedFields = Object.keys(settings);
-      
-      if (providedFields.length === 0) {
-        return res.status(400).json({ message: "At least one privacy setting must be provided" });
+      // Validate isProfilePrivate is a boolean
+      if (typeof isProfilePrivate !== "boolean") {
+        return res.status(400).json({ message: "isProfilePrivate must be a boolean" });
       }
 
-      for (const field of providedFields) {
-        if (!validFields.includes(field)) {
-          return res.status(400).json({ message: `Invalid privacy field: ${field}` });
-        }
-        if (typeof settings[field] !== "boolean") {
-          return res.status(400).json({ message: `${field} must be a boolean` });
-        }
-      }
-
-      const user = await storage.updateUserPrivacySettings(userId, settings);
-      console.log('[PRIVACY POST] Successfully updated, returning user');
+      const user = await storage.updateUserPrivacySettings(userId, { isProfilePrivate });
       res.json({ success: true, user });
     } catch (error) {
       console.error("Error updating privacy settings:", error);
@@ -285,7 +269,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Home page data
+  // Helper function to sanitize user data based on privacy settings
+  // Returns only public/competitive fields for private profiles
+  // Crew members must use profile/stats endpoints for full access
+  const sanitizeUserForLeaderboard = (user: any) => {
+    // If profile is private, only return competitive & display data
+    if (user.isProfilePrivate) {
+      return {
+        id: user.id,
+        username: user.username,
+        displayName: user.displayName,
+        level: user.level,
+        xp: user.xp,
+        title: user.title,
+        crewName: user.crewName,
+        // Competitive stats (public for leaderboards)
+        mvlWins: user.mvlWins || 0,
+        dailyXp: user.dailyXp || 0,
+        // Avatar data for display
+        gender: user.gender || "male",
+        skinColor: user.skinColor || "#FFCC99",
+        characterType: user.characterType || "classic",
+        shirtColor: user.shirtColor,
+        shortsColor: user.shortsColor,
+        hairStyle: user.hairStyle,
+        hairColor: user.hairColor,
+        headband: user.headband,
+        wristbands: user.wristbands,
+        facialHair: user.facialHair,
+        isProfilePrivate: user.isProfilePrivate,
+      };
+    }
+    // Public profile - return all data as-is
+    return user;
+  };
+
+  // Home page data (public endpoint - no authentication required)
   app.get("/api/home", async (req, res) => {
     try {
       const leaderboard = await storage.getAllUsersWithCrews();
@@ -294,13 +313,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const allPRs = await storage.getAllPRs();
       const total = allPRs.reduce((sum, pr) => sum + pr.squat + pr.bench + pr.deadlift, 0);
 
+      // Sanitize leaderboard data to respect privacy settings
+      const sanitizedLeaderboard = leaderboard.map(sanitizeUserForLeaderboard);
+
       const formattedActivities = activities.map((a) => ({
         ...a,
         createdAt: getRelativeTime(new Date(a.createdAt)),
       }));
 
       res.json({
-        leaderboard,
+        leaderboard: sanitizedLeaderboard,
         activities: formattedActivities,
         goal,
         total,
@@ -867,7 +889,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         createdAt: getRelativeTime(new Date(a.createdAt)),
       }));
 
-      // Apply granular privacy filters
+      // Apply privacy filters
       const response: any = {
         user: profileUser,
         crewName: profileUserCrewName,
@@ -881,24 +903,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         response.challenges = challenges;
         response.weeklyGoals = weeklyGoals;
         response.lifetimeGoals = lifetimeGoals;
-      } else {
-        // Apply privacy settings for non-crew members
-        if (profileUser.showPRs) {
-          response.pr = pr;
-        }
-        if (profileUser.showPhotos) {
-          response.photos = photos;
-        }
-        if (profileUser.showActivities) {
-          response.activities = formattedActivities;
-        }
-        if (profileUser.showGoals) {
-          response.weeklyGoals = weeklyGoals;
-          response.lifetimeGoals = lifetimeGoals;
-        }
-        // Challenges are always shown (part of profile functionality)
+      } else if (!profileUser.isProfilePrivate) {
+        // Public profile: non-crew members see everything
+        response.pr = pr;
+        response.photos = photos;
+        response.activities = formattedActivities;
         response.challenges = challenges;
+        response.weeklyGoals = weeklyGoals;
+        response.lifetimeGoals = lifetimeGoals;
       }
+      // Private profile: non-crew members only see name, crew, level (already in response)
 
       res.json(response);
     } catch (error) {
@@ -1629,11 +1643,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Activity Feed endpoint - get recent activities from all users
-  app.get("/api/activity-feed", async (req, res) => {
+  // Now respects privacy settings: filters out activities from private profiles
+  // unless viewer is crew member
+  app.get("/api/activity-feed", isAuthenticated, async (req: any, res) => {
     try {
+      const currentUserId = req.user.id;
       const limit = parseInt(req.query.limit as string) || 50;
-      const activities = await storage.getRecentActivities(limit);
-      res.json(activities);
+      
+      // Get all recent activities
+      const allActivities = await storage.getRecentActivities(limit * 2); // Get more to account for filtering
+      
+      // Get current user's crew membership
+      const currentUserCrews = await storage.getUserCrews(currentUserId);
+      const currentUserCrewId = currentUserCrews.length > 0 ? currentUserCrews[0].id : null;
+      
+      // Filter activities based on privacy settings
+      const filteredActivities = [];
+      for (const activity of allActivities) {
+        const activityUser = await storage.getUser(activity.userId);
+        
+        if (!activityUser) continue;
+        
+        // Always show own activities
+        if (activity.userId === currentUserId) {
+          filteredActivities.push(activity);
+          continue;
+        }
+        
+        // If user has private profile, only show to crew members
+        if (activityUser.isProfilePrivate) {
+          const activityUserCrews = await storage.getUserCrews(activity.userId);
+          const activityUserCrewId = activityUserCrews.length > 0 ? activityUserCrews[0].id : null;
+          
+          const isSameCrew = currentUserCrewId && activityUserCrewId && currentUserCrewId === activityUserCrewId;
+          
+          if (isSameCrew) {
+            filteredActivities.push(activity);
+          }
+          // Skip this activity if not crew member
+        } else {
+          // Public profile - show activity
+          filteredActivities.push(activity);
+        }
+        
+        // Stop once we have enough activities
+        if (filteredActivities.length >= limit) {
+          break;
+        }
+      }
+      
+      res.json(filteredActivities.slice(0, limit));
     } catch (error) {
       console.error("Error fetching activity feed:", error);
       res.status(500).json({ message: "Failed to fetch activity feed" });
@@ -1669,10 +1728,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const isSameCrew = currentUserCrewId && targetUserCrewId && currentUserCrewId === targetUserCrewId;
         hasFullAccess = isSameCrew;
 
-        // If not crew member and stats are private, deny access
-        if (!isSameCrew && !user.showStats) {
+        // If not crew member and profile is private, deny access to stats
+        if (!isSameCrew && user.isProfilePrivate) {
           return res.status(403).json({ 
-            message: "This user's stats are private. Only crew members can view them.",
+            message: "This user's profile is private. Only crew members can view their stats.",
             isRestricted: true 
           });
         }
@@ -1770,12 +1829,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         checkinHistory: uniqueCheckinDates, // Array of YYYY-MM-DD dates
       };
 
-      // Apply privacy filters for body metrics (weight, calories)
-      // Crew members and own profile always see everything
-      if (hasFullAccess || user.showMetrics) {
-        response.currentWeight = user?.weight;
-        response.calories = user?.calories;
-      }
+      // Body metrics are shown if user has access to stats page
+      // (Access already controlled by isProfilePrivate check above)
+      response.currentWeight = user?.weight;
+      response.calories = user?.calories;
 
       res.json(response);
     } catch (error) {
@@ -1910,33 +1967,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get all users (public endpoint for browsing)
+  // Get all users (authenticated endpoint for browsing)
   app.get("/api/users", isAuthenticated, async (req, res) => {
     try {
       const allUsers = await storage.getAllUsers();
       
-      // Return only basic public info
-      const publicUsers = allUsers.map((u: any) => ({
-        id: u.id,
-        username: u.username,
-        displayName: u.displayName,
-        level: u.level,
-        xp: u.xp,
-        title: u.title,
-        mvlWins: u.mvlWins || 0,
-        gender: u.gender || "male",
-        skinColor: u.skinColor || "#FFCC99",
-        characterType: u.characterType || "classic",
-        shirtColor: u.shirtColor,
-        shortsColor: u.shortsColor,
-        hairStyle: u.hairStyle,
-        hairColor: u.hairColor,
-        headband: u.headband,
-        wristbands: u.wristbands,
-        facialHair: u.facialHair,
-      }));
+      // Sanitize user data to respect privacy settings
+      const sanitizedUsers = allUsers.map(sanitizeUserForLeaderboard);
       
-      res.json(publicUsers);
+      res.json(sanitizedUsers);
     } catch (error) {
       console.error("Error fetching users:", error);
       res.status(500).json({ message: "Failed to fetch users" });
@@ -1947,7 +1986,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/leaderboards/mvl", async (req, res) => {
     try {
       const leaderboard = await storage.getTodayMVLLeaderboard(10);
-      res.json(leaderboard);
+      // Sanitize leaderboard to respect privacy settings
+      const sanitizedLeaderboard = leaderboard.map(sanitizeUserForLeaderboard);
+      res.json(sanitizedLeaderboard);
     } catch (error) {
       console.error("Error fetching MVL leaderboard:", error);
       res.status(500).json({ message: "Failed to fetch MVL leaderboard" });
@@ -1959,7 +2000,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { crewId } = req.params;
       const leaderboard = await storage.getCrewMVLLeaderboard(crewId, 10);
-      res.json(leaderboard);
+      // Sanitize leaderboard to respect privacy settings
+      const sanitizedLeaderboard = leaderboard.map(sanitizeUserForLeaderboard);
+      res.json(sanitizedLeaderboard);
     } catch (error) {
       console.error("Error fetching crew MVL leaderboard:", error);
       res.status(500).json({ message: "Failed to fetch crew MVL leaderboard" });

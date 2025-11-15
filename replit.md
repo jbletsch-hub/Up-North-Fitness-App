@@ -80,17 +80,20 @@ The gamification system includes an XP curve (~200k XP for level 50) and an 11-t
 - **Crew Name Display:** Leaderboards show crew membership under usernames in gym-wide view. HomePage always displays crew names as it's the public landing page.
 - **Gym Combined Total:** HomePage prominently displays the combined total of all users' PRs (squat + bench + deadlift) regardless of crew membership, showing the collective strength of the entire gym via GymTotalCard component. Additionally, the GymTotalCard appears on the dashboard when users toggle to gym-wide view by clicking the "Up North Fitness" button.
 - **Separate Crew Goals:** Crew-specific goals and progress are tracked separately in crew view via CrewGoalMeter component. Gym-wide statistics display when in gym-wide view mode.
-- **Granular Privacy Controls (Nov 15, 2025):** Users have fine-grained control over what profile sections are visible to non-crew members via `/settings/privacy` page. Six independent privacy toggles:
-  - **Personal Records (showPRs):** Controls visibility of squat/bench/deadlift PRs on profile and stats pages
-  - **Progress Photos (showPhotos):** Controls visibility of uploaded progress photos
-  - **Activity Feed (showActivities):** Controls visibility of recent activities and XP events
-  - **Stats & Analytics (showStats):** Controls access to the entire stats page with charts and analytics
-  - **Goals (showGoals):** Controls visibility of weekly and lifetime goals
-  - **Body Metrics (showMetrics):** Controls visibility of current weight and calorie data
-  - All privacy settings default to `true` (public)
-  - Crew members **always** bypass all privacy restrictions and see full profiles
-  - API endpoints (`/api/profile/:username`, `/api/stats/:userId`) conditionally return data based on privacy settings
-  - Frontend (ProfilePage, StatsPage) conditionally renders sections based on server response
+- **Simplified Privacy System (Nov 15, 2025):** Complete redesign from 6 individual toggles to a single "Private Profile" toggle:
+  - **Single Toggle:** `isProfilePrivate` boolean field (default `false` = public)
+  - **Public Profile (OFF):** Everyone sees full profile including PRs, photos, activities, stats, goals, and body metrics
+  - **Private Profile (ON):** Non-crew members only see name, crew name, and level
+  - **Crew Member Override:** Crew members ALWAYS bypass privacy settings and see full profiles regardless of toggle state
+  - **Backend Implementation:** 
+    - Database field: `is_profile_private` (snake_case)
+    - TypeScript/Frontend: `isProfilePrivate` (camelCase via Drizzle ORM auto-mapping)
+    - POST `/api/user/privacy-settings` endpoint accepts `{ isProfilePrivate: boolean }`
+  - **Privacy Enforcement:**
+    - `/api/profile/:username` - Private profiles return only user.name, crew, level to non-crew viewers
+    - `/api/stats/:userId` - Returns 403 Forbidden for private profiles viewed by non-crew members
+    - `/api/activity-feed` - Filters out activities from private users unless viewer is crew member
+  - **UI:** Clean single-toggle interface at `/settings/privacy` with clear explanations of public vs private visibility
 
 ## External Dependencies
 

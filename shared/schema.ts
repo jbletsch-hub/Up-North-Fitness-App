@@ -73,7 +73,10 @@ export const users = pgTable("users", {
   hairColor: varchar("hair_color").default("#4A3728"),
   facialHair: varchar("facial_hair").default("none"),
   
-  // Granular privacy settings (default true = public)
+  // Simple privacy setting (default false = public profile)
+  isProfilePrivate: boolean("is_profile_private").default(false).notNull(),
+  
+  // Legacy granular privacy settings (kept for backward compatibility)
   showPRs: boolean("show_prs").default(true).notNull(),
   showPhotos: boolean("show_photos").default(true).notNull(),
   showActivities: boolean("show_activities").default(true).notNull(),

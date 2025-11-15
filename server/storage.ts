@@ -79,7 +79,7 @@ export interface IStorage {
   updateUserProfile(id: string, firstName: string, lastName: string | undefined, profileImageUrl: string): Promise<User>;
   updateUserDisplayName(id: string, displayName: string): Promise<User>;
   toggleUserAdmin(id: string, isAdmin: boolean): Promise<User>;
-  updateUserPrivacySettings(id: string, settings: { showPRs?: boolean; showPhotos?: boolean; showActivities?: boolean; showStats?: boolean; showGoals?: boolean; showMetrics?: boolean }): Promise<User>;
+  updateUserPrivacySettings(id: string, settings: { isProfilePrivate: boolean }): Promise<User>;
   updateUserAvatar(id: string, avatar: { gender?: string; skinColor?: string; characterType?: string; shirtColor?: string; shortsColor?: string; headband?: boolean; wristbands?: boolean; hairStyle?: string; hairColor?: string; facialHair?: string }): Promise<User>;
   getTodayMVLLeaderboard(limit: number): Promise<User[]>;
   getCrewMVLLeaderboard(crewId: string, limit: number): Promise<User[]>;
@@ -377,26 +377,12 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
-  async updateUserPrivacySettings(id: string, settings: { showPRs?: boolean; showPhotos?: boolean; showActivities?: boolean; showStats?: boolean; showGoals?: boolean; showMetrics?: boolean }): Promise<User> {
-    // Drizzle expects TypeScript property names (camelCase), not database column names
-    // The schema handles the mapping to snake_case columns automatically
-    console.log('[PRIVACY] Updating privacy settings for user:', id);
-    console.log('[PRIVACY] Settings to save:', JSON.stringify(settings, null, 2));
-    
+  async updateUserPrivacySettings(id: string, settings: { isProfilePrivate: boolean }): Promise<User> {
     const [user] = await db
       .update(users)
       .set(settings)
       .where(eq(users.id, id))
       .returning();
-    
-    console.log('[PRIVACY] Database returned user with privacy settings:', {
-      showPRs: user.showPRs,
-      showPhotos: user.showPhotos,
-      showActivities: user.showActivities,
-      showStats: user.showStats,
-      showGoals: user.showGoals,
-      showMetrics: user.showMetrics
-    });
     
     return user;
   }
