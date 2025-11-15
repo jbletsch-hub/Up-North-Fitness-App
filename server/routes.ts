@@ -1649,6 +1649,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         mvlWins: user?.mvlWins || 0,
         completedGoals: completedGoalsCount,
         goals: groupedGoals,
+        gender: user?.gender || "male",
+        skinColor: user?.skinColor || "#FFCC99",
         characterType: user?.characterType || "classic",
         shirtColor: user?.shirtColor,
         shortsColor: user?.shortsColor,
