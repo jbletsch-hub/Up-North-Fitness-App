@@ -13,8 +13,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Users, Crown, Plus, UserPlus, LogOut, Shield, UserMinus } from "lucide-react";
-import { useState } from "react";
+import { Users, Crown, Plus, UserPlus, LogOut, Shield, UserMinus, Settings } from "lucide-react";
+import { useState, useEffect } from "react";
 import type { Crew, CrewMembership } from "@shared/schema";
 
 const createCrewSchema = z.object({
@@ -54,6 +54,7 @@ export default function CrewsPage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
 
   const { data: userCrew, isLoading: isLoadingUserCrew } = useQuery<UserCrewResponse>({
@@ -86,6 +87,25 @@ export default function CrewsPage() {
     onError: (error: any) => {
       toast({ 
         title: "Failed to create crew", 
+        description: error.message || "Something went wrong",
+        variant: "destructive" 
+      });
+    },
+  });
+
+  const updateCrewMutation = useMutation({
+    mutationFn: async (data: CreateCrewForm) => {
+      return await apiRequest("PUT", `/api/crews/${userCrew?.crewId}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/crews"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/crews/my-crew"] });
+      setEditDialogOpen(false);
+      toast({ title: "Crew updated!", description: "Your crew details have been updated." });
+    },
+    onError: (error: any) => {
+      toast({ 
+        title: "Failed to update crew", 
         description: error.message || "Something went wrong",
         variant: "destructive" 
       });
@@ -159,6 +179,15 @@ export default function CrewsPage() {
     },
   });
 
+  const editForm = useForm<CreateCrewForm>({
+    resolver: zodResolver(createCrewSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      color: "#3B82F6",
+    },
+  });
+
   const inviteForm = useForm<InviteUserForm>({
     resolver: zodResolver(inviteUserSchema),
     defaultValues: {
@@ -166,8 +195,23 @@ export default function CrewsPage() {
     },
   });
 
+  // Update edit form when crew data changes or dialog opens
+  useEffect(() => {
+    if (editDialogOpen && userCrew?.crew) {
+      editForm.reset({
+        name: userCrew.crew.name,
+        description: userCrew.crew.description || "",
+        color: userCrew.crew.color,
+      });
+    }
+  }, [editDialogOpen, userCrew, editForm]);
+
   const onSubmit = (data: CreateCrewForm) => {
     createCrewMutation.mutate(data);
+  };
+
+  const onEditSubmit = (data: CreateCrewForm) => {
+    updateCrewMutation.mutate(data);
   };
 
   const onInviteSubmit = (data: InviteUserForm) => {
@@ -291,6 +335,81 @@ export default function CrewsPage() {
         )}
       </div>
 
+      {/* Edit Crew Dialog */}
+      {isLeader && (
+        <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Edit Crew Details</DialogTitle>
+              <DialogDescription>
+                Update your crew's name, description, and color.
+              </DialogDescription>
+            </DialogHeader>
+            <Form {...editForm}>
+              <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
+                <FormField
+                  control={editForm.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Crew Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="The Iron Warriors" {...field} data-testid="input-edit-crew-name" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editForm.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description (Optional)</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          placeholder="Describe your crew's goals and vibe..." 
+                          {...field} 
+                          data-testid="textarea-edit-crew-description"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editForm.control}
+                  name="color"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Crew Color</FormLabel>
+                      <FormControl>
+                        <div className="flex items-center gap-2">
+                          <Input type="color" {...field} className="w-20 h-10" data-testid="input-edit-crew-color" />
+                          <Input type="text" {...field} placeholder="#3B82F6" data-testid="input-edit-crew-color-hex" />
+                        </div>
+                      </FormControl>
+                      <FormDescription>
+                        Choose a color to represent your crew
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex justify-end gap-2">
+                  <Button type="button" variant="outline" onClick={() => setEditDialogOpen(false)} data-testid="button-cancel-edit">
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={updateCrewMutation.isPending} data-testid="button-submit-edit">
+                    {updateCrewMutation.isPending ? "Saving..." : "Save Changes"}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+      )}
+
       {/* Pending Invites */}
       {!userCrew && myInvites && myInvites.length > 0 && (
         <Card data-testid="card-pending-invites">
@@ -361,16 +480,29 @@ export default function CrewsPage() {
                 </CardTitle>
                 <CardDescription>{userCrew.crew.description || "No description"}</CardDescription>
               </div>
-              <Button 
-                variant="destructive" 
-                size="sm"
-                onClick={() => leaveCrewMutation.mutate()}
-                disabled={leaveCrewMutation.isPending}
-                data-testid="button-leave-crew"
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Leave
-              </Button>
+              <div className="flex gap-2">
+                {isLeader && (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setEditDialogOpen(true)}
+                    data-testid="button-edit-crew"
+                  >
+                    <Settings className="w-4 h-4 mr-2" />
+                    Edit
+                  </Button>
+                )}
+                <Button 
+                  variant="destructive" 
+                  size="sm"
+                  onClick={() => leaveCrewMutation.mutate()}
+                  disabled={leaveCrewMutation.isPending}
+                  data-testid="button-leave-crew"
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Leave
+                </Button>
+              </div>
             </div>
           </CardHeader>
           <CardContent>
