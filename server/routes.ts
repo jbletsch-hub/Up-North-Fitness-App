@@ -1882,6 +1882,285 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ============ CREW MANAGEMENT ROUTES ============
+  
+  // Get all crews
+  app.get("/api/crews", isAuthenticated, async (req, res) => {
+    try {
+      const crews = await storage.getAllCrews();
+      res.json(crews);
+    } catch (error) {
+      console.error("Error fetching crews:", error);
+      res.status(500).json({ message: "Failed to fetch crews" });
+    }
+  });
+
+  // Get user's crew
+  app.get("/api/crews/my-crew", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const userCrew = await storage.getUserCrew(userId);
+      res.json(userCrew);
+    } catch (error) {
+      console.error("Error fetching user crew:", error);
+      res.status(500).json({ message: "Failed to fetch user crew" });
+    }
+  });
+
+  // Get crew by ID
+  app.get("/api/crews/:id", isAuthenticated, async (req, res) => {
+    try {
+      const crew = await storage.getCrew(req.params.id);
+      if (!crew) {
+        return res.status(404).json({ message: "Crew not found" });
+      }
+      res.json(crew);
+    } catch (error) {
+      console.error("Error fetching crew:", error);
+      res.status(500).json({ message: "Failed to fetch crew" });
+    }
+  });
+
+  // Create a new crew
+  app.post("/api/crews", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const { name, description, color } = req.body;
+
+      // Check if user is already in a crew
+      const existingCrew = await storage.getUserCrew(userId);
+      if (existingCrew) {
+        return res.status(400).json({ message: "You're already in a crew. Leave your current crew first." });
+      }
+
+      // Check if crew name is taken
+      const existingCrewByName = await storage.getCrewByName(name);
+      if (existingCrewByName) {
+        return res.status(400).json({ message: "A crew with this name already exists." });
+      }
+
+      // Create the crew
+      const crew = await storage.createCrew({ name, description, color });
+
+      // Add creator as leader
+      await storage.addCrewMember({
+        crewId: crew.id,
+        userId,
+        role: "leader",
+      });
+
+      res.status(201).json(crew);
+    } catch (error) {
+      console.error("Error creating crew:", error);
+      res.status(500).json({ message: "Failed to create crew" });
+    }
+  });
+
+  // Update crew
+  app.patch("/api/crews/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const crewId = req.params.id;
+      const { name, description, color } = req.body;
+
+      // Check if user is a leader of this crew
+      const userCrew = await storage.getUserCrew(userId);
+      if (!userCrew || userCrew.crewId !== crewId || userCrew.role !== "leader") {
+        return res.status(403).json({ message: "Only crew leaders can update crew details" });
+      }
+
+      const updated = await storage.updateCrew(crewId, { name, description, color });
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating crew:", error);
+      res.status(500).json({ message: "Failed to update crew" });
+    }
+  });
+
+  // Get crew members
+  app.get("/api/crews/:id/members", isAuthenticated, async (req, res) => {
+    try {
+      const members = await storage.getCrewMembers(req.params.id);
+      res.json(members);
+    } catch (error) {
+      console.error("Error fetching crew members:", error);
+      res.status(500).json({ message: "Failed to fetch crew members" });
+    }
+  });
+
+  // Leave crew
+  app.post("/api/crews/leave", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const userCrew = await storage.getUserCrew(userId);
+      
+      if (!userCrew) {
+        return res.status(400).json({ message: "You're not in a crew" });
+      }
+
+      // Check if user is the only leader
+      const members = await storage.getCrewMembers(userCrew.crewId);
+      const leaders = members.filter(m => m.role === "leader");
+      
+      if (leaders.length === 1 && leaders[0].userId === userId && members.length > 1) {
+        return res.status(400).json({ 
+          message: "You're the only leader. Transfer leadership or promote another member before leaving." 
+        });
+      }
+
+      await storage.removeCrewMember(userCrew.crewId, userId);
+      
+      // Delete crew if it's empty
+      const remainingMembers = await storage.getCrewMembers(userCrew.crewId);
+      if (remainingMembers.length === 0) {
+        await storage.deleteCrew(userCrew.crewId);
+      }
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error leaving crew:", error);
+      res.status(500).json({ message: "Failed to leave crew" });
+    }
+  });
+
+  // Invite user to crew
+  app.post("/api/crews/:id/invite", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const crewId = req.params.id;
+      const { targetUserId } = req.body;
+
+      // Check if user is a leader of this crew
+      const userCrew = await storage.getUserCrew(userId);
+      if (!userCrew || userCrew.crewId !== crewId || userCrew.role !== "leader") {
+        return res.status(403).json({ message: "Only crew leaders can send invites" });
+      }
+
+      // Check if target user is already in a crew
+      const targetCrew = await storage.getUserCrew(targetUserId);
+      if (targetCrew) {
+        return res.status(400).json({ message: "This user is already in a crew" });
+      }
+
+      // Create invite
+      const invite = await storage.createCrewInvite({
+        crewId,
+        userId: targetUserId,
+        invitedBy: userId,
+        status: "pending",
+      });
+
+      res.status(201).json(invite);
+    } catch (error) {
+      console.error("Error sending crew invite:", error);
+      res.status(500).json({ message: "Failed to send crew invite" });
+    }
+  });
+
+  // Get user's pending invites
+  app.get("/api/crews/invites/my-invites", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const invites = await storage.getUserInvites(userId);
+      res.json(invites);
+    } catch (error) {
+      console.error("Error fetching invites:", error);
+      res.status(500).json({ message: "Failed to fetch invites" });
+    }
+  });
+
+  // Accept/Decline crew invite
+  app.post("/api/crews/invites/:id/:action", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const inviteId = req.params.id;
+      const action = req.params.action; // "accept" or "decline"
+
+      if (action !== "accept" && action !== "declined") {
+        return res.status(400).json({ message: "Invalid action" });
+      }
+
+      const invites = await storage.getUserInvites(userId);
+      const invite = invites.find(i => i.id === inviteId);
+
+      if (!invite) {
+        return res.status(404).json({ message: "Invite not found" });
+      }
+
+      if (action === "accept") {
+        // Check if user is already in a crew
+        const existingCrew = await storage.getUserCrew(userId);
+        if (existingCrew) {
+          return res.status(400).json({ message: "You're already in a crew" });
+        }
+
+        // Add user to crew
+        await storage.addCrewMember({
+          crewId: invite.crewId,
+          userId,
+          role: "member",
+        });
+
+        await storage.updateInviteStatus(inviteId, "accepted");
+      } else {
+        await storage.updateInviteStatus(inviteId, "declined");
+      }
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error responding to invite:", error);
+      res.status(500).json({ message: "Failed to respond to invite" });
+    }
+  });
+
+  // Promote/demote crew member
+  app.post("/api/crews/:id/members/:userId/role", isAuthenticated, async (req: any, res) => {
+    try {
+      const currentUserId = req.user.id;
+      const crewId = req.params.id;
+      const targetUserId = req.params.userId;
+      const { role } = req.body;
+
+      // Check if current user is a leader
+      const userCrew = await storage.getUserCrew(currentUserId);
+      if (!userCrew || userCrew.crewId !== crewId || userCrew.role !== "leader") {
+        return res.status(403).json({ message: "Only crew leaders can change member roles" });
+      }
+
+      await storage.updateMemberRole(crewId, targetUserId, role);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error updating member role:", error);
+      res.status(500).json({ message: "Failed to update member role" });
+    }
+  });
+
+  // Remove crew member
+  app.delete("/api/crews/:id/members/:userId", isAuthenticated, async (req: any, res) => {
+    try {
+      const currentUserId = req.user.id;
+      const crewId = req.params.id;
+      const targetUserId = req.params.userId;
+
+      // Check if current user is a leader
+      const userCrew = await storage.getUserCrew(currentUserId);
+      if (!userCrew || userCrew.crewId !== crewId || userCrew.role !== "leader") {
+        return res.status(403).json({ message: "Only crew leaders can remove members" });
+      }
+
+      // Can't remove yourself this way
+      if (targetUserId === currentUserId) {
+        return res.status(400).json({ message: "Use the leave endpoint to remove yourself" });
+      }
+
+      await storage.removeCrewMember(crewId, targetUserId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error removing crew member:", error);
+      res.status(500).json({ message: "Failed to remove crew member" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
