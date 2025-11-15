@@ -491,6 +491,7 @@ export default function Dashboard() {
                 wristbands={dashboardUser.wristbands || false}
                 hairStyle={dashboardUser.hairStyle || "short"}
                 hairColor={dashboardUser.hairColor || "#8B4513"}
+                facialHair={dashboardUser.facialHair || "none"}
                 size="md"
                 showProgress={true}
               />
