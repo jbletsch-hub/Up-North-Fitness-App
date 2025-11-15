@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { Navigation } from "@/components/Navigation";
-import { CrewGoalMeter } from "@/components/CrewGoalMeter";
+import { GymTotalCard } from "@/components/GymTotalCard";
 import { LeaderboardCard } from "@/components/LeaderboardCard";
 import { ActivityFeed } from "@/components/ActivityFeed";
 import { Link } from "wouter";
@@ -22,7 +22,7 @@ export default function HomePage() {
     </div>;
   }
 
-  const { leaderboard, activities, goal, total } = homeData as any;
+  const { leaderboard, activities, total } = homeData as any;
 
   return (
     <div className="min-h-screen bg-background">
@@ -36,7 +36,7 @@ export default function HomePage() {
       />
 
       <main className="max-w-7xl mx-auto px-4 md:px-6 py-6 space-y-6">
-        <CrewGoalMeter current={total} goal={goal} />
+        <GymTotalCard total={total} />
 
         <div className="grid md:grid-cols-2 gap-6">
           <LeaderboardCard users={leaderboard} showCrewNames={true} />
