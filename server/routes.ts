@@ -63,6 +63,14 @@ function getRelativeTime(date: Date): string {
   return `${days} day${days > 1 ? "s" : ""} ago`;
 }
 
+async function checkSameCrew(userId1: string, userId2: string): Promise<boolean> {
+  const crew1 = await storage.getUserCrew(userId1);
+  const crew2 = await storage.getUserCrew(userId2);
+  
+  if (!crew1 || !crew2) return false;
+  return crew1.crewId === crew2.crewId;
+}
+
 async function awardXP(userId: string, amount: number, reason: string, countTowardMVL = true) {
   const user = await storage.getUser(userId);
   if (!user) return;
@@ -799,6 +807,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get photo history for a user with metadata
+  app.get("/api/photos/:userId", isAuthenticated, async (req: any, res) => {
+    try {
+      const { userId } = req.params;
+      const requestingUserId = req.user.id;
+      
+      // Fetch user to check privacy settings
+      const targetUser = await storage.getUser(userId);
+      if (!targetUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Check privacy - only allow access if:
+      // 1. Viewing own photos
+      // 2. User has public profile
+      // 3. Requesting user is in same crew as target user
+      const canView = requestingUserId === userId || 
+                     !targetUser.isProfilePrivate ||
+                     await checkSameCrew(requestingUserId, userId);
+      
+      if (!canView) {
+        return res.status(403).json({ message: "This profile is private" });
+      }
+      
+      // Fetch photos
+      const photos = await storage.getPhotosByUser(userId);
+      
+      // Return photos with basic metadata
+      const photosWithMetadata = photos.map(photo => ({
+        id: photo.id,
+        imagePath: photo.imagePath,
+        uploadDate: photo.uploadDate,
+        createdAt: photo.createdAt,
+      }));
+      
+      res.json(photosWithMetadata);
+    } catch (error) {
+      console.error("[PHOTO HISTORY] Error fetching photos:", error);
+      res.status(500).json({ message: "Failed to fetch photos", error: String(error) });
+    }
+  });
+  
   // Serve uploaded photos from object storage
   app.get("/objects/:objectPath(*)", async (req, res) => {
     try {

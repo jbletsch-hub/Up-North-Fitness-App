@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { Trophy, Star } from "lucide-react";
+import { useCelebration } from "@/hooks/use-celebration";
 
 interface GoalCompletionPopupProps {
   goalTitle: string;
@@ -12,8 +13,12 @@ interface GoalCompletionPopupProps {
 export function GoalCompletionPopup({ goalTitle, xpAwarded, position, onComplete }: GoalCompletionPopupProps) {
   const [isVisible, setIsVisible] = useState(true);
   const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; delay: number }>>([]);
+  const { celebrate } = useCelebration();
 
   useEffect(() => {
+    // Trigger confetti celebration!
+    celebrate("confetti");
+    
     // Generate particles for the burst effect
     const newParticles = Array.from({ length: 12 }, (_, i) => ({
       id: i,

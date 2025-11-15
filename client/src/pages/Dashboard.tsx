@@ -30,12 +30,15 @@ import { QuickStatsWidget } from "@/components/QuickStatsWidget";
 import { CollapsibleSection } from "@/components/CollapsibleSection";
 import { ViewContextSwitcher } from "@/components/ViewContextSwitcher";
 import { useViewContext } from "@/hooks/use-view-context";
+import { useCelebration } from "@/hooks/use-celebration";
+import { PhotoComparison } from "@/components/PhotoComparison";
 
 export default function Dashboard() {
   const { toast } = useToast();
   const { user, isLoading } = useAuth();
   const { showXP, popup } = useXPPopup();
   const { viewContext, isCrewView } = useViewContext();
+  const { celebrate } = useCelebration();
 
   const { data: userCrew } = useQuery({
     queryKey: ["/api/crews/my-crew"],
@@ -161,6 +164,17 @@ export default function Dashboard() {
       const { data, position } = response;
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      
+      // Celebrate streak milestones!
+      const milestones = [7, 30, 60, 100];
+      if (milestones.includes(data.streak)) {
+        if (data.streak === 100) {
+          celebrate("fireworks"); // Big milestone!
+        } else {
+          celebrate("streak"); // Flame effect for streaks
+        }
+      }
+      
       if (data.xpAwarded && position) {
         const fakeEvent = {
           currentTarget: {
@@ -203,6 +217,9 @@ export default function Dashboard() {
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       queryClient.invalidateQueries({ queryKey: ["/api/home"] });
       if (data.xpAwarded > 0 && position) {
+        // Celebrate new PR!
+        celebrate("confetti");
+        
         const fakeEvent = {
           currentTarget: {
             getBoundingClientRect: () => ({
@@ -222,6 +239,7 @@ export default function Dashboard() {
       
       // Show special notification if crew goal was advanced
       if (data.goalAdvanced) {
+        celebrate("fireworks");
         toast({
           title: "🎉 Crew Goal Achieved!",
           description: `Goal automatically advanced from ${data.oldGoal.toLocaleString()} to ${data.newGoal.toLocaleString()} lbs!`,
@@ -672,6 +690,8 @@ export default function Dashboard() {
                       </CardContent>
                     </Card>
                   )}
+                {/* Photo Comparison - Show if user has photos */}
+                {user && <PhotoComparison userId={user.id} />}
               </div>
             </div>
           </CollapsibleSection>

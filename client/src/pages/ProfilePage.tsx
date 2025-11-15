@@ -65,7 +65,13 @@ export default function ProfilePage() {
   }
 
   if (!profileData) {
-    return null;
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="font-display text-2xl">Loading profile...</div>
+        </div>
+      </div>
+    );
   }
 
   const { user: profileUser, isRestricted, crewName } = profileData;
