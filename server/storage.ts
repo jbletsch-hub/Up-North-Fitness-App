@@ -378,9 +378,18 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateUserPrivacySettings(id: string, settings: { showPRs?: boolean; showPhotos?: boolean; showActivities?: boolean; showStats?: boolean; showGoals?: boolean; showMetrics?: boolean }): Promise<User> {
+    // Transform camelCase to snake_case for database columns
+    const dbSettings: any = {};
+    if (settings.showPRs !== undefined) dbSettings.show_prs = settings.showPRs;
+    if (settings.showPhotos !== undefined) dbSettings.show_photos = settings.showPhotos;
+    if (settings.showActivities !== undefined) dbSettings.show_activities = settings.showActivities;
+    if (settings.showStats !== undefined) dbSettings.show_stats = settings.showStats;
+    if (settings.showGoals !== undefined) dbSettings.show_goals = settings.showGoals;
+    if (settings.showMetrics !== undefined) dbSettings.show_metrics = settings.showMetrics;
+    
     const [user] = await db
       .update(users)
-      .set(settings)
+      .set(dbSettings)
       .where(eq(users.id, id))
       .returning();
     return user;
