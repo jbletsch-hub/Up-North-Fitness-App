@@ -11,6 +11,20 @@ import { Palette, User } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
+const GENDER_OPTIONS = [
+  { id: "male", name: "Male", description: "Masculine build" },
+  { id: "female", name: "Female", description: "Feminine build" },
+];
+
+const SKIN_COLORS = [
+  { name: "Fair", value: "#FFE0BD" },
+  { name: "Light", value: "#FFCC99" },
+  { name: "Medium", value: "#E0AC69" },
+  { name: "Tan", value: "#C68642" },
+  { name: "Brown", value: "#8D5524" },
+  { name: "Dark Brown", value: "#6B3E2E" },
+];
+
 const CHARACTER_TYPES = [
   { id: "classic", name: "Classic", description: "Balanced proportions" },
   { id: "bulky", name: "Bulky", description: "Mass monster build" },
@@ -66,6 +80,8 @@ export default function AvatarPage() {
   const { user } = useAuth();
   const { toast } = useToast();
   
+  const [gender, setGender] = useState(user?.gender || "male");
+  const [skinColor, setSkinColor] = useState(user?.skinColor || "#FFCC99");
   const [characterType, setCharacterType] = useState(user?.characterType || "classic");
   const [shirtColor, setShirtColor] = useState(user?.shirtColor || "#FF5722");
   const [shortsColor, setShortsColor] = useState(user?.shortsColor || "#20B2AA");
@@ -78,6 +94,8 @@ export default function AvatarPage() {
   const saveAvatarMutation = useMutation({
     mutationFn: async () => {
       const res = await apiRequest("PUT", "/api/avatar", {
+        gender,
+        skinColor,
         characterType,
         shirtColor,
         shortsColor,
@@ -162,6 +180,8 @@ export default function AvatarPage() {
             <CardContent className="flex flex-col items-center space-y-4">
               <AvatarDisplay
                 level={user?.level || 1}
+                gender={gender}
+                skinColor={skinColor}
                 characterType={characterType}
                 shirtColor={shirtColor}
                 shortsColor={shortsColor}
@@ -183,6 +203,54 @@ export default function AvatarPage() {
 
           {/* Customization Section */}
           <div className="space-y-4">
+            {/* Gender */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Gender</CardTitle>
+                <CardDescription>Choose your character gender</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-2">
+                  {GENDER_OPTIONS.map((option) => (
+                    <Button
+                      key={option.id}
+                      variant={gender === option.id ? "default" : "outline"}
+                      className="h-auto flex-col gap-1 py-3"
+                      onClick={() => setGender(option.id)}
+                      data-testid={`button-gender-${option.id}`}
+                    >
+                      <span className="font-semibold text-sm">{option.name}</span>
+                      <span className="text-xs opacity-80">{option.description}</span>
+                    </Button>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Skin Color */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Skin Tone</CardTitle>
+                <CardDescription>Choose your skin color</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-6 gap-2">
+                  {SKIN_COLORS.map((color) => (
+                    <button
+                      key={color.value}
+                      className={`h-12 w-12 rounded-full border-2 transition-all hover-elevate ${
+                        skinColor === color.value ? "border-primary ring-2 ring-primary" : "border-border"
+                      }`}
+                      style={{ backgroundColor: color.value }}
+                      onClick={() => setSkinColor(color.value)}
+                      title={color.name}
+                      data-testid={`button-skin-${color.name.toLowerCase().replace(' ', '-')}`}
+                    />
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Character Type */}
             <Card>
               <CardHeader>
@@ -380,6 +448,8 @@ export default function AvatarPage() {
                       <div key={level} className="flex flex-col items-center space-y-2">
                         <AvatarDisplay
                           level={level}
+                          gender={gender}
+                          skinColor={skinColor}
                           characterType={characterType}
                           shirtColor={shirtColor}
                           shortsColor={shortsColor}

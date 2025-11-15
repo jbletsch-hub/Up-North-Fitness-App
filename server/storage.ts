@@ -79,7 +79,7 @@ export interface IStorage {
   updateUserProfile(id: string, firstName: string, lastName: string | undefined, profileImageUrl: string): Promise<User>;
   updateUserDisplayName(id: string, displayName: string): Promise<User>;
   toggleUserAdmin(id: string, isAdmin: boolean): Promise<User>;
-  updateUserAvatar(id: string, avatar: { characterType?: string; shirtColor?: string; shortsColor?: string; headband?: boolean; wristbands?: boolean; hairStyle?: string; hairColor?: string; facialHair?: string }): Promise<User>;
+  updateUserAvatar(id: string, avatar: { gender?: string; skinColor?: string; characterType?: string; shirtColor?: string; shortsColor?: string; headband?: boolean; wristbands?: boolean; hairStyle?: string; hairColor?: string; facialHair?: string }): Promise<User>;
   getTodayMVLLeaderboard(limit: number): Promise<User[]>;
   getCrewMVLLeaderboard(crewId: string, limit: number): Promise<User[]>;
   awardMVLWin(id: string): Promise<User>;
@@ -374,7 +374,7 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
-  async updateUserAvatar(id: string, avatar: { characterType?: string; shirtColor?: string; shortsColor?: string; headband?: boolean; wristbands?: boolean; hairStyle?: string; hairColor?: string; facialHair?: string }): Promise<User> {
+  async updateUserAvatar(id: string, avatar: { gender?: string; skinColor?: string; characterType?: string; shirtColor?: string; shortsColor?: string; headband?: boolean; wristbands?: boolean; hairStyle?: string; hairColor?: string; facialHair?: string }): Promise<User> {
     const [user] = await db
       .update(users)
       .set(avatar)

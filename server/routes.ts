@@ -1889,9 +1889,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/avatar", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.id;
-      const { characterType, shirtColor, shortsColor, headband, wristbands, hairStyle, hairColor, facialHair } = req.body;
+      const { gender, skinColor, characterType, shirtColor, shortsColor, headband, wristbands, hairStyle, hairColor, facialHair } = req.body;
       
       await storage.updateUserAvatar(userId, {
+        gender,
+        skinColor,
         characterType,
         shirtColor,
         shortsColor,
