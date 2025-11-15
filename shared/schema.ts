@@ -52,6 +52,10 @@ export const users = pgTable("users", {
   lastCalorieLogDate: varchar("last_calorie_log_date"),
   calories: integer("calories"),
   
+  // Weekly challenge limit tracking (2 per week, resets Monday midnight CT)
+  lastChallengeWeekStart: varchar("last_challenge_week_start"),
+  challengesCompletedThisWeek: integer("challenges_completed_this_week").default(0).notNull(),
+  
   // MVL (Most Valuable Lifter) tracking
   mvlWins: integer("mvl_wins").default(0).notNull(),
   dailyXp: integer("daily_xp").default(0).notNull(),
@@ -85,6 +89,8 @@ export const insertUserSchema = createInsertSchema(users).omit({
   mvlWins: true,
   dailyXp: true,
   lastDailyXpReset: true,
+  lastChallengeWeekStart: true,
+  challengesCompletedThisWeek: true,
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;

@@ -61,6 +61,7 @@ export interface IStorage {
   updateUserPRDate(id: string, lastPrUpdateDate: string): Promise<User>;
   updateUserRerollDate(id: string, lastRerollDate: string): Promise<User>;
   updateUserCalorieLogDate(id: string, lastCalorieLogDate: string, calories?: number): Promise<User>;
+  updateWeeklyChallengeTracking(id: string, challengesCompleted: number, weekStart: string): Promise<User>;
   updateUserProfile(id: string, firstName: string, lastName: string | undefined, profileImageUrl: string): Promise<User>;
   updateUserDisplayName(id: string, displayName: string): Promise<User>;
   toggleUserAdmin(id: string, isAdmin: boolean): Promise<User>;
@@ -262,6 +263,18 @@ export class DatabaseStorage implements IStorage {
     const [user] = await db
       .update(users)
       .set({ lastRerollDate })
+      .where(eq(users.id, id))
+      .returning();
+    return user;
+  }
+
+  async updateWeeklyChallengeTracking(id: string, challengesCompleted: number, weekStart: string): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({ 
+        challengesCompletedThisWeek: challengesCompleted,
+        lastChallengeWeekStart: weekStart 
+      })
       .where(eq(users.id, id))
       .returning();
     return user;

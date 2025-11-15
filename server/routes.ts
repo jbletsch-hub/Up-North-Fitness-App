@@ -88,6 +88,29 @@ function shuffleArray<T>(array: T[]): T[] {
   return shuffled;
 }
 
+// Get the start of the current week (Monday at midnight CT) in YYYY-MM-DD format
+function getChallengeWeekStart(): string {
+  const now = new Date();
+  const centralTime = new Date(now.toLocaleString("en-US", { timeZone: "America/Chicago" }));
+  
+  // Get the day of week (0 = Sunday, 1 = Monday, etc.)
+  const dayOfWeek = centralTime.getDay();
+  
+  // Calculate days since Monday (Sunday is 0, so we need to handle it specially)
+  const daysSinceMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+  
+  // Get the Monday of this week
+  const monday = new Date(centralTime);
+  monday.setDate(centralTime.getDate() - daysSinceMonday);
+  monday.setHours(0, 0, 0, 0);
+  
+  const year = monday.getFullYear();
+  const month = String(monday.getMonth() + 1).padStart(2, '0');
+  const day = String(monday.getDate()).padStart(2, '0');
+  
+  return `${year}-${month}-${day}`;
+}
+
 async function assignDailyChallenges(userId: string, date: string) {
   const existing = await storage.getUserDailyChallenges(userId, date);
   if (existing.length > 0) return;
@@ -277,10 +300,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Challenge not found" });
       }
 
+      // Check weekly challenge limit (2 per week, resets Monday midnight CT)
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const currentWeekStart = getChallengeWeekStart();
+      let challengesThisWeek = user.challengesCompletedThisWeek || 0;
+
+      // If it's a new week, reset the counter
+      if (user.lastChallengeWeekStart !== currentWeekStart) {
+        challengesThisWeek = 0;
+      }
+
+      // Check if user has already completed 2 challenges this week
+      if (challengesThisWeek >= 2) {
+        return res.status(400).json({ 
+          message: "You can only complete 2 challenges per week. Week resets Monday at midnight CT." 
+        });
+      }
+
       const xpValue = challenge.xpValue || 20; // Default to 20 if not set
 
       await storage.completeChallenge(challengeId);
       const result = await awardXP(userId, xpValue, "completed a daily challenge");
+
+      // Update weekly challenge tracking
+      await storage.updateWeeklyChallengeTracking(userId, challengesThisWeek + 1, currentWeekStart);
 
       // Log activity
       await storage.createActivity({
