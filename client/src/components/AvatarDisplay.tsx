@@ -1,5 +1,7 @@
 interface AvatarDisplayProps {
   level: number;
+  gender?: string;
+  skinColor?: string;
   characterType?: string;
   shirtColor?: string;
   shortsColor?: string;
@@ -13,6 +15,8 @@ interface AvatarDisplayProps {
 
 export function AvatarDisplay({
   level,
+  gender = "male",
+  skinColor = "#FFCC99",
   characterType = "classic",
   shirtColor = "#FF5722",
   shortsColor = "#20B2AA",
@@ -166,7 +170,7 @@ export function AvatarDisplay({
   };
   
   const attrs = getStageAttributes();
-  const skinTone = "#FFCC99";
+  const skinTone = skinColor;
   const outlineColor = "#1A1A1A";
   const outlineWidth = 2.5;
   
@@ -221,111 +225,186 @@ export function AvatarDisplay({
       case "medium":
         return (
           <g>
-            {/* Main volume */}
+            {/* Full head coverage - solid base */}
             <path
-              d="M 70 48 Q 72 36, 80 31 Q 89 27, 100 26 Q 111 27, 120 31 Q 128 36, 130 48"
+              d="M 68 50 Q 70 35, 78 29 Q 88 25, 100 24 Q 112 25, 122 29 Q 130 35, 132 50 
+                 L 132 65 Q 130 60, 126 56 Q 120 50, 115 48 
+                 L 115 48 Q 107 46, 100 46 Q 93 46, 85 48 
+                 Q 80 50, 74 56 Q 70 60, 68 65 Z"
               fill={hairColor}
               stroke={outlineColor}
               strokeWidth={2}
             />
-            {/* Left side flow with volume */}
+            {/* Left side volume and flow */}
             <path 
-              d="M 70 48 Q 68 55, 66 64 L 72 64 Q 71 56, 70 48 Z" 
+              d="M 68 50 Q 65 58, 63 68 Q 62 74, 64 78 L 70 76 Q 69 70, 70 64 Q 71 56, 72 50 Z" 
               fill={hairColor} 
               stroke={outlineColor} 
               strokeWidth={2} 
             />
-            {/* Right side flow with volume */}
+            {/* Right side volume and flow */}
             <path 
-              d="M 130 48 Q 132 55, 134 64 L 128 64 Q 129 56, 130 48 Z" 
+              d="M 132 50 Q 135 58, 137 68 Q 138 74, 136 78 L 130 76 Q 131 70, 130 64 Q 129 56, 128 50 Z" 
               fill={hairColor} 
               stroke={outlineColor} 
               strokeWidth={2} 
             />
-            {/* Natural strands */}
-            <path d="M 85 30 Q 87 34, 88 40" stroke={darkerHair} strokeWidth="1.3" fill="none" opacity="0.6" />
-            <path d="M 100 27 Q 100 32, 100 38" stroke={darkerHair} strokeWidth="1.3" fill="none" opacity="0.6" />
-            <path d="M 115 30 Q 113 34, 112 40" stroke={darkerHair} strokeWidth="1.3" fill="none" opacity="0.6" />
+            {/* Layered texture for depth */}
+            <path d="M 78 32 Q 82 38, 84 46" stroke={darkerHair} strokeWidth="1.5" fill="none" opacity="0.4" />
+            <path d="M 88 28 Q 92 36, 94 44" stroke={darkerHair} strokeWidth="1.5" fill="none" opacity="0.4" />
+            <path d="M 100 26 Q 100 34, 100 42" stroke={darkerHair} strokeWidth="1.5" fill="none" opacity="0.4" />
+            <path d="M 112 28 Q 108 36, 106 44" stroke={darkerHair} strokeWidth="1.5" fill="none" opacity="0.4" />
+            <path d="M 122 32 Q 118 38, 116 46" stroke={darkerHair} strokeWidth="1.5" fill="none" opacity="0.4" />
+            {/* Side flow texture */}
+            <path d="M 66 58 Q 67 65, 68 72" stroke={darkerHair} strokeWidth="1.3" fill="none" opacity="0.5" />
+            <path d="M 134 58 Q 133 65, 132 72" stroke={darkerHair} strokeWidth="1.3" fill="none" opacity="0.5" />
           </g>
         );
       
       case "long":
         return (
           <g>
-            {/* Top volume */}
+            {/* Full top volume - solid coverage */}
             <path
-              d="M 68 50 Q 70 37, 78 31 Q 88 26, 100 25 Q 112 26, 122 31 Q 130 37, 132 50"
+              d="M 66 52 Q 68 36, 76 29 Q 86 24, 100 23 Q 114 24, 124 29 Q 132 36, 134 52
+                 L 134 68 Q 132 62, 128 57 Q 122 52, 116 50
+                 Q 108 48, 100 48 Q 92 48, 84 50
+                 Q 78 52, 72 57 Q 68 62, 66 68 Z"
               fill={hairColor}
               stroke={outlineColor}
               strokeWidth={2}
             />
-            {/* Left flowing strands */}
+            {/* Left side - full flowing volume */}
             <path 
-              d="M 68 50 Q 64 60, 60 75 Q 58 82, 60 88 L 66 86 Q 65 78, 66 70 Q 67 60, 68 50 Z" 
+              d="M 66 52 Q 62 64, 58 78 Q 56 86, 57 94 Q 58 98, 61 100
+                 L 68 97 Q 67 92, 68 86 Q 69 78, 70 70 Q 71 60, 72 52 Z" 
               fill={hairColor} 
               stroke={outlineColor} 
               strokeWidth={2} 
             />
-            {/* Right flowing strands */}
+            {/* Right side - full flowing volume */}
             <path 
-              d="M 132 50 Q 136 60, 140 75 Q 142 82, 140 88 L 134 86 Q 135 78, 134 70 Q 133 60, 132 50 Z" 
+              d="M 134 52 Q 138 64, 142 78 Q 144 86, 143 94 Q 142 98, 139 100
+                 L 132 97 Q 133 92, 132 86 Q 131 78, 130 70 Q 129 60, 128 52 Z" 
               fill={hairColor} 
               stroke={outlineColor} 
               strokeWidth={2} 
             />
-            {/* Individual long strands for detail */}
-            <path d="M 75 50 Q 72 65, 70 82" stroke={darkerHair} strokeWidth="1.5" fill="none" opacity="0.6" />
-            <path d="M 125 50 Q 128 65, 130 82" stroke={darkerHair} strokeWidth="1.5" fill="none" opacity="0.6" />
-            <path d="M 92 28 Q 94 45, 96 60" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.5" />
-            <path d="M 108 28 Q 106 45, 104 60" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.5" />
+            {/* Additional middle layers for fuller look */}
+            <path 
+              d="M 75 50 Q 72 62, 70 76 Q 69 84, 70 90 L 74 88 Q 74 82, 75 75 Q 76 64, 77 52 Z" 
+              fill={hairColor} 
+              stroke={outlineColor} 
+              strokeWidth={1.8} 
+              opacity="0.9"
+            />
+            <path 
+              d="M 125 50 Q 128 62, 130 76 Q 131 84, 130 90 L 126 88 Q 126 82, 125 75 Q 124 64, 123 52 Z" 
+              fill={hairColor} 
+              stroke={outlineColor} 
+              strokeWidth={1.8} 
+              opacity="0.9"
+            />
+            {/* Flowing texture lines */}
+            <path d="M 64 60 Q 62 72, 61 86" stroke={darkerHair} strokeWidth="1.6" fill="none" opacity="0.5" />
+            <path d="M 70 54 Q 68 68, 67 82" stroke={darkerHair} strokeWidth="1.4" fill="none" opacity="0.5" />
+            <path d="M 136 60 Q 138 72, 139 86" stroke={darkerHair} strokeWidth="1.6" fill="none" opacity="0.5" />
+            <path d="M 130 54 Q 132 68, 133 82" stroke={darkerHair} strokeWidth="1.4" fill="none" opacity="0.5" />
+            <path d="M 90 26 Q 92 42, 94 58" stroke={darkerHair} strokeWidth="1.3" fill="none" opacity="0.4" />
+            <path d="M 110 26 Q 108 42, 106 58" stroke={darkerHair} strokeWidth="1.3" fill="none" opacity="0.4" />
           </g>
         );
       
       case "curly":
         return (
           <g>
-            {/* Base foundation */}
-            <path
-              d="M 70 48 Q 73 36, 81 31 Q 90 27, 100 26 Q 110 27, 119 31 Q 127 36, 130 48"
-              fill={hairColor}
-              stroke={outlineColor}
-              strokeWidth={1.5}
+            {/* Solid afro/curly base - full coverage */}
+            <ellipse 
+              cx="100" 
+              cy="38" 
+              rx="36" 
+              ry="32" 
+              fill={hairColor} 
+              stroke={outlineColor} 
+              strokeWidth={2}
             />
-            {/* Natural curly volume - layered circles */}
-            <circle cx="78" cy="36" r="8" fill={hairColor} stroke={outlineColor} strokeWidth={1.8} opacity="0.95" />
-            <circle cx="91" cy="30" r="9" fill={hairColor} stroke={outlineColor} strokeWidth={1.8} />
-            <circle cx="100" cy="28" r="9" fill={hairColor} stroke={outlineColor} strokeWidth={1.8} />
-            <circle cx="109" cy="30" r="9" fill={hairColor} stroke={outlineColor} strokeWidth={1.8} />
-            <circle cx="122" cy="36" r="8" fill={hairColor} stroke={outlineColor} strokeWidth={1.8} opacity="0.95" />
-            {/* Side curls */}
-            <circle cx="70" cy="45" r="6" fill={hairColor} stroke={outlineColor} strokeWidth={1.8} opacity="0.9" />
-            <circle cx="130" cy="45" r="6" fill={hairColor} stroke={outlineColor} strokeWidth={1.8} opacity="0.9" />
-            {/* Top layer of smaller curls for texture */}
-            <circle cx="85" cy="32" r="5" fill={hairColor} stroke={outlineColor} strokeWidth={1.5} opacity="0.8" />
-            <circle cx="100" cy="26" r="5" fill={hairColor} stroke={outlineColor} strokeWidth={1.5} opacity="0.8" />
-            <circle cx="115" cy="32" r="5" fill={hairColor} stroke={outlineColor} strokeWidth={1.5} opacity="0.8" />
+            {/* Additional volume layers for fuller afro */}
+            <ellipse 
+              cx="100" 
+              cy="32" 
+              rx="32" 
+              ry="26" 
+              fill={hairColor} 
+              stroke="none"
+              opacity="0.9"
+            />
+            <ellipse 
+              cx="100" 
+              cy="28" 
+              rx="28" 
+              ry="22" 
+              fill={hairColor} 
+              stroke="none"
+              opacity="0.8"
+            />
+            {/* Curl texture overlay - many small circles for afro texture */}
+            <circle cx="72" cy="38" r="7" fill={hairColor} stroke={outlineColor} strokeWidth={1.5} opacity="0.7" />
+            <circle cx="80" cy="32" r="7" fill={hairColor} stroke={outlineColor} strokeWidth={1.5} opacity="0.7" />
+            <circle cx="88" cy="26" r="7" fill={hairColor} stroke={outlineColor} strokeWidth={1.5} opacity="0.7" />
+            <circle cx="100" cy="20" r="7" fill={hairColor} stroke={outlineColor} strokeWidth={1.5} opacity="0.7" />
+            <circle cx="112" cy="26" r="7" fill={hairColor} stroke={outlineColor} strokeWidth={1.5} opacity="0.7" />
+            <circle cx="120" cy="32" r="7" fill={hairColor} stroke={outlineColor} strokeWidth={1.5} opacity="0.7" />
+            <circle cx="128" cy="38" r="7" fill={hairColor} stroke={outlineColor} strokeWidth={1.5} opacity="0.7" />
+            <circle cx="76" cy="44" r="6" fill={hairColor} stroke={outlineColor} strokeWidth={1.5} opacity="0.6" />
+            <circle cx="124" cy="44" r="6" fill={hairColor} stroke={outlineColor} strokeWidth={1.5} opacity="0.6" />
+            <circle cx="84" cy="38" r="6" fill={hairColor} stroke={outlineColor} strokeWidth={1.5} opacity="0.6" />
+            <circle cx="94" cy="32" r="6" fill={hairColor} stroke={outlineColor} strokeWidth={1.5} opacity="0.6" />
+            <circle cx="106" cy="32" r="6" fill={hairColor} stroke={outlineColor} strokeWidth={1.5} opacity="0.6" />
+            <circle cx="116" cy="38" r="6" fill={hairColor} stroke={outlineColor} strokeWidth={1.5} opacity="0.6" />
+            {/* Smaller surface curls for extra texture */}
+            <circle cx="90" cy="22" r="4" fill={hairColor} stroke={outlineColor} strokeWidth={1.2} opacity="0.5" />
+            <circle cx="100" cy="18" r="4" fill={hairColor} stroke={outlineColor} strokeWidth={1.2} opacity="0.5" />
+            <circle cx="110" cy="22" r="4" fill={hairColor} stroke={outlineColor} strokeWidth={1.2} opacity="0.5" />
           </g>
         );
       
       case "spiky":
         return (
           <g>
-            {/* Base hair foundation */}
+            {/* Solid base foundation - full head coverage */}
             <path
-              d="M 72 46 Q 75 36, 82 32 Q 91 29, 100 28 Q 109 29, 118 32 Q 125 36, 128 46"
+              d="M 70 48 Q 72 36, 80 31 Q 89 27, 100 26 Q 111 27, 120 31 Q 128 36, 130 48
+                 L 128 50 Q 120 46, 110 44 Q 100 43, 90 44 Q 80 46, 72 50 Z"
               fill={hairColor}
               stroke={outlineColor}
-              strokeWidth={1.5}
+              strokeWidth={2}
             />
-            {/* Natural-looking spikes with varying heights */}
-            <path d="M 75 40 Q 73 28, 72 18 Q 77 22, 79 40 Z" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
-            <path d="M 88 35 Q 87 22, 86 14 Q 91 18, 93 35 Z" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
-            <path d="M 98 33 Q 98 18, 98 10 Q 102 16, 103 33 Z" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
-            <path d="M 108 35 Q 109 22, 110 14 Q 105 18, 103 35 Z" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
-            <path d="M 125 40 Q 127 28, 128 18 Q 123 22, 121 40 Z" fill={hairColor} stroke={outlineColor} strokeWidth={2} />
-            {/* Additional smaller spikes for volume */}
-            <path d="M 82 38 Q 81 30, 80 24 Q 84 28, 85 38 Z" fill={hairColor} stroke={outlineColor} strokeWidth={1.5} opacity="0.9" />
-            <path d="M 118 38 Q 119 30, 120 24 Q 116 28, 115 38 Z" fill={hairColor} stroke={outlineColor} strokeWidth={1.5} opacity="0.9" />
+            {/* Multiple wide spikes for full coverage - left side */}
+            <path d="M 70 45 Q 68 34, 66 22 Q 66 16, 68 12 Q 72 16, 75 24 Q 77 34, 78 45 Z" 
+              fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            <path d="M 80 40 Q 79 28, 78 18 Q 78 12, 80 8 Q 84 12, 86 20 Q 88 30, 89 40 Z" 
+              fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            <path d="M 90 36 Q 89 24, 88 14 Q 88 8, 90 4 Q 94 8, 96 16 Q 98 26, 99 36 Z" 
+              fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            {/* Center spike - tallest */}
+            <path d="M 98 34 Q 98 20, 98 8 Q 98 2, 100 0 Q 102 2, 102 8 Q 102 20, 102 34 Z" 
+              fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            {/* Multiple wide spikes - right side */}
+            <path d="M 110 36 Q 111 24, 112 14 Q 112 8, 110 4 Q 106 8, 104 16 Q 102 26, 101 36 Z" 
+              fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            <path d="M 120 40 Q 121 28, 122 18 Q 122 12, 120 8 Q 116 12, 114 20 Q 112 30, 111 40 Z" 
+              fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            <path d="M 130 45 Q 132 34, 134 22 Q 134 16, 132 12 Q 128 16, 125 24 Q 123 34, 122 45 Z" 
+              fill={hairColor} stroke={outlineColor} strokeWidth={2} />
+            {/* Additional smaller spikes between main ones for fuller coverage */}
+            <path d="M 75 42 Q 74 32, 73 22 Q 73 18, 75 15 Q 78 18, 80 26 Q 82 34, 83 42 Z" 
+              fill={hairColor} stroke={outlineColor} strokeWidth={1.6} opacity="0.9" />
+            <path d="M 95 38 Q 94 26, 93 16 Q 93 12, 95 9 Q 98 12, 100 20 Q 102 28, 103 38 Z" 
+              fill={hairColor} stroke={outlineColor} strokeWidth={1.6} opacity="0.9" />
+            <path d="M 115 40 Q 116 30, 117 20 Q 117 16, 115 13 Q 112 16, 110 24 Q 108 32, 107 40 Z" 
+              fill={hairColor} stroke={outlineColor} strokeWidth={1.6} opacity="0.9" />
+            <path d="M 125 42 Q 126 32, 127 22 Q 127 18, 125 15 Q 122 18, 120 26 Q 118 34, 117 42 Z" 
+              fill={hairColor} stroke={outlineColor} strokeWidth={1.6} opacity="0.9" />
           </g>
         );
       
