@@ -282,6 +282,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.completeChallenge(challengeId);
       const result = await awardXP(userId, xpValue, "completed a daily challenge");
 
+      // Log activity
+      await storage.createActivity({
+        userId,
+        type: "challenge",
+        detail: `completed a challenge: "${challenge.text}"`,
+        xpAwarded: xpValue,
+      });
+
       // Check if all daily challenges are completed
       const allChallenges = await storage.getUserDailyChallenges(userId, today);
       const allCompleted = allChallenges.every((c) => c.completed);
@@ -368,6 +376,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await storage.updateUserStreak(userId, newStreak, today);
       const result = await awardXP(userId, 15, "checked in");
 
+      // Log activity
+      await storage.createActivity({
+        userId,
+        type: "checkin",
+        detail: `checked in (${newStreak} day streak!)`,
+        xpAwarded: 15,
+      });
+
       res.json({ success: true, streak: newStreak, ...result });
     } catch (error) {
       console.error("Error checking in:", error);
@@ -432,6 +448,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         deadlift: newDeadlift,
       });
 
+      // Log activity if XP was awarded (meaning PRs improved)
+      if (xpAwarded > 0) {
+        const total = newSquat + newBench + newDeadlift;
+        await storage.createActivity({
+          userId,
+          type: "pr",
+          detail: `hit a new PR! Total: ${total}lbs (${newSquat}/${newBench}/${newDeadlift})`,
+          xpAwarded,
+        });
+      }
+
       // Check if crew goal is reached and auto-advance
       const allPRs = await storage.getAllPRs();
       const total = allPRs.reduce((sum, pr) => sum + pr.squat + pr.bench + pr.deadlift, 0);
@@ -481,6 +508,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (newWeight !== currentWeight) {
         await awardXP(userId, 15, "recorded their weight");
         xpAwarded = 15;
+
+        // Log activity
+        await storage.createActivity({
+          userId,
+          type: "weighin",
+          detail: `weighed in at ${newWeight}lbs`,
+          xpAwarded: 15,
+        });
       }
 
       await storage.updateUserWeight(userId, newWeight, today);
@@ -566,6 +601,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       const result = await awardXP(userId, 15, "uploaded a progress photo");
+
+      // Log activity
+      await storage.createActivity({
+        userId,
+        type: "photo",
+        detail: "uploaded a progress photo",
+        xpAwarded: 15,
+      });
 
       console.log("[PHOTO UPLOAD] Success! XP awarded:", result?.xpAwarded || 0);
       res.json({ success: true, objectPath, ...result });
@@ -1274,6 +1317,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Don't count goal XP toward daily MVL race
       const result = await awardXP(userId, xpAmount, xpReason, false);
 
+      // Log activity
+      await storage.createActivity({
+        userId,
+        type: "goal",
+        detail: `completed a ${goalBefore.type} goal: "${goalBefore.title}"`,
+        xpAwarded: xpAmount,
+      });
+
       res.json({ ...goal, ...result });
     } catch (error) {
       console.error("Error completing goal:", error);
@@ -1320,6 +1371,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Award 15 XP for logging calories
       const result = await awardXP(userId, 15, "logged daily calories");
+
+      // Log activity
+      await storage.createActivity({
+        userId,
+        type: "calories",
+        detail: `logged ${calories} calories`,
+        xpAwarded: 15,
+      });
 
       res.json({ 
         success: true, 
