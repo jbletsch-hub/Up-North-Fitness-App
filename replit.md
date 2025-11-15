@@ -47,8 +47,8 @@ The gamification system includes an XP curve (~200k XP for level 50) and an 11-t
 - **Crew vs Crew Competitions:** Dashboard displays four competitive categories: Weekly Check-In Battle, Monthly XP War, Challenge Completion %, and Total Lift Showdown. Backend queries fixed for proper date handling and SQL syntax.
 - **Weekly MVM System:** Tracks and awards the top weekly XP earner across the entire gym.
 - **Crew Name Display:** Leaderboards show crew membership under usernames in gym-wide view. HomePage always displays crew names as it's the public landing page.
-- **Gym Combined Total:** HomePage prominently displays the combined total of all users' PRs (squat + bench + deadlift) regardless of crew membership, showing the collective strength of the entire gym via GymTotalCard component.
-- **Separate Crew Goals:** Crew-specific goals and progress are tracked separately on the crews page via CrewGoalMeter component, while the homepage shows gym-wide statistics.
+- **Gym Combined Total:** HomePage prominently displays the combined total of all users' PRs (squat + bench + deadlift) regardless of crew membership, showing the collective strength of the entire gym via GymTotalCard component. Additionally, the GymTotalCard appears on the dashboard when users toggle to gym-wide view by clicking the "Up North Fitness" button.
+- **Separate Crew Goals:** Crew-specific goals and progress are tracked separately in crew view via CrewGoalMeter component. Gym-wide statistics display when in gym-wide view mode.
 
 ## External Dependencies
 
