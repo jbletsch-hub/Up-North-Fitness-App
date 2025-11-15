@@ -128,13 +128,25 @@ export default function PrivacySettingsPage() {
                           </p>
                         </div>
                       </div>
-                      <Switch
-                        id={option.field}
-                        checked={isEnabled}
-                        onCheckedChange={(checked) => handleToggle(option.field, checked)}
-                        disabled={updatePrivacyMutation.isPending}
-                        data-testid={`switch-${option.field.toLowerCase().replace(/([A-Z])/g, '-$1')}`}
-                      />
+                      <div className="flex items-center gap-3">
+                        <div className="text-right min-w-[60px]">
+                          <span className={`text-sm font-medium ${isEnabled ? 'text-muted-foreground' : 'text-primary'}`}>
+                            Private
+                          </span>
+                        </div>
+                        <Switch
+                          id={option.field}
+                          checked={isEnabled}
+                          onCheckedChange={(checked) => handleToggle(option.field, checked)}
+                          disabled={updatePrivacyMutation.isPending}
+                          data-testid={`switch-${option.field.toLowerCase().replace(/([A-Z])/g, '-$1')}`}
+                        />
+                        <div className="min-w-[60px]">
+                          <span className={`text-sm font-medium ${isEnabled ? 'text-primary' : 'text-muted-foreground'}`}>
+                            Public
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>

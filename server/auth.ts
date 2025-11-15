@@ -125,7 +125,7 @@ export function setupAuth(app: Express) {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     
     // Transform snake_case privacy fields to camelCase for frontend
-    const user = req.user;
+    const user = req.user as any;
     const transformedUser = {
       ...user,
       showPRs: user.show_prs,
