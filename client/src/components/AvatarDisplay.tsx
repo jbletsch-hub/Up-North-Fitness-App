@@ -282,26 +282,30 @@ export function AvatarDisplay({
       case "long":
         return (
           <g>
-            {/* Continuous flowing hair from head to waist - no gaps */}
+            {/* Left side - flowing hair from ear down to waist */}
             <path
-              d="M 68 52 Q 70 36, 78 29 Q 88 24, 100 23 Q 112 24, 122 29 Q 130 36, 132 52
-                 Q 132 60, 130 72 Q 129 82, 128 92 Q 127 98, 126 102
-                 L 120 100 Q 121 92, 122 82 Q 123 70, 124 58 Q 124 52, 116 48
-                 Q 108 46, 100 46 Q 92 46, 84 48
-                 Q 76 52, 76 58 Q 76 70, 77 82 Q 78 92, 79 100
-                 L 74 102 Q 73 98, 72 92 Q 71 82, 70 72 Q 68 60, 68 52 Z"
+              d="M 72 50 Q 72 52, 72 54
+                 Q 72 62, 71 72 Q 70 82, 69 92 Q 68 98, 68 102
+                 L 74 100 Q 75 92, 76 82 Q 77 70, 78 58 Q 78 54, 78 50 Z"
               fill={hairColor}
               stroke={outlineColor}
               strokeWidth={2}
             />
-            {/* Flowing texture lines - straight down close to body */}
-            <path d="M 76 58 Q 75 72, 75 88" stroke={darkerHair} strokeWidth="1.4" fill="none" opacity="0.5" />
-            <path d="M 82 50 Q 81 66, 80 84" stroke={darkerHair} strokeWidth="1.3" fill="none" opacity="0.5" />
-            <path d="M 90 28 Q 90 46, 90 68" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.4" />
-            <path d="M 100 26 Q 100 44, 100 66" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.4" />
-            <path d="M 110 28 Q 110 46, 110 68" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.4" />
-            <path d="M 118 50 Q 119 66, 120 84" stroke={darkerHair} strokeWidth="1.3" fill="none" opacity="0.5" />
-            <path d="M 124 58 Q 125 72, 125 88" stroke={darkerHair} strokeWidth="1.4" fill="none" opacity="0.5" />
+            {/* Right side - flowing hair from ear down to waist */}
+            <path
+              d="M 128 50 Q 128 52, 128 54
+                 Q 128 62, 129 72 Q 130 82, 131 92 Q 132 98, 132 102
+                 L 126 100 Q 125 92, 124 82 Q 123 70, 122 58 Q 122 54, 122 50 Z"
+              fill={hairColor}
+              stroke={outlineColor}
+              strokeWidth={2}
+            />
+            {/* Flowing texture lines - left side */}
+            <path d="M 74 56 Q 73 72, 72 88" stroke={darkerHair} strokeWidth="1.3" fill="none" opacity="0.5" />
+            <path d="M 76 54 Q 75 68, 74 84" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.4" />
+            {/* Flowing texture lines - right side */}
+            <path d="M 126 56 Q 127 72, 128 88" stroke={darkerHair} strokeWidth="1.3" fill="none" opacity="0.5" />
+            <path d="M 124 54 Q 125 68, 126 84" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.4" />
           </g>
         );
       
