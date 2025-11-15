@@ -11,6 +11,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { StreakCalendar } from "@/components/StreakCalendar";
 import { StreakMilestones } from "@/components/StreakMilestones";
+import { PRComparison } from "@/components/PRComparison";
 
 export default function StatsPage() {
   const { user } = useAuth();
@@ -254,6 +255,16 @@ export default function StatsPage() {
                 )}
               </CardContent>
             </Card>
+
+            {/* PR Comparison */}
+            {(stats as any)?.currentPR && targetUserId && (
+              <PRComparison 
+                userId={targetUserId}
+                squat={(stats as any).currentPR.squat}
+                bench={(stats as any).currentPR.bench}
+                deadlift={(stats as any).currentPR.deadlift}
+              />
+            )}
 
             {/* Current Stats */}
             <div className="grid md:grid-cols-2 gap-4">

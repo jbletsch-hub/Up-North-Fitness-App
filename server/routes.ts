@@ -300,16 +300,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get monthly check-ins (check-ins in current month)
       const now = new Date();
       const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-      const activities = await storage.getUserActivities(userId);
-      const checkIns = activities.filter(a => 
-        a.type === "check-in" && new Date(a.createdAt) >= monthStart
+      const activities = await storage.getActivitiesByUser(userId, 1000);
+      const checkIns = activities.filter((a: any) => 
+        a.type === "checkin" && new Date(a.createdAt) >= monthStart
       );
       const monthlyCheckIns = checkIns.length;
 
       // Get weekly PRs (PR updates in current week, starting Monday)
       const weekStart = getCentralTimeWeekStart();
       const prHistory = await storage.getPRHistory(userId);
-      const weeklyPRs = prHistory.filter(pr => pr.date >= weekStart).length;
+      const weeklyPRs = prHistory.filter((pr: any) => {
+        const prDate = new Date(pr.createdAt).toISOString().split('T')[0];
+        return prDate >= weekStart;
+      }).length;
 
       // Get MVL wins
       const mvlWins = user.mvlWins || 0;
@@ -1582,6 +1585,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Remove duplicates and sort
       const uniqueCheckinDates = Array.from(new Set(checkinDates)).sort();
 
+      // Get current PRs
+      const currentPR = await storage.getPR(targetUserId);
+
       res.json({
         userId: user.id,
         username: user.username,
@@ -1589,6 +1595,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         totalActivities: activities.length,
         xpTrend,
         prProgression, // PR history for chart
+        currentPR: currentPR || { squat: 0, bench: 0, deadlift: 0 }, // Current PR values
         currentStreak: user?.streakCount || 0,
         totalXP: user?.xp || 0,
         currentLevel: user?.level || 1,
@@ -1610,6 +1617,82 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching stats:", error);
       res.status(500).json({ message: "Failed to fetch stats" });
+    }
+  });
+
+  // PR Comparison endpoint
+  app.get("/api/pr-comparison/:userId", isAuthenticated, async (req, res) => {
+    try {
+      const targetUserId = req.params.userId;
+      const userPR = await storage.getPR(targetUserId);
+      
+      if (!userPR) {
+        return res.status(404).json({ message: "PR not found" });
+      }
+
+      // Get all PRs for comparison
+      const allPRs = await storage.getAllPRs();
+      
+      if (allPRs.length === 0) {
+        return res.json({
+          gymAverages: { squat: 0, bench: 0, deadlift: 0 },
+          percentiles: { squat: 0, bench: 0, deadlift: 0, total: 0 },
+          topLifters: []
+        });
+      }
+
+      // Calculate gym averages
+      const totalSquat = allPRs.reduce((sum, pr) => sum + pr.squat, 0);
+      const totalBench = allPRs.reduce((sum, pr) => sum + pr.bench, 0);
+      const totalDeadlift = allPRs.reduce((sum, pr) => sum + pr.deadlift, 0);
+
+      const gymAverages = {
+        squat: totalSquat / allPRs.length,
+        bench: totalBench / allPRs.length,
+        deadlift: totalDeadlift / allPRs.length,
+      };
+
+      // Calculate percentiles
+      const userTotal = userPR.squat + userPR.bench + userPR.deadlift;
+      
+      const squatPercentile = (allPRs.filter(pr => pr.squat < userPR.squat).length / allPRs.length) * 100;
+      const benchPercentile = (allPRs.filter(pr => pr.bench < userPR.bench).length / allPRs.length) * 100;
+      const deadliftPercentile = (allPRs.filter(pr => pr.deadlift < userPR.deadlift).length / allPRs.length) * 100;
+      const totalPercentile = (allPRs.filter(pr => (pr.squat + pr.bench + pr.deadlift) < userTotal).length / allPRs.length) * 100;
+
+      const percentiles = {
+        squat: squatPercentile,
+        bench: benchPercentile,
+        deadlift: deadliftPercentile,
+        total: totalPercentile,
+      };
+
+      // Get top lifters
+      const allUsers = await storage.getAllUsers();
+      const liftersWithTotals = await Promise.all(
+        allUsers.map(async (user: any) => {
+          const pr = await storage.getPR(user.id);
+          return {
+            userId: user.id,
+            username: user.username,
+            total: pr ? pr.squat + pr.bench + pr.deadlift : 0,
+          };
+        })
+      );
+
+      const topLifters = liftersWithTotals
+        .filter(l => l.total > 0)
+        .sort((a, b) => b.total - a.total)
+        .slice(0, 5);
+
+      res.json({
+        gymAverages,
+        percentiles,
+        topLifters,
+      });
+    } catch (error) {
+      console.error("Error fetching PR comparison:", error);
+      res.status(500).json({ message: "Failed to fetch PR comparison" });
     }
   });
 
