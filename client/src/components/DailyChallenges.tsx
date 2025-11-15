@@ -12,7 +12,7 @@ interface Challenge {
 
 interface DailyChallengesProps {
   challenges: Challenge[];
-  onComplete?: (id: string, event: React.MouseEvent) => void;
+  onComplete?: (id: string, position: { x: number; y: number }) => void;
   canReroll?: boolean;
   onReroll?: () => void;
   isRerolling?: boolean;
@@ -26,7 +26,13 @@ export function DailyChallenges({
   isRerolling = false
 }: DailyChallengesProps) {
   const handleComplete = (id: string, event: React.MouseEvent) => {
-    onComplete?.(id, event);
+    // Capture position synchronously before React recycles the event (production mode issue)
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    const position = {
+      x: rect.left + rect.width / 2,
+      y: rect.top,
+    };
+    onComplete?.(id, position);
   };
 
   return (

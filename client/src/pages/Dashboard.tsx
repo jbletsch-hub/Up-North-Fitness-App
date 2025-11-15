@@ -556,12 +556,7 @@ export default function Dashboard() {
           <div className="grid md:grid-cols-2 gap-6">
             <DailyChallenges
               challenges={challenges}
-              onComplete={(id, event) => {
-                const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
-                const position = {
-                  x: rect.left + rect.width / 2,
-                  y: rect.top,
-                };
+              onComplete={(id, position) => {
                 completeMutation.mutate({ challengeId: id, position });
               }}
               canReroll={canReroll}
