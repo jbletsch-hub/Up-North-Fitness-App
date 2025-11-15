@@ -839,26 +839,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const profileUserCrewId = profileUserCrews.length > 0 ? profileUserCrews[0].id : null;
       const profileUserCrewName = profileUserCrews.length > 0 ? profileUserCrews[0].name : null;
 
-      // Check if profile is private and if current user has access
-      const isPrivate = profileUser.isPrivateProfile || false;
+      // Determine access level
       const isSameCrew = currentUserCrewId && profileUserCrewId && currentUserCrewId === profileUserCrewId;
       const isOwnProfile = currentUserId === profileUser.id;
-      const hasAccess = !isPrivate || isOwnProfile || isSameCrew;
+      const hasFullAccess = isOwnProfile || isSameCrew;
 
-      // If no access, return limited data
-      if (!hasAccess) {
-        return res.json({
-          user: {
-            username: profileUser.username,
-            level: profileUser.level,
-            crewName: profileUserCrewName,
-            isPrivateProfile: true,
-          },
-          isRestricted: true,
-        });
-      }
-
-      // Full access - return all data
+      // Fetch all data
       const pr = (await storage.getPR(profileUser.id)) || { squat: 0, bench: 0, deadlift: 0 };
       const photos = await storage.getPhotosByUser(profileUser.id);
       const activities = await storage.getActivitiesByUser(profileUser.id, 20);
@@ -877,16 +863,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
         createdAt: getRelativeTime(new Date(a.createdAt)),
       }));
 
-      res.json({
+      // Apply granular privacy filters
+      const response: any = {
         user: profileUser,
-        pr,
-        photos,
-        activities: formattedActivities,
-        challenges,
-        weeklyGoals,
-        lifetimeGoals,
         crewName: profileUserCrewName,
-      });
+      };
+
+      // Crew members and own profile always see everything
+      if (hasFullAccess) {
+        response.pr = pr;
+        response.photos = photos;
+        response.activities = formattedActivities;
+        response.challenges = challenges;
+        response.weeklyGoals = weeklyGoals;
+        response.lifetimeGoals = lifetimeGoals;
+      } else {
+        // Apply privacy settings for non-crew members
+        if (profileUser.showPRs) {
+          response.pr = pr;
+        }
+        if (profileUser.showPhotos) {
+          response.photos = photos;
+        }
+        if (profileUser.showActivities) {
+          response.activities = formattedActivities;
+        }
+        if (profileUser.showGoals) {
+          response.weeklyGoals = weeklyGoals;
+          response.lifetimeGoals = lifetimeGoals;
+        }
+        // Challenges are always shown (part of profile functionality)
+        response.challenges = challenges;
+      }
+
+      res.json(response);
     } catch (error) {
       console.error("Error fetching profile:", error);
       res.status(500).json({ message: "Failed to fetch profile" });
@@ -1639,8 +1649,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "User not found" });
       }
 
-      // Check privacy settings if viewing someone else's stats
-      if (targetUserId !== currentUserId) {
+      // Determine access level if viewing someone else's stats
+      let hasFullAccess = targetUserId === currentUserId;
+      
+      if (!hasFullAccess) {
         // Get current user's crew membership
         const currentUserCrews = await storage.getUserCrews(currentUserId);
         const currentUserCrewId = currentUserCrews.length > 0 ? currentUserCrews[0].id : null;
@@ -1649,14 +1661,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const targetUserCrews = await storage.getUserCrews(targetUserId);
         const targetUserCrewId = targetUserCrews.length > 0 ? targetUserCrews[0].id : null;
 
-        // Check if profile is private and if current user has access
-        const isPrivate = user.isPrivateProfile || false;
+        // Crew members have full access
         const isSameCrew = currentUserCrewId && targetUserCrewId && currentUserCrewId === targetUserCrewId;
-        const hasAccess = !isPrivate || isSameCrew;
+        hasFullAccess = isSameCrew;
 
-        if (!hasAccess) {
+        // If not crew member and stats are private, deny access
+        if (!isSameCrew && !user.showStats) {
           return res.status(403).json({ 
-            message: "This profile is private. Only crew members can view detailed stats.",
+            message: "This user's stats are private. Only crew members can view them.",
             isRestricted: true 
           });
         }
@@ -1725,7 +1737,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         a.type === "pr_update" || a.detail?.includes("New PR")
       ).slice(0, 10); // Get the 10 most recent PR updates
 
-      res.json({
+      // Build response with privacy filters
+      const response: any = {
         userId: user.id,
         username: user.username,
         displayName: user.displayName,
@@ -1737,8 +1750,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         currentStreak: user?.streakCount || 0,
         totalXP: user?.xp || 0,
         currentLevel: user?.level || 1,
-        currentWeight: user?.weight,
-        calories: user?.calories,
         mvlWins: user?.mvlWins || 0,
         completedGoals: completedGoalsCount,
         goals: groupedGoals,
@@ -1753,7 +1764,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         wristbands: user?.wristbands,
         facialHair: user?.facialHair,
         checkinHistory: uniqueCheckinDates, // Array of YYYY-MM-DD dates
-      });
+      };
+
+      // Apply privacy filters for body metrics (weight, calories)
+      // Crew members and own profile always see everything
+      if (hasFullAccess || user.showMetrics) {
+        response.currentWeight = user?.weight;
+        response.calories = user?.calories;
+      }
+
+      res.json(response);
     } catch (error) {
       console.error("Error fetching stats:", error);
       res.status(500).json({ message: "Failed to fetch stats" });
