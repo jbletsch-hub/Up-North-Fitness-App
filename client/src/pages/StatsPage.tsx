@@ -30,6 +30,9 @@ export default function StatsPage() {
   // Use the userId from params, or the logged-in user's id
   const targetUserId = userId || user?.id;
 
+  // Determine if viewing own stats or someone else's
+  const isOwnStats = !userId || userId === user?.id;
+
   const { data: stats, isLoading } = useQuery({
     queryKey: ["/api/stats", targetUserId],
     enabled: !!targetUserId,
@@ -46,9 +49,9 @@ export default function StatsPage() {
     enabled: !!user?.isAdmin && !isOwnStats,
   });
 
-  // Fetch user's crew memberships (to find crews where they're a leader)
-  const { data: userCrews } = useQuery({
-    queryKey: ["/api/crews"],
+  // Fetch user's crew to check if they're a leader
+  const { data: userCrew } = useQuery({
+    queryKey: ["/api/crews/my-crew"],
     enabled: !!user && !isOwnStats,
   });
 
@@ -57,16 +60,10 @@ export default function StatsPage() {
     return `${date.getMonth() + 1}/${date.getDate()}`;
   };
 
-  // Determine if viewing own stats or someone else's
-  const isOwnStats = !userId || userId === user?.id;
   const displayName = (stats as any)?.displayName || (stats as any)?.username || "User";
 
-  // Filter crews where current user is a leader
-  const leaderCrews = userCrews ? 
-    (userCrews as any[]).filter((crew: any) => {
-      // Check if user is a leader of this crew
-      return crew.members?.some((m: any) => m.userId === user?.id && m.role === "leader");
-    }) : [];
+  // Check if user is a leader of their crew
+  const isCrewLeader = userCrew && (userCrew as any).role === "leader";
 
   // Invite to crew mutation
   const inviteMutation = useMutation({
@@ -114,8 +111,8 @@ export default function StatsPage() {
   });
 
   const handleInvite = () => {
-    if (selectedCrewId && targetUserId) {
-      inviteMutation.mutate({ crewId: selectedCrewId, targetUserId });
+    if (userCrew && targetUserId) {
+      inviteMutation.mutate({ crewId: (userCrew as any).crewId, targetUserId });
     }
   };
 
@@ -153,7 +150,7 @@ export default function StatsPage() {
         {!isOwnStats && user && (
           <div className="flex flex-wrap gap-2 justify-center">
             {/* Crew Leader Invitation */}
-            {leaderCrews.length > 0 && (
+            {isCrewLeader && (
               <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
                 <DialogTrigger asChild>
                   <Button variant="default" size="default" data-testid="button-invite-to-crew">
@@ -163,24 +160,15 @@ export default function StatsPage() {
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Invite {displayName} to Crew</DialogTitle>
+                    <DialogTitle>Invite {displayName} to {(userCrew as any)?.crew?.name}</DialogTitle>
                     <DialogDescription>
-                      Select a crew to invite this user to join.
+                      Send an invitation for this user to join your crew.
                     </DialogDescription>
                   </DialogHeader>
-                  <div className="space-y-4 py-4">
-                    <Select value={selectedCrewId} onValueChange={setSelectedCrewId}>
-                      <SelectTrigger data-testid="select-crew">
-                        <SelectValue placeholder="Select a crew" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {leaderCrews.map((crew: any) => (
-                          <SelectItem key={crew.id} value={crew.id}>
-                            {crew.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                  <div className="py-4">
+                    <p className="text-sm text-muted-foreground">
+                      {displayName} will receive an invitation to join <span className="font-semibold">{(userCrew as any)?.crew?.name}</span>. They can accept or decline the invitation.
+                    </p>
                   </div>
                   <DialogFooter>
                     <Button 
@@ -192,7 +180,7 @@ export default function StatsPage() {
                     </Button>
                     <Button 
                       onClick={handleInvite} 
-                      disabled={!selectedCrewId || inviteMutation.isPending}
+                      disabled={inviteMutation.isPending}
                       data-testid="button-send-invite"
                     >
                       {inviteMutation.isPending ? "Sending..." : "Send Invitation"}
