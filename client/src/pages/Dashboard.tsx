@@ -23,6 +23,7 @@ import { AvatarDisplay } from "@/components/AvatarDisplay";
 import { AvatarWithProgress } from "@/components/AvatarWithProgress";
 import { Card, CardContent } from "@/components/ui/card";
 import { CrewChallengeCard } from "@/components/CrewChallengeCard";
+import { CrewCompetitionsCard } from "@/components/CrewCompetitionsCard";
 import { QuickStatsWidget } from "@/components/QuickStatsWidget";
 import { CollapsibleSection } from "@/components/CollapsibleSection";
 import { ViewContextSwitcher } from "@/components/ViewContextSwitcher";
@@ -662,6 +663,10 @@ export default function Dashboard() {
             onContribute={(contribution) => crewContributionMutation.mutate(contribution)}
             isSubmitting={crewContributionMutation.isPending}
           />
+        </CollapsibleSection>
+
+        <CollapsibleSection id="crew-competitions" title="Crew Competitions">
+          <CrewCompetitionsCard />
         </CollapsibleSection>
 
         <CollapsibleSection id="leaderboards" title="Leaderboards">

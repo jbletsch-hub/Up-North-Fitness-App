@@ -2173,6 +2173,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Crew Competitions Endpoints
+  app.get("/api/crew-competitions/check-ins", isAuthenticated, async (req, res) => {
+    try {
+      const standings = await storage.getWeeklyCheckInBattle();
+      res.json(standings);
+    } catch (error) {
+      console.error("Error fetching check-in battle:", error);
+      res.status(500).json({ message: "Failed to fetch check-in battle" });
+    }
+  });
+
+  app.get("/api/crew-competitions/xp", isAuthenticated, async (req, res) => {
+    try {
+      const standings = await storage.getMonthlyXPWar();
+      res.json(standings);
+    } catch (error) {
+      console.error("Error fetching XP war:", error);
+      res.status(500).json({ message: "Failed to fetch XP war" });
+    }
+  });
+
+  app.get("/api/crew-competitions/challenges", isAuthenticated, async (req, res) => {
+    try {
+      const standings = await storage.getChallengeCompletionRates();
+      res.json(standings);
+    } catch (error) {
+      console.error("Error fetching challenge completion:", error);
+      res.status(500).json({ message: "Failed to fetch challenge completion" });
+    }
+  });
+
+  app.get("/api/crew-competitions/lifts", isAuthenticated, async (req, res) => {
+    try {
+      const standings = await storage.getTotalLiftShowdown();
+      res.json(standings);
+    } catch (error) {
+      console.error("Error fetching lift showdown:", error);
+      res.status(500).json({ message: "Failed to fetch lift showdown" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

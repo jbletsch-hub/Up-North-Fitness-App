@@ -1102,6 +1102,104 @@ export class DatabaseStorage implements IStorage {
   async deleteInvite(id: string): Promise<void> {
     await db.delete(crewInvites).where(eq(crewInvites.id, id));
   }
+
+  // Crew Competition Methods
+  async getWeeklyCheckInBattle(): Promise<Array<{ crewId: string; crewName: string; checkInCount: number; memberCount: number }>> {
+    const { weekStart } = getWeekBounds();
+    
+    const crewCheckIns = await db
+      .select({
+        crewId: crewMemberships.crewId,
+        crewName: crews.name,
+        checkInCount: sql<number>`COUNT(DISTINCT ${activities.userId})`.as('checkInCount'),
+        memberCount: sql<number>`COUNT(DISTINCT ${crewMemberships.userId})`.as('memberCount'),
+      })
+      .from(crewMemberships)
+      .innerJoin(crews, eq(crewMemberships.crewId, crews.id))
+      .leftJoin(
+        activities,
+        and(
+          eq(activities.userId, crewMemberships.userId),
+          eq(activities.type, 'check-in'),
+          gte(activities.createdAt, weekStart)
+        )
+      )
+      .groupBy(crewMemberships.crewId, crews.name)
+      .orderBy(desc(sql`COUNT(DISTINCT ${activities.userId})`));
+    
+    return crewCheckIns;
+  }
+
+  async getMonthlyXPWar(): Promise<Array<{ crewId: string; crewName: string; totalXP: number; memberCount: number }>> {
+    const monthStart = new Date();
+    monthStart.setDate(1);
+    monthStart.setHours(0, 0, 0, 0);
+    
+    const crewXP = await db
+      .select({
+        crewId: crewMemberships.crewId,
+        crewName: crews.name,
+        totalXP: sql<number>`COALESCE(SUM(${activities.xpAwarded}), 0)`.as('totalXP'),
+        memberCount: sql<number>`COUNT(DISTINCT ${crewMemberships.userId})`.as('memberCount'),
+      })
+      .from(crewMemberships)
+      .innerJoin(crews, eq(crewMemberships.crewId, crews.id))
+      .leftJoin(
+        activities,
+        and(
+          eq(activities.userId, crewMemberships.userId),
+          gte(activities.createdAt, monthStart)
+        )
+      )
+      .groupBy(crewMemberships.crewId, crews.name)
+      .orderBy(desc(sql`COALESCE(SUM(${activities.xpAwarded}), 0)`));
+    
+    return crewXP;
+  }
+
+  async getChallengeCompletionRates(): Promise<Array<{ crewId: string; crewName: string; completionRate: number; completedCount: number; memberCount: number }>> {
+    const { weekStart } = getWeekBounds();
+    
+    const crewChallenges = await db
+      .select({
+        crewId: crewMemberships.crewId,
+        crewName: crews.name,
+        completedCount: sql<number>`COUNT(DISTINCT CASE WHEN ${userDailyChallenges.completedAt} >= ${weekStart} THEN ${userDailyChallenges.userId} END)`.as('completedCount'),
+        memberCount: sql<number>`COUNT(DISTINCT ${crewMemberships.userId})`.as('memberCount'),
+      })
+      .from(crewMemberships)
+      .innerJoin(crews, eq(crewMemberships.crewId, crews.id))
+      .leftJoin(
+        userDailyChallenges,
+        eq(userDailyChallenges.userId, crewMemberships.userId)
+      )
+      .groupBy(crewMemberships.crewId, crews.name);
+    
+    return crewChallenges.map(c => ({
+      ...c,
+      completionRate: c.memberCount > 0 ? (c.completedCount / c.memberCount) * 100 : 0,
+    })).sort((a, b) => b.completionRate - a.completionRate);
+  }
+
+  async getTotalLiftShowdown(): Promise<Array<{ crewId: string; crewName: string; totalLifts: number; avgLifts: number; memberCount: number }>> {
+    const crewLifts = await db
+      .select({
+        crewId: crewMemberships.crewId,
+        crewName: crews.name,
+        totalLifts: sql<number>`COALESCE(SUM(${prs.squat} + ${prs.bench} + ${prs.deadlift}), 0)`.as('totalLifts'),
+        memberCount: sql<number>`COUNT(DISTINCT ${crewMemberships.userId})`.as('memberCount'),
+      })
+      .from(crewMemberships)
+      .innerJoin(crews, eq(crewMemberships.crewId, crews.id))
+      .leftJoin(prs, eq(prs.userId, crewMemberships.userId))
+      .groupBy(crewMemberships.crewId, crews.name)
+      .orderBy(desc(sql`COALESCE(SUM(${prs.squat} + ${prs.bench} + ${prs.deadlift}), 0)`));
+    
+    return crewLifts.map(c => ({
+      ...c,
+      avgLifts: c.memberCount > 0 ? Math.round(c.totalLifts / c.memberCount) : 0,
+    }));
+  }
 }
 
 export const storage = new DatabaseStorage();
