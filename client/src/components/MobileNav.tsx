@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, Dumbbell, Home, Trophy, User, Settings, LogOut } from "lucide-react";
+import { Menu, Dumbbell, Home, Trophy, User, Settings, LogOut, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -10,6 +10,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { apiRequest } from "@/lib/queryClient";
+import { useQuery } from "@tanstack/react-query";
 
 interface MobileNavProps {
   username?: string;
@@ -22,6 +23,12 @@ interface MobileNavProps {
 export function MobileNav({ username, isAdmin, userLevel, userXP, userTitle }: MobileNavProps) {
   const [open, setOpen] = useState(false);
   const [, setLocation] = useLocation();
+
+  // Fetch user's crew
+  const { data: crewData } = useQuery({
+    queryKey: ['/api/crews/my-crew'],
+    enabled: open, // Only fetch when menu is open
+  });
 
   const handleLogout = async () => {
     try {
@@ -47,9 +54,17 @@ export function MobileNav({ username, isAdmin, userLevel, userXP, userTitle }: M
       </SheetTrigger>
       <SheetContent side="left" className="w-[280px] sm:w-[320px]">
         <SheetHeader>
-          <SheetTitle className="flex items-center gap-2">
-            <Dumbbell className="h-5 w-5 text-primary" />
-            <span className="font-display text-xl tracking-wider">UP NORTH FITNESS</span>
+          <SheetTitle className="flex flex-col items-start gap-1">
+            <div className="flex items-center gap-2">
+              <Dumbbell className="h-5 w-5 text-primary" />
+              <span className="font-display text-xl tracking-wider">UP NORTH FITNESS</span>
+            </div>
+            {crewData?.crew && (
+              <div className="flex items-center gap-2 ml-7">
+                <Users className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">{crewData.crew.name}</span>
+              </div>
+            )}
           </SheetTitle>
         </SheetHeader>
         
@@ -100,6 +115,19 @@ export function MobileNav({ username, isAdmin, userLevel, userXP, userTitle }: M
               <Link href={`/profile/${username}`}>
                 <User className="h-5 w-5" />
                 Profile
+              </Link>
+            </Button>
+            
+            <Button
+              variant="ghost"
+              className="justify-start gap-3"
+              asChild
+              onClick={handleNavClick}
+              data-testid="mobile-link-crews"
+            >
+              <Link href="/crews">
+                <Users className="h-5 w-5" />
+                {crewData?.crew ? crewData.crew.name : 'Crews'}
               </Link>
             </Button>
             
