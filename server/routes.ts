@@ -253,7 +253,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Home page data
   app.get("/api/home", async (req, res) => {
     try {
-      const leaderboard = await storage.getAllUsers();
+      const leaderboard = await storage.getAllUsersWithCrews();
       const activities = await storage.getRecentActivities(10);
       const goal = await storage.getCrewGoal();
       const allPRs = await storage.getAllPRs();

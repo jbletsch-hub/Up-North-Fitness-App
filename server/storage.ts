@@ -66,6 +66,7 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   upsertUser(user: UpsertUser): Promise<User>;
   getAllUsers(): Promise<User[]>;
+  getAllUsersWithCrews(): Promise<Array<User & { crewName: string | null }>>;
   deleteUser(id: string): Promise<void>;
   updateUserXP(id: string, xp: number, level: number, title: string): Promise<User>;
   updateUserDailyXP(id: string, dailyXp: number, lastDailyXpReset: string): Promise<User>;
@@ -244,6 +245,23 @@ export class DatabaseStorage implements IStorage {
 
   async getAllUsers(): Promise<User[]> {
     return await db.select().from(users).orderBy(desc(users.xp));
+  }
+
+  async getAllUsersWithCrews(): Promise<Array<User & { crewName: string | null }>> {
+    const usersWithCrews = await db
+      .select({
+        user: users,
+        crewName: crews.name,
+      })
+      .from(users)
+      .leftJoin(crewMemberships, eq(users.id, crewMemberships.userId))
+      .leftJoin(crews, eq(crewMemberships.crewId, crews.id))
+      .orderBy(desc(users.xp));
+    
+    return usersWithCrews.map(row => ({
+      ...row.user,
+      crewName: row.crewName,
+    }));
   }
 
   async deleteUser(id: string): Promise<void> {
