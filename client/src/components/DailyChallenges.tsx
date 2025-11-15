@@ -38,6 +38,7 @@ export function DailyChallenges({
         </CardTitle>
         {canReroll && onReroll && (
           <Button
+            type="button"
             variant="outline"
             size="sm"
             onClick={onReroll}
@@ -73,6 +74,7 @@ export function DailyChallenges({
                 <Badge className="bg-chart-3 text-white border-0">✓</Badge>
               ) : (
                 <Button
+                  type="button"
                   size="sm"
                   onClick={(e) => handleComplete(challenge.id, e)}
                   data-testid={`button-complete-${challenge.id}`}
