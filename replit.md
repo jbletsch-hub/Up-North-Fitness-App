@@ -36,10 +36,11 @@ The gamification system includes an XP curve (~200k XP for level 50) and an 11-t
 - **Collapsible Dashboard Sections:** Major dashboard sections are collapsible with `localStorage` persistence.
 - **Top Lifts Widget:** Displays top 3 users for squat, bench press, and deadlift.
 - **Multi-Crew System:** Supports multiple crews with membership management, invitations, and roles. Users can only join one crew.
-- **View Context Switcher:** Toggles between crew-specific and gym-wide views. Gym-wide view hides personal sections (Quick Stats, Daily Actions, Tracking, Crew Challenge) and shows only competitive content (MVL Race, Weekly MVM, Crew Competitions, Leaderboards).
+- **View Context Switcher:** Toggles between crew-specific and gym-wide views. Gym-wide view hides personal sections (Quick Stats, Daily Actions, Tracking, Crew Challenge) and shows only competitive content (MVL Race, Weekly MVM, Crew Competitions, Leaderboards). Implemented using React Context API (ViewContextProvider) for instant reactivity across all components.
 - **Crew-Specific MVL:** Daily MVL race can be filtered by crew membership.
-- **Crew vs Crew Competitions:** Dashboard displays four competitive categories: Weekly Check-In Battle, Monthly XP War, Challenge Completion %, and Total Lift Showdown.
+- **Crew vs Crew Competitions:** Dashboard displays four competitive categories: Weekly Check-In Battle, Monthly XP War, Challenge Completion %, and Total Lift Showdown. Backend queries fixed for proper date handling and SQL syntax.
 - **Weekly MVM System:** Tracks and awards the top weekly XP earner across the entire gym.
+- **Crew Name Display:** Leaderboards show crew membership under usernames in gym-wide view. HomePage always displays crew names as it's the public landing page.
 
 ## External Dependencies
 
