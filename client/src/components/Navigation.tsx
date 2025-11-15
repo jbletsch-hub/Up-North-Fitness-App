@@ -47,7 +47,7 @@ export function Navigation({ isLoggedIn, username, isAdmin, userLevel, userXP, u
 
           {/* Logo and Title */}
           <Link href="/" className="flex items-center gap-2 hover-elevate active-elevate-2 px-3 py-2 rounded-md">
-            <img src={compassLogo} alt="Up North Fitness" className="h-5 w-5 md:h-6 md:w-6 object-contain" />
+            <img src={compassLogo} alt="Up North Fitness" className="h-8 w-8 md:h-10 md:w-10 object-contain" />
             <span className="font-display text-lg md:text-xl lg:text-2xl tracking-wider whitespace-nowrap">UP NORTH FITNESS</span>
           </Link>
 
