@@ -170,14 +170,24 @@ export function AvatarDisplay({
     
     // Apply gender-based adjustments for female body type
     if (gender === "female") {
+      // Calculate hip width based on stage - females have wider hips
+      const hipMultiplier = 1.3 + (stage * 0.05); // Hips grow from 1.3x to 1.75x torso width
+      const hipWidth = Math.round(attrs.torsoWidth * hipMultiplier);
+      
       attrs = {
         ...attrs,
-        shoulderWidth: Math.round(attrs.shoulderWidth * 0.85), // Narrower shoulders
-        armWidth: Math.round(attrs.armWidth * 0.9), // Slightly slimmer arms
-        chestWidth: Math.round(attrs.chestWidth * 0.82), // More feminine chest/upper body
-        chestHeight: Math.round(attrs.chestHeight * 0.85),
-        torsoWidth: Math.round(attrs.torsoWidth * 0.92), // Slightly narrower waist
-        neckWidth: Math.round(attrs.neckWidth * 0.85), // More slender neck
+        shoulderWidth: Math.round(attrs.shoulderWidth * 0.75), // Significantly narrower shoulders
+        armWidth: Math.round(attrs.armWidth * 0.85), // Slimmer arms
+        chestWidth: Math.round(attrs.chestWidth * 0.72), // Much more feminine chest
+        chestHeight: Math.round(attrs.chestHeight * 0.75),
+        torsoWidth: Math.round(attrs.torsoWidth * 0.75), // Narrower waist
+        neckWidth: Math.round(attrs.neckWidth * 0.8), // More slender neck
+        hipWidth: hipWidth, // Add hip width for females
+      };
+    } else {
+      attrs = {
+        ...attrs,
+        hipWidth: Math.round(attrs.torsoWidth * 1.1), // Males have minimal hip flare
       };
     }
     
@@ -333,53 +343,53 @@ export function AvatarDisplay({
       case "curly":
         return (
           <g>
-            {/* Solid afro/curly base - full coverage */}
+            {/* Solid afro/curly base - raised higher and fuller */}
             <ellipse 
               cx="100" 
-              cy="38" 
-              rx="36" 
-              ry="32" 
+              cy="24" 
+              rx="38" 
+              ry="28" 
               fill={hairColor} 
               stroke={outlineColor} 
               strokeWidth={2}
             />
-            {/* Additional volume layers for fuller afro */}
+            {/* Additional volume layers for shape */}
             <ellipse 
               cx="100" 
-              cy="32" 
-              rx="32" 
-              ry="26" 
+              cy="20" 
+              rx="34" 
+              ry="24" 
               fill={hairColor} 
               stroke="none"
               opacity="0.9"
             />
             <ellipse 
               cx="100" 
-              cy="28" 
-              rx="28" 
-              ry="22" 
+              cy="16" 
+              rx="30" 
+              ry="20" 
               fill={hairColor} 
               stroke="none"
               opacity="0.8"
             />
-            {/* Curl texture overlay - many small circles for afro texture */}
-            <circle cx="72" cy="38" r="7" fill={hairColor} stroke={outlineColor} strokeWidth={1.5} opacity="0.7" />
-            <circle cx="80" cy="32" r="7" fill={hairColor} stroke={outlineColor} strokeWidth={1.5} opacity="0.7" />
-            <circle cx="88" cy="26" r="7" fill={hairColor} stroke={outlineColor} strokeWidth={1.5} opacity="0.7" />
-            <circle cx="100" cy="20" r="7" fill={hairColor} stroke={outlineColor} strokeWidth={1.5} opacity="0.7" />
-            <circle cx="112" cy="26" r="7" fill={hairColor} stroke={outlineColor} strokeWidth={1.5} opacity="0.7" />
-            <circle cx="120" cy="32" r="7" fill={hairColor} stroke={outlineColor} strokeWidth={1.5} opacity="0.7" />
-            <circle cx="128" cy="38" r="7" fill={hairColor} stroke={outlineColor} strokeWidth={1.5} opacity="0.7" />
-            <circle cx="76" cy="44" r="6" fill={hairColor} stroke={outlineColor} strokeWidth={1.5} opacity="0.6" />
-            <circle cx="124" cy="44" r="6" fill={hairColor} stroke={outlineColor} strokeWidth={1.5} opacity="0.6" />
-            <circle cx="84" cy="38" r="6" fill={hairColor} stroke={outlineColor} strokeWidth={1.5} opacity="0.6" />
-            <circle cx="94" cy="32" r="6" fill={hairColor} stroke={outlineColor} strokeWidth={1.5} opacity="0.6" />
-            <circle cx="106" cy="32" r="6" fill={hairColor} stroke={outlineColor} strokeWidth={1.5} opacity="0.6" />
-            <circle cx="116" cy="38" r="6" fill={hairColor} stroke={outlineColor} strokeWidth={1.5} opacity="0.6" />
-            {/* Smaller surface curls for extra texture */}
-            <circle cx="90" cy="22" r="4" fill={hairColor} stroke={outlineColor} strokeWidth={1.2} opacity="0.5" />
-            <circle cx="100" cy="18" r="4" fill={hairColor} stroke={outlineColor} strokeWidth={1.2} opacity="0.5" />
-            <circle cx="110" cy="22" r="4" fill={hairColor} stroke={outlineColor} strokeWidth={1.2} opacity="0.5" />
+            {/* Textured curly strands using curved paths instead of circles */}
+            <path d="M 68 26 Q 70 22, 72 26 Q 74 30, 72 34" stroke={darkerHair} strokeWidth="2.5" fill="none" strokeLinecap="round" />
+            <path d="M 78 18 Q 80 14, 82 18 Q 84 22, 82 26" stroke={darkerHair} strokeWidth="2.5" fill="none" strokeLinecap="round" />
+            <path d="M 88 12 Q 90 8, 92 12 Q 94 16, 92 20" stroke={darkerHair} strokeWidth="2.5" fill="none" strokeLinecap="round" />
+            <path d="M 100 8 Q 102 4, 104 8 Q 106 12, 104 16" stroke={darkerHair} strokeWidth="2.5" fill="none" strokeLinecap="round" />
+            <path d="M 112 12 Q 114 8, 116 12 Q 118 16, 116 20" stroke={darkerHair} strokeWidth="2.5" fill="none" strokeLinecap="round" />
+            <path d="M 122 18 Q 124 14, 126 18 Q 128 22, 126 26" stroke={darkerHair} strokeWidth="2.5" fill="none" strokeLinecap="round" />
+            <path d="M 132 26 Q 134 22, 136 26 Q 138 30, 136 34" stroke={darkerHair} strokeWidth="2.5" fill="none" strokeLinecap="round" />
+            {/* Mid-level curl texture */}
+            <path d="M 74 22 Q 76 19, 78 22 Q 80 25, 78 28" stroke={darkerHair} strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.8" />
+            <path d="M 94 16 Q 96 13, 98 16 Q 100 19, 98 22" stroke={darkerHair} strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.8" />
+            <path d="M 106 16 Q 108 13, 110 16 Q 112 19, 110 22" stroke={darkerHair} strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.8" />
+            <path d="M 126 22 Q 128 19, 130 22 Q 132 25, 130 28" stroke={darkerHair} strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.8" />
+            {/* Bottom layer texture */}
+            <path d="M 70 32 Q 72 29, 74 32 Q 76 35, 74 38" stroke={darkerHair} strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.7" />
+            <path d="M 84 28 Q 86 25, 88 28 Q 90 31, 88 34" stroke={darkerHair} strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.7" />
+            <path d="M 116 28 Q 118 25, 120 28 Q 122 31, 120 34" stroke={darkerHair} strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.7" />
+            <path d="M 130 32 Q 132 29, 134 32 Q 136 35, 134 38" stroke={darkerHair} strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.7" />
           </g>
         );
       
@@ -420,6 +430,96 @@ export function AvatarDisplay({
               fill={hairColor} stroke={outlineColor} strokeWidth={1.6} opacity="0.9" />
             <path d="M 125 42 Q 126 32, 127 22 Q 127 18, 125 15 Q 122 18, 120 26 Q 118 34, 117 42 Z" 
               fill={hairColor} stroke={outlineColor} strokeWidth={1.6} opacity="0.9" />
+          </g>
+        );
+      
+      case "faded":
+        return (
+          <g>
+            {/* Modern fade - tight on sides, volume on top */}
+            <path
+              d="M 76 48 Q 78 38, 82 32 Q 88 28, 100 27 Q 112 28, 118 32 Q 122 38, 124 48"
+              fill={hairColor}
+              stroke={outlineColor}
+              strokeWidth={2}
+            />
+            {/* Top volume - textured and styled */}
+            <path
+              d="M 85 32 Q 88 26, 92 22 Q 96 19, 100 18 Q 104 19, 108 22 Q 112 26, 115 32 
+                 L 112 34 Q 108 30, 100 28 Q 92 30, 88 34 Z"
+              fill={hairColor}
+              stroke={outlineColor}
+              strokeWidth={2}
+            />
+            {/* Fade gradient effect on sides */}
+            <path d="M 78 46 Q 79 44, 80 42" stroke={darkerHair} strokeWidth="1.5" fill="none" opacity="0.3" />
+            <path d="M 82 44 Q 83 42, 84 40" stroke={darkerHair} strokeWidth="1.5" fill="none" opacity="0.4" />
+            <path d="M 122 46 Q 121 44, 120 42" stroke={darkerHair} strokeWidth="1.5" fill="none" opacity="0.3" />
+            <path d="M 118 44 Q 117 42, 116 40" stroke={darkerHair} strokeWidth="1.5" fill="none" opacity="0.4" />
+            {/* Top texture lines */}
+            <path d="M 92 24 Q 94 26, 96 30" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.5" />
+            <path d="M 100 20 Q 100 24, 100 28" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.5" />
+            <path d="M 108 24 Q 106 26, 104 30" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.5" />
+          </g>
+        );
+      
+      case "ponytail":
+        return (
+          <g>
+            {/* Front hair - parted with volume */}
+            <path
+              d="M 72 48 Q 74 36, 80 30 Q 88 26, 100 25 Q 112 26, 120 30 Q 126 36, 128 48
+                 L 126 50 Q 120 46, 100 44 Q 80 46, 74 50 Z"
+              fill={hairColor}
+              stroke={outlineColor}
+              strokeWidth={2}
+            />
+            {/* Side parts */}
+            <path 
+              d="M 72 48 Q 70 54, 69 62 L 73 62 Q 74 56, 75 50 Z" 
+              fill={hairColor} 
+              stroke={outlineColor} 
+              strokeWidth={2} 
+            />
+            <path 
+              d="M 128 48 Q 130 54, 131 62 L 127 62 Q 126 56, 125 50 Z" 
+              fill={hairColor} 
+              stroke={outlineColor} 
+              strokeWidth={2} 
+            />
+            {/* Ponytail base - gathered at back */}
+            <ellipse 
+              cx="100" 
+              cy="78" 
+              rx="12" 
+              ry="8" 
+              fill={hairColor} 
+              stroke={outlineColor} 
+              strokeWidth={2}
+            />
+            {/* Ponytail length - flowing down */}
+            <path
+              d="M 92 82 Q 94 90, 95 100 Q 96 108, 97 116 
+                 L 103 116 Q 104 108, 105 100 Q 106 90, 108 82 Z"
+              fill={hairColor}
+              stroke={outlineColor}
+              strokeWidth={2}
+            />
+            {/* Ponytail tip - tapered end */}
+            <path
+              d="M 97 116 Q 98 122, 100 126 Q 102 122, 103 116 Z"
+              fill={hairColor}
+              stroke={outlineColor}
+              strokeWidth={2}
+            />
+            {/* Texture strands in ponytail */}
+            <path d="M 96 90 Q 97 100, 98 110" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.5" />
+            <path d="M 100 88 Q 100 98, 100 108" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.5" />
+            <path d="M 104 90 Q 103 100, 102 110" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.5" />
+            {/* Front texture */}
+            <path d="M 86 30 Q 88 34, 90 40" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.4" />
+            <path d="M 100 27 Q 100 32, 100 38" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.4" />
+            <path d="M 114 30 Q 112 34, 110 40" stroke={darkerHair} strokeWidth="1.2" fill="none" opacity="0.4" />
           </g>
         );
       
@@ -978,11 +1078,11 @@ export function AvatarDisplay({
           className="body-shirt"
         />
 
-        {/* === SHORTS - Smaller === */}
+        {/* === SHORTS - Hip-aware === */}
         <ellipse
           cx="100"
           cy="170"
-          rx={Math.max(attrs.torsoWidth / 2 + 2, 24)}
+          rx={Math.max(attrs.hipWidth / 2 + 2, 24)}
           ry="15"
           fill={shortsColor}
           stroke={outlineColor}

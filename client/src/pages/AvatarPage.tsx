@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { Navigation } from "@/components/Navigation";
@@ -50,14 +50,19 @@ const SHORTS_COLORS = [
   { name: "Green", value: "#16A34A" },
 ];
 
-const HAIR_STYLES = [
+const MALE_HAIR_STYLES = [
   { id: "bald", name: "Bald", description: "No hair" },
-  { id: "buzzcut", name: "Buzzcut", description: "Very short" },
   { id: "short", name: "Short", description: "Classic short cut" },
   { id: "medium", name: "Medium", description: "Medium length" },
-  { id: "long", name: "Long", description: "Long flowing hair" },
-  { id: "curly", name: "Curly", description: "Curly afro style" },
-  { id: "spiky", name: "Spiky", description: "Spiky anime style" },
+  { id: "spiky", name: "Spiky", description: "Spiky style" },
+  { id: "faded", name: "Faded", description: "Modern fade cut" },
+];
+
+const FEMALE_HAIR_STYLES = [
+  { id: "short", name: "Short", description: "Short pixie cut" },
+  { id: "medium", name: "Medium", description: "Shoulder-length" },
+  { id: "long", name: "Long Straight", description: "Long flowing hair" },
+  { id: "ponytail", name: "Ponytail", description: "Classic ponytail" },
 ];
 
 const HAIR_COLORS = [
@@ -123,6 +128,22 @@ export default function AvatarPage() {
       });
     },
   });
+
+  // Reset hair style to valid option when gender changes
+  useEffect(() => {
+    const validStyles = gender === "female" ? FEMALE_HAIR_STYLES : MALE_HAIR_STYLES;
+    const isCurrentStyleValid = validStyles.some(style => style.id === hairStyle);
+    
+    if (!isCurrentStyleValid) {
+      // Default to "short" if current style is invalid for new gender
+      setHairStyle("short");
+    }
+    
+    // Reset facial hair to "none" when switching to female
+    if (gender === "female" && facialHair !== "none") {
+      setFacialHair("none");
+    }
+  }, [gender]);
 
   const getMuscleStageInfo = (level: number) => {
     const stage = Math.min(Math.floor((level - 1) / 5), 9);
@@ -326,12 +347,15 @@ export default function AvatarPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg">Hair Style</CardTitle>
+                <CardDescription>
+                  {gender === "female" ? "Feminine hairstyles" : "Masculine hairstyles"}
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label>Style</Label>
                   <div className="grid grid-cols-2 gap-2">
-                    {HAIR_STYLES.map((style) => (
+                    {(gender === "female" ? FEMALE_HAIR_STYLES : MALE_HAIR_STYLES).map((style) => (
                       <Button
                         key={style.id}
                         variant={hairStyle === style.id ? "default" : "outline"}
@@ -366,31 +390,33 @@ export default function AvatarPage() {
               </CardContent>
             </Card>
 
-            {/* Facial Hair Customization */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Facial Hair</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Style</Label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {FACIAL_HAIR_STYLES.map((style) => (
-                      <Button
-                        key={style.id}
-                        variant={facialHair === style.id ? "default" : "outline"}
-                        className="h-auto flex-col gap-1 py-2"
-                        onClick={() => setFacialHair(style.id)}
-                        data-testid={`button-facial-hair-${style.id}`}
-                      >
-                        <span className="font-semibold text-xs">{style.name}</span>
-                        <span className="text-xs opacity-70">{style.description}</span>
-                      </Button>
-                    ))}
+            {/* Facial Hair Customization - Males Only */}
+            {gender === "male" && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Facial Hair</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Style</Label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {FACIAL_HAIR_STYLES.map((style) => (
+                        <Button
+                          key={style.id}
+                          variant={facialHair === style.id ? "default" : "outline"}
+                          className="h-auto flex-col gap-1 py-2"
+                          onClick={() => setFacialHair(style.id)}
+                          data-testid={`button-facial-hair-${style.id}`}
+                        >
+                          <span className="font-semibold text-xs">{style.name}</span>
+                          <span className="text-xs opacity-70">{style.description}</span>
+                        </Button>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Accessories */}
             <Card>
