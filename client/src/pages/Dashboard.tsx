@@ -64,10 +64,16 @@ export default function Dashboard() {
 
   const completeMutation = useMutation({
     mutationFn: async ({ challengeId, position }: { challengeId: string; position?: { x: number; y: number } }) => {
+      console.log('[DEBUG] Starting challenge completion mutation for:', challengeId);
+      console.log('[DEBUG] Button position:', position);
       const res = await apiRequest("POST", `/api/challenges/${challengeId}/complete`);
-      return { data: await res.json(), position };
+      console.log('[DEBUG] API response received:', res.status, res.statusText);
+      const data = await res.json();
+      console.log('[DEBUG] Response data:', data);
+      return { data, position };
     },
     onSuccess: (response: any) => {
+      console.log('[DEBUG] Mutation onSuccess called');
       const { data, position } = response;
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard"] });
       if (data.xpAwarded && position) {
@@ -112,6 +118,16 @@ export default function Dashboard() {
           description: `Bonus ${data.bonusXP} XP awarded!`,
         });
       }
+    },
+    onError: (error: Error) => {
+      console.error('[DEBUG] Mutation onError called:', error);
+      console.error('[DEBUG] Error message:', error.message);
+      console.error('[DEBUG] Error stack:', error.stack);
+      toast({
+        title: "Challenge Error",
+        description: error.message || "Failed to complete challenge. Please try again.",
+        variant: "destructive",
+      });
     },
   });
 

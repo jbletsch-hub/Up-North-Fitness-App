@@ -26,12 +26,15 @@ export function DailyChallenges({
   isRerolling = false
 }: DailyChallengesProps) {
   const handleComplete = (id: string, event: React.MouseEvent) => {
+    console.log('[DEBUG] DailyChallenges handleComplete called for:', id);
     // Capture position synchronously before React recycles the event (production mode issue)
     const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
     const position = {
       x: rect.left + rect.width / 2,
       y: rect.top,
     };
+    console.log('[DEBUG] Captured position:', position);
+    console.log('[DEBUG] Calling onComplete callback');
     onComplete?.(id, position);
   };
 
