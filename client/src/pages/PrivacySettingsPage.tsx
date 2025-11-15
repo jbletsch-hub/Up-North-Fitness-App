@@ -18,7 +18,8 @@ export default function PrivacySettingsPage() {
 
   const updatePrivacyMutation = useMutation({
     mutationFn: async (isProfilePrivate: boolean) => {
-      return await apiRequest("POST", "/api/user/privacy-settings", { isProfilePrivate });
+      const res = await apiRequest("POST", "/api/user/privacy-settings", { isProfilePrivate });
+      return await res.json();
     },
     onSuccess: (data: any) => {
       if (data.user) {
@@ -26,12 +27,13 @@ export default function PrivacySettingsPage() {
       }
       toast({
         title: "Privacy Updated",
-        description: data.user.isProfilePrivate 
+        description: data.user?.isProfilePrivate 
           ? "Your profile is now private" 
           : "Your profile is now public",
       });
     },
-    onError: () => {
+    onError: (error: any) => {
+      console.error("Privacy settings error:", error);
       toast({
         title: "Error",
         description: "Failed to update privacy settings",
