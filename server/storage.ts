@@ -377,6 +377,15 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
+  async toggle2XPBoost(id: string, has2XPBoost: boolean): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({ has2XPBoost })
+      .where(eq(users.id, id))
+      .returning();
+    return user;
+  }
+
   async updateUserPrivacySettings(id: string, settings: { isProfilePrivate: boolean }): Promise<User> {
     const [user] = await db
       .update(users)

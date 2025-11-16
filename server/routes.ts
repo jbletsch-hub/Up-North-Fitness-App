@@ -1092,6 +1092,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/admin/users/:id/toggle-2xp", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+
+      const { has2XPBoost } = req.body;
+      const updatedUser = await storage.toggle2XPBoost(req.params.id, has2XPBoost);
+      res.json({ success: true, user: updatedUser });
+    } catch (error) {
+      console.error("Error toggling 2XP boost:", error);
+      res.status(500).json({ message: "Failed to toggle 2XP boost" });
+    }
+  });
+
   app.post("/api/admin/users/:id/update-streak", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.id;
