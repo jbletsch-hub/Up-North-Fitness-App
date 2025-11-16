@@ -23,6 +23,7 @@ import { Progress } from "@/components/ui/progress";
 import { AvatarDisplay } from "@/components/AvatarDisplay";
 import { AvatarWithProgress } from "@/components/AvatarWithProgress";
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { CrewChallengeCard } from "@/components/CrewChallengeCard";
 import { CrewCompetitionsCard } from "@/components/CrewCompetitionsCard";
 import { WeeklyMVMCard } from "@/components/WeeklyMVMCard";
@@ -33,6 +34,7 @@ import { ViewContextSwitcher } from "@/components/ViewContextSwitcher";
 import { useViewContext } from "@/hooks/use-view-context";
 import { useCelebration } from "@/hooks/use-celebration";
 import { PhotoComparison } from "@/components/PhotoComparison";
+import { Sparkles } from "lucide-react";
 
 export default function Dashboard() {
   const { toast } = useToast();
@@ -546,6 +548,17 @@ export default function Dashboard() {
                 <span className="font-display text-xl md:text-2xl text-primary">{dashboardUser.title}</span>
                 <span className="text-sm md:text-base text-muted-foreground sm:ml-3">Level {dashboardUser.level} · {dashboardUser.xp.toLocaleString()} XP</span>
               </div>
+              {dashboardUser.has2XPBoost && (
+                <div className="mb-3">
+                  <Badge variant="default" className="gap-1.5 font-semibold" data-testid="badge-2xp-active">
+                    <Sparkles className="h-4 w-4" />
+                    2X XP BOOST ACTIVE
+                  </Badge>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    You're earning double XP on daily and weekly challenges!
+                  </p>
+                </div>
+              )}
               <div className="space-y-1">
                 <div className="flex flex-col sm:flex-row sm:justify-between gap-1 text-xs md:text-sm">
                   <span className="text-muted-foreground">Progress to Level {dashboardUser.level + 1}</span>
