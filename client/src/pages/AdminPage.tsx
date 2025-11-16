@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
-import { Trash2, Plus, Users, Trophy, Zap, RefreshCw, UserX, Edit2, Flame, UserPlus } from "lucide-react";
+import { Trash2, Plus, Users, Trophy, Zap, RefreshCw, UserX, Edit2, Flame, UserPlus, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { useLocation } from "wouter";
 
@@ -259,6 +259,28 @@ export default function AdminPage() {
       toast({
         title: "Failed to update admin status",
         description: error.message || "An error occurred while updating admin privileges.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const toggle2XPMutation = useMutation({
+    mutationFn: async ({ userId, has2XPBoost }: { userId: string; has2XPBoost: boolean }) => {
+      const res = await apiRequest("POST", `/api/admin/users/${userId}/toggle-2xp`, { has2XPBoost });
+      return await res.json();
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/home"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      toast({
+        title: variables.has2XPBoost ? "2XP Boost Enabled!" : "2XP Boost Disabled",
+        description: variables.has2XPBoost ? "User now earns 2X XP on daily and weekly challenges." : "User XP returns to normal rates.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Failed to toggle 2XP boost",
+        description: error.message || "An error occurred while updating 2XP boost status.",
         variant: "destructive",
       });
     },
@@ -606,6 +628,12 @@ export default function AdminPage() {
                         {u.isAdmin && (
                           <Badge variant="default" className="text-xs">Admin</Badge>
                         )}
+                        {u.has2XPBoost && (
+                          <Badge variant="secondary" className="text-xs gap-1">
+                            <Sparkles className="h-3 w-3" />
+                            2X XP
+                          </Badge>
+                        )}
                       </div>
                       <div className="text-sm text-muted-foreground">
                         Level {u.level} • {u.xp.toLocaleString()} XP • {u.streakCount} day streak
@@ -836,6 +864,20 @@ export default function AdminPage() {
                           </DialogFooter>
                         </DialogContent>
                       </Dialog>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          const action = u.has2XPBoost ? "disable 2XP boost for" : "enable 2XP boost for";
+                          if (confirm(`Are you sure you want to ${action} ${u.username}? This affects daily and weekly challenge XP.`)) {
+                            toggle2XPMutation.mutate({ userId: u.id, has2XPBoost: !u.has2XPBoost });
+                          }
+                        }}
+                        data-testid={`button-toggle-2xp-${u.id}`}
+                        title={u.has2XPBoost ? "Disable 2XP Boost" : "Enable 2XP Boost"}
+                      >
+                        <Sparkles className={`h-4 w-4 ${u.has2XPBoost ? 'text-primary' : 'text-muted-foreground'}`} />
+                      </Button>
                       <Button
                         variant="ghost"
                         size="icon"
