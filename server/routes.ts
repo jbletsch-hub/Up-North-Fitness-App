@@ -443,6 +443,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.id;
       const challengeId = req.params.id;
 
+      // Get the user to check for 2XP boost
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
       // Get the challenge to find its XP value
       const today = getTodayDate();
       const challenges = await storage.getUserDailyChallenges(userId, today);
@@ -452,7 +458,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Challenge not found" });
       }
 
-      const xpValue = challenge.xpValue || 20; // Default to 20 if not set
+      let xpValue = challenge.xpValue || 20; // Default to 20 if not set
+      
+      // Apply 2XP boost for daily challenges if user has it enabled
+      if (user.has2XPBoost) {
+        xpValue = xpValue * 2;
+      }
 
       await storage.completeChallenge(challengeId);
       const result = await awardXP(userId, xpValue, "completed a daily challenge");
@@ -471,7 +482,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       let bonusResult;
       if (allCompleted) {
-        bonusResult = await awardXP(userId, 45, "completed all daily challenges!");
+        let bonusXP = 45;
+        // Apply 2XP boost to "all challenges completed" bonus as well
+        if (user.has2XPBoost) {
+          bonusXP = bonusXP * 2;
+        }
+        bonusResult = await awardXP(userId, bonusXP, "completed all daily challenges!");
       }
 
       res.json({ 
@@ -1651,6 +1667,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.id;
       const { id } = req.params;
       
+      // Get user to check for 2XP boost
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      
       // Get goal to check type before completing
       const goalBefore = await storage.getGoal(id);
       if (!goalBefore) {
@@ -1665,13 +1687,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (goalBefore.type === "weekly") {
         xpAmount = 100;
+        // Apply 2XP boost for weekly goals if user has it enabled
+        if (user.has2XPBoost) {
+          xpAmount = xpAmount * 2;
+        }
         xpReason = "completed a weekly goal!";
       } else if (goalBefore.type === "yearly") {
         xpAmount = 2000;
         xpReason = "completed a yearly goal!";
+        // No 2XP boost for yearly goals
       } else {
         xpAmount = 5000;
         xpReason = "completed a lifetime goal!";
+        // No 2XP boost for lifetime goals
       }
       
       // Don't count goal XP toward daily MVL race
