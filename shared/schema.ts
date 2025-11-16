@@ -40,6 +40,7 @@ export const users = pgTable("users", {
   
   // Iron Crew specific fields
   isAdmin: boolean("is_admin").default(false),
+  has2XPBoost: boolean("has_2xp_boost").default(false).notNull(),
   xp: integer("xp").default(0).notNull(),
   level: integer("level").default(1).notNull(),
   title: varchar("title").default("Rookie 1").notNull(),
