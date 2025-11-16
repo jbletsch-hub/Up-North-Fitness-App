@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { Trophy, Target, Plus, Check, X, Edit } from "lucide-react";
+import { Trophy, Target, Plus, Check, X, Edit, Sparkles } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useXPPopup } from "@/components/XPPopup";
@@ -36,7 +36,11 @@ interface UserGoal {
   completed: boolean;
 }
 
-export function GoalsCard() {
+interface GoalsCardProps {
+  has2XPBoost?: boolean;
+}
+
+export function GoalsCard({ has2XPBoost = false }: GoalsCardProps = {}) {
   const { toast } = useToast();
   const { showXP, popup } = useXPPopup();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -209,7 +213,16 @@ export function GoalsCard() {
     };
 
     const getXPReward = () => {
-      if (type === "weekly") return "100 XP";
+      if (type === "weekly") {
+        const baseXP = 100;
+        const xp = has2XPBoost ? baseXP * 2 : baseXP;
+        return has2XPBoost ? (
+          <span className="inline-flex items-center gap-1">
+            <Sparkles className="h-3.5 w-3.5" />
+            {xp.toLocaleString()} XP (2X Boost!)
+          </span>
+        ) : `${xp} XP`;
+      }
       if (type === "yearly") return "2,000 XP";
       return "5,000 XP";
     };

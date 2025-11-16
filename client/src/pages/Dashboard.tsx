@@ -622,6 +622,7 @@ export default function Dashboard() {
               canReroll={canReroll}
               onReroll={() => rerollMutation.mutate()}
               isRerolling={rerollMutation.isPending}
+              has2XPBoost={dashboardUser.has2XPBoost}
             />
             <CheckInCard
               streak={dashboardUser.streakCount}

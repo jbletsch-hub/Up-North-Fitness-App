@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, Target, RefreshCw } from "lucide-react";
+import { Check, Target, RefreshCw, Sparkles } from "lucide-react";
 
 interface Challenge {
   id: string;
@@ -16,6 +16,7 @@ interface DailyChallengesProps {
   canReroll?: boolean;
   onReroll?: () => void;
   isRerolling?: boolean;
+  has2XPBoost?: boolean;
 }
 
 export function DailyChallenges({ 
@@ -23,7 +24,8 @@ export function DailyChallenges({
   onComplete,
   canReroll = false,
   onReroll,
-  isRerolling = false
+  isRerolling = false,
+  has2XPBoost = false
 }: DailyChallengesProps) {
   const handleComplete = (id: string, event: React.MouseEvent) => {
     console.log('[DEBUG] DailyChallenges handleComplete called for:', id);
@@ -87,8 +89,10 @@ export function DailyChallenges({
                   size="sm"
                   onClick={(e) => handleComplete(challenge.id, e)}
                   data-testid={`button-complete-${challenge.id}`}
+                  className={has2XPBoost ? "gap-1" : ""}
                 >
-                  Done (+{challenge.xpValue || 20} XP)
+                  {has2XPBoost && <Sparkles className="h-3.5 w-3.5" />}
+                  Done (+{has2XPBoost ? (challenge.xpValue || 20) * 2 : (challenge.xpValue || 20)} XP)
                 </Button>
               )}
             </div>

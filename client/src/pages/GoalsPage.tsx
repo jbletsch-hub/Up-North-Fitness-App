@@ -107,9 +107,16 @@ export default function GoalsPage() {
   });
 
   const getGoalTypeInfo = (type: string) => {
+    const has2XPBoost = user?.has2XPBoost || false;
     switch (type) {
       case "weekly":
-        return { label: "Weekly", icon: Calendar, xp: "100 XP", color: "text-blue-500" };
+        const weeklyXP = has2XPBoost ? 200 : 100;
+        return { 
+          label: "Weekly", 
+          icon: Calendar, 
+          xp: has2XPBoost ? `${weeklyXP} XP (2X Boost!)` : `${weeklyXP} XP`, 
+          color: "text-blue-500" 
+        };
       case "yearly":
         return { label: "Yearly", icon: Target, xp: "2,000 XP", color: "text-purple-500" };
       case "lifetime":
@@ -269,7 +276,9 @@ export default function GoalsPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="weekly">Weekly (100 XP)</SelectItem>
+                    <SelectItem value="weekly">
+                      Weekly ({user?.has2XPBoost ? '200 XP - 2X Boost!' : '100 XP'})
+                    </SelectItem>
                     <SelectItem value="yearly">Yearly (2,000 XP)</SelectItem>
                     <SelectItem value="lifetime">Lifetime (5,000 XP)</SelectItem>
                   </SelectContent>
