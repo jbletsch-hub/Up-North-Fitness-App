@@ -1,0 +1,31 @@
+{
+  "squat": {
+    "male": {
+      "18-39": {
+        "60": { "untrained": 80, "novice": 110, "intermediate": 140, "advanced": 180, "elite": 230 },
+        "75": { "untrained": 100, "novice": 135, "intermediate": 170, "advanced": 215, "elite": 270 },
+        "90": { "untrained": 120, "novice": 155, "intermediate": 195, "advanced": 245, "elite": 305 }
+      }
+    },
+    "female": {
+      "18-39": {
+        "52": { "untrained": 45, "novice": 70, "intermediate": 95, "advanced": 125, "elite": 165 }
+      }
+    }
+  },
+  "bench": {
+    "male": {
+      "18-39": {
+        "60": { "untrained": 45, "novice": 65, "intermediate": 85, "advanced": 105, "elite": 135 },
+        "75": { "untrained": 60, "novice": 85, "intermediate": 110, "advanced": 135, "elite": 170 }
+      }
+    }
+  },
+  "deadlift": {
+    "male": {
+      "18-39": {
+        "60": { "untrained": 100, "novice": 140, "intermediate": 170, "advanced": 210, "elite": 260 }
+      }
+    }
+  }
+}
